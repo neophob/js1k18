@@ -18,10 +18,9 @@ var camera =
 
 var map =
 {
-    height: new Uint8Array(1024*1024), // 1024*1024 byte array with height information
     color:  new Uint32Array(1024*1024) // 1024*1024 int array with RGB colors
 };
-
+var height = new Uint8Array(1024*1024); // 1024*1024 byte array with height information
 // ---------------------------------------------
 // Screen data
 
@@ -80,7 +79,7 @@ function UpdateCamera()
 
     // Collision detection. Don't fly below the surface.
     var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
-    if ((map.height[mapoffset]+10) > camera.height) camera.height = map.height[mapoffset] + 10;
+    if ((height[mapoffset]+10) > camera.height) camera.height = height[mapoffset] + 10;
 
     time = current;
 
@@ -171,7 +170,7 @@ function Render()
         for(var i=0; i<screenwidth|0; i=i+1|0)
         {
             var mapoffset = ((Math.floor(ply) & 1023) << 10) + (Math.floor(plx) & 1023)|0;
-            var heightonscreen = (camera.height - map.height[mapoffset]) * invz + camera.horizon|0;
+            var heightonscreen = (camera.height - height[mapoffset]) * invz + camera.horizon|0;
             DrawVerticalLine(i, heightonscreen, hiddeny[i], map.color[mapoffset]);
             if (heightonscreen < hiddeny[i]) hiddeny[i] = heightonscreen;
             plx += dx;
@@ -249,7 +248,7 @@ function OnLoadedImages(result)
     for(var i=0; i<1024*1024; i++)
     {
         map.color[i] = 0xFF000000 | (datac[(i<<2) + 2] << 16) | (datac[(i<<2) + 1] << 8) | datac[(i<<2) + 0];
-        map.height[i] = datah[i<<2];
+        height[i] = datah[i<<2];
     }
     Draw();
 }
@@ -278,7 +277,7 @@ function Init()
     for(var i=0; i<1024*1024; i++)
     {
         map.color[i] = 0xFF007050;
-        map.height[i] = 0;
+        height[i] = 0;
     }
 
     // LOAD MAP
