@@ -5,11 +5,11 @@
 
 var camera =
 {
-    x:        512., // x position on the map
-    y:        800., // y position on the map
-    height:    78., // height of the camera
-    angle:      0., // direction of the camera
-    horizon:  100., // horizon position (look up and down)
+    x:        512, // x position on the map
+    y:        800, // y position on the map
+    height:    78, // height of the camera
+    angle:      0, // direction of the camera
+    horizon:  100, // horizon position (look up and down)
     distance: 800   // distance of map
 };
 
