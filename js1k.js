@@ -27,15 +27,12 @@ var map =
 
 var screen =
 {
-    canvas:    null,
     context:   null,
     imagedata: null,
 
     bufarray:  null, // color data
     buf8:      null, // the same array but with bytes
     buf32:     null, // the same array but with 32-Bit words
-
-    backgroundcolor: 0xFFE09090
 };
 
 // ---------------------------------------------
@@ -229,7 +226,7 @@ function DrawVerticalLine(x, ytop, ybottom, col)
     ybottom = ybottom|0;
     col = col|0;
     var buf32 = screen.buf32;
-    var screenwidth = screen.canvas.width|0;
+    var screenwidth = a.width|0;
     if (ytop < 0) ytop = 0;
     if (ytop > ybottom) return;
 
@@ -248,7 +245,8 @@ function DrawVerticalLine(x, ytop, ybottom, col)
 function DrawBackground()
 {
     var buf32 = screen.buf32;
-    var color = screen.backgroundcolor|0;
+    // set background color
+    var color = 0xFFE09090
     for (var i = 0; i < buf32.length; i++) buf32[i] = color|0;
 }
 
@@ -264,13 +262,13 @@ function Flip()
 
 function Render()
 {
-    var screenwidth = screen.canvas.width|0;
+    var screenwidth = a.width|0;
     var sinang = Math.sin(camera.angle);
     var cosang = Math.cos(camera.angle);
 
     var hiddeny = new Int32Array(screenwidth);
-    for(var i=0; i<screen.canvas.width|0; i=i+1|0)
-        hiddeny[i] = screen.canvas.height;
+    for(var i=0; i<a.width|0; i=i+1|0)
+        hiddeny[i] = a.height;
 
     var dz = 1.;
 
@@ -377,17 +375,15 @@ function OnLoadedImages(result)
 
 function OnResizeWindow()
 {
-    screen.canvas = window.a;
-
     var aspect = window.innerWidth / window.innerHeight;
 
-    screen.canvas.width = window.innerWidth<800?window.innerWidth:800;
-    screen.canvas.height = screen.canvas.width / aspect;
+    a.width = window.innerWidth<800?window.innerWidth:800;
+    a.height = a.width / aspect;
 
-    if (screen.canvas.getContext)
+    if (a.getContext)
     {
-        screen.context = screen.canvas.getContext('2d');
-        screen.imagedata = screen.context.createImageData(screen.canvas.width, screen.canvas.height);
+        screen.context = a.getContext('2d');
+        screen.imagedata = screen.context.createImageData(a.width, a.height);
     }
 
     screen.bufarray = new ArrayBuffer(screen.imagedata.width * screen.imagedata.height * 4);
