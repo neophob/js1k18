@@ -50,13 +50,8 @@ var input =
 }
 
 var updaterunning = false;
+var time = 0;
 
-var time = new Date().getTime();
-
-
-// for fps display
-var timelastframe = new Date().getTime();
-var frames = 0;
 
 // Update the camera for next frame. Dependent on keypresses
 function UpdateCamera()
@@ -124,115 +119,29 @@ function DetectMouseUp()
 function DetectMouseMove(e)
 {
     e.preventDefault();
-    if (input.mouseposition == null) return;
-    if (input.forwardbackward == 0) return;
+    if (input.mouseposition == null || input.forwardbackward == 0) return;
 
     input.leftright = (input.mouseposition[0]-e.pageX)*1e-3;
     camera.horizon  = 100 + (input.mouseposition[1]-e.pageY)*0.5;
     input.updown    = (input.mouseposition[1]-e.pageY)*1e-2;
 }
 
-
-function DetectKeysDown(e)
-{
-    switch(e.keyCode)
-    {
-    case 37:    // left cursor
-    case 65:    // a
-        input.leftright = +1.;
-        break;
-    case 39:    // right cursor
-    case 68:    // d
-        input.leftright = -1.;
-        break;
-    case 38:    // cursor up
-    case 87:    // w
-        input.forwardbackward = 3.;
-        break;
-    case 40:    // cursor down
-    case 83:    // s
-        input.forwardbackward = -3.;
-        break;
-    case 82:    // r
-        input.updown = +2.;
-        break;
-    case 70:    // f
-        input.updown = -2.;
-        break;
-    case 69:    // e
-        input.lookup = true;
-        break;
-    case 81:    //q
-        input.lookdown = true;
-        break;
-    default:
-        return;
-        break;
-    }
-
-    if (!updaterunning) {
-        time = new Date().getTime();
-        Draw();
-    }
-    return false;
-}
-
-function DetectKeysUp(e)
-{
-    switch(e.keyCode)
-    {
-    case 37:    // left cursor
-    case 65:    // a
-        input.leftright = 0;
-        break;
-    case 39:    // right cursor
-    case 68:    // d
-        input.leftright = 0;
-        break;
-    case 38:    // cursor up
-    case 87:    // w
-        input.forwardbackward = 0;
-        break;
-    case 40:    // cursor down
-    case 83:    // s
-        input.forwardbackward = 0;
-        break;
-    case 82:    // r
-        input.updown = 0;
-        break;
-    case 70:    // f
-        input.updown = 0;
-        break;
-    case 69:    // e
-        input.lookup = false;
-        break;
-    case 81:    //q
-        input.lookdown = false;
-        break;
-    default:
-        return;
-        break;
-    }
-    return false;
-}
-
 // ---------------------------------------------
 // Fast way to draw vertical lines
 
-function DrawVerticalLine(x, ytop, ybottom, col)
-{
+function DrawVerticalLine(x, ytop, ybottom, col) {
     x = x|0;
     ytop = ytop|0;
     ybottom = ybottom|0;
     col = col|0;
-    var buf32 = screen.buf32;
     var screenwidth = a.width|0;
     if (ytop < 0) ytop = 0;
     if (ytop > ybottom) return;
 
     // get offset on screen for the vertical line
     var offset = ((ytop * screenwidth) + x)|0;
-    for (var k = ytop|0; k < ybottom|0; k=k+1|0)
+    var buf32 = screen.buf32;
+    for (var k = ytop|0; k < ybottom|0; k++)//k=k+1|0)
     {
         buf32[offset|0] = col|0;
         offset = offset + screenwidth|0;
@@ -273,7 +182,7 @@ function Render()
     var dz = 1.;
 
     // Draw from front to back
-    for(var z=1; z<camera.distance; z+=dz)
+    for (var z=1; z<camera.distance; z+=dz)
     {
         // 90 degree field of view
         var plx =  -cosang * z - sinang * z;
@@ -310,7 +219,6 @@ function Draw()
     DrawBackground();
     Render();
     Flip();
-    frames++;
 
     if (!input.keypressed)
     {
@@ -354,13 +262,6 @@ function DownloadImagesAsync(urls, OnSuccess) {
     });
 }
 
-function LoadMap(filenames)
-{
-   var files = filenames.split(";");
-//   DownloadImagesAsync(["maps/"+files[0]+".png", "maps/"+files[1]+".png"], OnLoadedImages);
-   DownloadImagesAsync(["https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/"+files[0]+".png", "https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/"+files[1]+".png"], OnLoadedImages);
-}
-
 function OnLoadedImages(result)
 {
     var datac = result[0];
@@ -400,27 +301,16 @@ function Init()
         map.height[i] = 0;
     }
 
-    LoadMap("C1W;D1");
+    // LOAD MAP
+    DownloadImagesAsync(["https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/C1W.png", "https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/D1.png"], OnLoadedImages);
+
     OnResizeWindow();
 
     // set event handlers for keyboard, mouse, touchscreen and window resize
-    document.onkeydown    = DetectKeysDown;
-    document.onkeyup      = DetectKeysUp;
     document.onmousedown  = DetectMouseDown;
     document.onmouseup    = DetectMouseUp;
     document.onmousemove  = DetectMouseMove;
-    document.ontouchstart = DetectMouseDown;
-    document.ontouchend   = DetectMouseUp;
-    document.ontouchmove  = DetectMouseMove;
     window.onresize       = OnResizeWindow;
-
-    window.setInterval(function(){
-        var current = new Date().getTime();
-        console.log('fps:', (frames / (current-timelastframe) * 1000).toFixed(1));
-        frames = 0;
-        timelastframe = current;
-    }, 2000);
-
 }
 
 Init();
