@@ -79,36 +79,6 @@ function UpdateCamera()
 
 }
 
-// ---------------------------------------------
-// Keyboard and mouse event handlers
-
-function DetectMouseDown(e)
-{
-    input.forwardbackward = 3;
-    input.mouseposition = [e.pageX, e.pageY];
-    time = new Date().getTime();
-
-    if (!updaterunning) Draw();
-    return;
-}
-
-function DetectMouseUp()
-{
-    input.mouseposition = null;
-    input.forwardbackward = 0;
-    input.leftright = 0;
-    input.updown = 0;
-    return;
-}
-
-function DetectMouseMove(e)
-{
-    if (input.mouseposition == null || input.forwardbackward == 0) return;
-
-    input.leftright = (input.mouseposition[0]-e.pageX)*1e-3;
-    camera.horizon  = 100 + (input.mouseposition[1]-e.pageY)*0.5;
-    input.updown    = (input.mouseposition[1]-e.pageY)*1e-2;
-}
 
 // ---------------------------------------------
 // Fast way to draw vertical lines
@@ -192,12 +162,10 @@ function Draw()
     imagedata.data.set(buf8);
     context.putImageData(imagedata, 0, 0);
 
-    if (!input.keypressed)
-    {
-        updaterunning = false;
-    } else
-    {
-        window.setTimeout(Draw, 0);
+    if (!input.keypressed) {
+      updaterunning = false;
+    } else {
+      window.setTimeout(Draw, 0);
     }
 }
 
@@ -246,8 +214,7 @@ function OnLoadedImages(result)
     Draw();
 }
 
-function OnResizeWindow()
-{
+function OnResizeWindow() {
     var aspect = window.innerWidth / window.innerHeight;
 
     a.width = window.innerWidth<800?window.innerWidth:800;
@@ -265,25 +232,40 @@ function OnResizeWindow()
     Draw();
 }
 
-function Init()
-{
+function Init() {
     heightmap = new Uint8Array(1024*1024);
     colormap = new Uint32Array(1024*1024) // 1024*1024 int array with RGB colors
-    for(var i=0; i<1024*1024; i++)
-    {
-        colormap[i] = 0xFF007050;
-        heightmap[i] = 0;
+    for (var i=0; i<1024*1024; i++) {
+      colormap[i] = 0xFF007050;
+      heightmap[i] = 0;
     }
 
     // LOAD MAP
     DownloadImagesAsync(["https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/C1W.png", "https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/D1.png"], OnLoadedImages);
-
     OnResizeWindow();
 
     // set event handlers for keyboard, mouse, touchscreen and window resize
-    document.onmousedown  = DetectMouseDown;
-    document.onmouseup    = DetectMouseUp;
-    document.onmousemove  = DetectMouseMove;
+    document.onmousedown = (e) => {
+      input.forwardbackward = 3;
+      input.mouseposition = [e.pageX, e.pageY];
+      time = new Date().getTime();
+      if (!updaterunning) Draw();
+    };
+
+    document.onmouseup = () => {
+      input.mouseposition = null;
+      input.forwardbackward = 0;
+      input.leftright = 0;
+      input.updown = 0;
+    }
+
+    document.onmousemove  = (e) => {
+      if (input.mouseposition == null || input.forwardbackward == 0) return;
+      input.leftright = (input.mouseposition[0]-e.pageX)*1e-3;
+      camera.horizon  = 100 + (input.mouseposition[1]-e.pageY)*0.5;
+      input.updown    = (input.mouseposition[1]-e.pageY)*1e-2;
+    }
+
     window.onresize       = OnResizeWindow;
 }
 
