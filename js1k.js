@@ -30,8 +30,6 @@ var input =
     forwardbackward: 0,
     leftright:       0,
     updown:          0,
-    lookup:          false,
-    lookdown:        false,
     mouseposition:   null,
     keypressed:      false
 }
@@ -62,16 +60,16 @@ function UpdateCamera()
         camera.height += input.updown * (current-time)*0.03;
         input.keypressed = true;
     }
-    if (input.lookup)
+/*    if (input.lookup)
     {
         camera.horizon += 2 * (current-time)*0.03;
         input.keypressed = true;
     }
-    if (input.lookdown)
+/*    if (input.lookdown)
     {
         camera.horizon -= 2 * (current-time)*0.03;
         input.keypressed = true;
-    }
+    }*/
 
     // Collision detection. Don't fly below the surface.
     var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
@@ -86,7 +84,7 @@ function UpdateCamera()
 
 function DetectMouseDown(e)
 {
-    input.forwardbackward = 3.;
+    input.forwardbackward = 3;
     input.mouseposition = [e.pageX, e.pageY];
     time = new Date().getTime();
 
@@ -105,7 +103,6 @@ function DetectMouseUp()
 
 function DetectMouseMove(e)
 {
-    e.preventDefault();
     if (input.mouseposition == null || input.forwardbackward == 0) return;
 
     input.leftright = (input.mouseposition[0]-e.pageX)*1e-3;
@@ -117,11 +114,11 @@ function DetectMouseMove(e)
 // Fast way to draw vertical lines
 
 function DrawVerticalLine(x, ytop, ybottom, col) {
-    x = x|0;
-    ytop = ytop|0;
-    ybottom = ybottom|0;
-    col = col|0;
-    var screenwidth = a.width|0;
+    x = x;
+    ytop = ytop;
+    ybottom = ybottom;
+    col = col;
+    var screenwidth = a.width;
     if (ytop < 0) ytop = 0;
     if (ytop > ybottom) return;
 
@@ -187,7 +184,7 @@ function Draw()
 
     // DrawBackground
     var color = 0xFFE09090
-    for (var i = 0; i < buf32.length; i++) buf32[i] = color|0;
+    for (var i = 0; i < buf32.length; i++) buf32[i] = color;
 
     Render();
 
