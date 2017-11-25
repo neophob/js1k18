@@ -16,11 +16,7 @@ var camera =
 // ---------------------------------------------
 // Landscape data
 
-var map =
-{
-    color:  new Uint32Array(1024*1024) // 1024*1024 int array with RGB colors
-};
-var height = new Uint8Array(1024*1024); // 1024*1024 byte array with height information
+var heightmap, colormap; // 1024*1024 byte array with height information
 // ---------------------------------------------
 // Screen data
 
@@ -40,7 +36,7 @@ var input =
     keypressed:      false
 }
 
-var updaterunning = false;
+var updaterunning = 0;
 var time = 0;
 
 
@@ -79,7 +75,7 @@ function UpdateCamera()
 
     // Collision detection. Don't fly below the surface.
     var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
-    if ((height[mapoffset]+10) > camera.height) camera.height = height[mapoffset] + 10;
+    if ((heightmap[mapoffset]+10) > camera.height) camera.height = heightmap[mapoffset] + 10;
 
     time = current;
 
@@ -130,11 +126,11 @@ function DrawVerticalLine(x, ytop, ybottom, col) {
     if (ytop > ybottom) return;
 
     // get offset on screen for the vertical line
-    var offset = ((ytop * screenwidth) + x)|0;
-    for (var k = ytop|0; k < ybottom|0; k++)//k=k+1|0)
+    var offset = ((ytop * screenwidth) + x);
+    for (var k = ytop; k < ybottom|0; k++)
     {
-        buf32[offset|0] = col|0;
-        offset = offset + screenwidth|0;
+        buf32[offset] = col;
+        offset = offset + screenwidth;
     }
 }
 
@@ -170,8 +166,8 @@ function Render()
         for(var i=0; i<screenwidth|0; i=i+1|0)
         {
             var mapoffset = ((Math.floor(ply) & 1023) << 10) + (Math.floor(plx) & 1023)|0;
-            var heightonscreen = (camera.height - height[mapoffset]) * invz + camera.horizon|0;
-            DrawVerticalLine(i, heightonscreen, hiddeny[i], map.color[mapoffset]);
+            var heightonscreen = (camera.height - heightmap[mapoffset]) * invz + camera.horizon|0;
+            DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
             if (heightonscreen < hiddeny[i]) hiddeny[i] = heightonscreen;
             plx += dx;
             ply += dy;
@@ -247,8 +243,8 @@ function OnLoadedImages(result)
     var datah = result[1];
     for(var i=0; i<1024*1024; i++)
     {
-        map.color[i] = 0xFF000000 | (datac[(i<<2) + 2] << 16) | (datac[(i<<2) + 1] << 8) | datac[(i<<2) + 0];
-        height[i] = datah[i<<2];
+        colormap[i] = 0xFF000000 | (datac[(i<<2) + 2] << 16) | (datac[(i<<2) + 1] << 8) | datac[(i<<2) + 0];
+        heightmap[i] = datah[i<<2];
     }
     Draw();
 }
@@ -274,10 +270,12 @@ function OnResizeWindow()
 
 function Init()
 {
+    heightmap = new Uint8Array(1024*1024);
+    colormap = new Uint32Array(1024*1024) // 1024*1024 int array with RGB colors
     for(var i=0; i<1024*1024; i++)
     {
-        map.color[i] = 0xFF007050;
-        height[i] = 0;
+        colormap[i] = 0xFF007050;
+        heightmap[i] = 0;
     }
 
     // LOAD MAP
