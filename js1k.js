@@ -25,15 +25,7 @@ var map =
 // ---------------------------------------------
 // Screen data
 
-var screen =
-{
-    context:   null,
-    imagedata: null,
-
-    bufarray:  null, // color data
-    buf8:      null, // the same array but with bytes
-    buf32:     null, // the same array but with 32-Bit words
-};
+var buf8, buf32, imagedata, context;
 
 // ---------------------------------------------
 // Keyboard and mouse interaction
@@ -140,30 +132,11 @@ function DrawVerticalLine(x, ytop, ybottom, col) {
 
     // get offset on screen for the vertical line
     var offset = ((ytop * screenwidth) + x)|0;
-    var buf32 = screen.buf32;
     for (var k = ytop|0; k < ybottom|0; k++)//k=k+1|0)
     {
         buf32[offset|0] = col|0;
         offset = offset + screenwidth|0;
     }
-}
-
-// ---------------------------------------------
-// Basic screen handling
-
-function DrawBackground()
-{
-    var buf32 = screen.buf32;
-    // set background color
-    var color = 0xFFE09090
-    for (var i = 0; i < buf32.length; i++) buf32[i] = color|0;
-}
-
-// Show the back buffer on screen
-function Flip()
-{
-    screen.imagedata.data.set(screen.buf8);
-    screen.context.putImageData(screen.imagedata, 0, 0);
 }
 
 // ---------------------------------------------
@@ -216,9 +189,16 @@ function Draw()
 {
     updaterunning = true;
     UpdateCamera();
-    DrawBackground();
+
+    // DrawBackground
+    var color = 0xFFE09090
+    for (var i = 0; i < buf32.length; i++) buf32[i] = color|0;
+
     Render();
-    Flip();
+
+    // Flip, Show the back buffer on screen
+    imagedata.data.set(buf8);
+    context.putImageData(imagedata, 0, 0);
 
     if (!input.keypressed)
     {
@@ -283,13 +263,13 @@ function OnResizeWindow()
 
     if (a.getContext)
     {
-        screen.context = a.getContext('2d');
-        screen.imagedata = screen.context.createImageData(a.width, a.height);
+        context = a.getContext('2d');
+        imagedata = context.createImageData(a.width, a.height);
     }
 
-    screen.bufarray = new ArrayBuffer(screen.imagedata.width * screen.imagedata.height * 4);
-    screen.buf8     = new Uint8Array(screen.bufarray);
-    screen.buf32    = new Uint32Array(screen.bufarray);
+    var bufarray = new ArrayBuffer(imagedata.width * imagedata.height * 4);
+    buf8   = new Uint8Array(bufarray);
+    buf32  = new Uint32Array(bufarray);
     Draw();
 }
 
