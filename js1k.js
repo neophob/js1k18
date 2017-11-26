@@ -37,20 +37,23 @@ var input =
 */
 var time = 0;
 
-//var pallete = [0xff113231, 0xff6E612D, 0xffFFD38C];
-var pallete = [0xff113231, 0xff2d616e, 0xffFFD38C];
+var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
+//var pallete = [0xff113231, 0xff2d616e, 0xffFFD38C];
 
 
-// Update the camera for next frame. Dependent on keypresses
-function UpdateCamera()
-{
+
+// ---------------------------------------------
+// Draw the next frame
+
+function Draw(){
+// ## UPDATE CAMERA START
     var current = Date.now();
 
     camera.x -= 3 * Math.sin(camera.angle) * (current-time)*0.03;
     camera.y -= 3 * Math.cos(camera.angle) * (current-time)*0.03;
 
     var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
-    camera.height = heightmap[mapoffset]  + 64;
+    camera.height = heightmap[mapoffset] + 64;
 
 /*
 //input.leftright -1 .. 1
@@ -81,27 +84,30 @@ function UpdateCamera()
     //if ((heightmap[mapoffset]+10) > camera.height) camera.height = heightmap[mapoffset] + 10;
 
     time = current;
-}
+// UPDATE CAMERA START
+
+// ## DRAW BACKGROUND START
+    //var color = 0xFFFFD68A;
+    //for (var i = 0; i < buf32.length; i++) buf32[i] = color;
+    buf32.fill(pallete[0]);
+// DRAW BACKGROUND END
 
 
-// ---------------------------------------------
-// The main render routine
+// ## RENDER START
 
-function Render() {
     var sinang = Math.sin(camera.angle);
     var cosang = Math.cos(camera.angle);
-    var hiddeny = new Uint32Array(a.width);
 
-    for (var i=0; i<a.width; i++)
-        hiddeny[i] = a.height;
+    var hiddeny = new Uint32Array(a.width);
+    hiddeny.fill(a.width);
 
     // Draw from front to back
     for (var z=1; z<camera.distance; z++)
     {
         // 90 degree field of view
-        var plx =  -cosang * z - sinang * z;
-        var ply =   sinang * z - cosang * z;
         var prx =   cosang * z - sinang * z;
+        var plx =  -prx;
+        var ply =   sinang * z - cosang * z;
         var pry =  -sinang * z - cosang * z;
 
         var dx = (prx - plx) / a.width;
@@ -110,49 +116,37 @@ function Render() {
         ply += camera.y;
         var invz = 1 / z * 240;
         for (var i=0; i<a.width; i++) {
-            // |0 is math floor
-            var mapoffset = ( ((ply|0) & 1023) << 10) + ( (plx|0) & 1023);
-            var heightonscreen = (camera.height - heightmap[mapoffset]) * invz + camera.horizon|0;
+          // |0 is math floor
+          var mapoffset = ( ((ply|0) & 1023) << 10) + ( (plx|0) & 1023);
+          var heightonscreen = (camera.height - heightmap[mapoffset]) * invz + camera.horizon|0;
 
-            //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
-            // Fast way to draw vertical lines
-            if (heightonscreen < 0) heightonscreen = 0;
-            if (heightonscreen <= hiddeny[i]) {
-              // get offset on screen for the vertical line
-              var offset = ((heightonscreen * a.width) + i);
-              for (var k = heightonscreen; k < hiddeny[i]; k++) {
-                  buf32[offset] = colormap[mapoffset];
-                  offset += a.width;
-              }
+          //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
+          // Fast way to draw vertical lines
+          if (heightonscreen < 0) heightonscreen = 0;
+          if (heightonscreen <= hiddeny[i]) {
+            // get offset on screen for the vertical line
+            var offset = ((heightonscreen * a.width) + i);
+            for (var k = heightonscreen; k < hiddeny[i]; k++) {
+                buf32[offset] = colormap[mapoffset];
+                offset += a.width;
             }
-            //DrawVerticalLine end
+          }
+          //DrawVerticalLine end
 
-            if (heightonscreen < hiddeny[i]) hiddeny[i] = heightonscreen;
-            plx += dx;
-            ply += dy;
+          if (heightonscreen < hiddeny[i]) hiddeny[i] = heightonscreen;
+          plx += dx;
+          ply += dy;
         }
     }
-}
 
+  // ## RENDER END
 
-// ---------------------------------------------
-// Draw the next frame
-
-function Draw(){
-    UpdateCamera();
-
-    // DrawBackground
-    //var color = 0xFFFFD68A;
-    //for (var i = 0; i < buf32.length; i++) buf32[i] = color;
-    buf32.fill(pallete[0]);
-
-    Render();
 
     // Flip, Show the back buffer on screen
     imagedata.data.set(buf8);
     context.putImageData(imagedata, 0, 0);
 
-window.requestAnimationFrame(Draw);
+    window.requestAnimationFrame(Draw);
 //window.setTimeout(Draw, 0);
 /*    if (!input.keypressed) {
       updaterunning = false;
@@ -209,8 +203,7 @@ var hm=[];
 for (x=0;x<1024;x++) {
   for (y=0;y<1024;y++) {
 //      var l = ((0.3 + fractal2d(x / 255, y / 255, 9) * 0.5) * 254)|0;
-    var l = ((0.5 + fractal2d(x / 512, y / 512, 17) * 0.5) * 254)|0;
-
+    var l = ((0.5 + fractal2d(x / 512, y / 512, 15) * 0.5) * 254)|0;
     if (l<0) l=0;
     hm[ofs++] = l
     //if (l == undefined || l<0 || l > 255) console.log('err:',l);
@@ -262,9 +255,9 @@ for (var i=0; i<256; i++) {
     // LOAD MAP
     //DownloadImagesAsync(["https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/C1W.png", "https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/D1.png"], OnLoadedImages);
     for (var i=0; i<1024*1024; i++) {
-        var r = hm[i];
-        colormap[i] = col[r];//0xFF000000 | (r << 16) | (r << 8) | r;
-        heightmap[i] = r;//Math.random()*256 | 0;
+      var r = hm[i];
+      colormap[i] = col[r];//0xFF000000 | (r << 16) | (r << 8) | r;
+      heightmap[i] = r;//Math.random()*256 | 0;
     }
 
     var aspect = window.innerWidth / window.innerHeight;
@@ -273,7 +266,7 @@ for (var i=0; i<256; i++) {
 
     context = a.getContext('2d');
     imagedata = context.createImageData(a.width, a.height);
-    var bufarray = new ArrayBuffer(imagedata.width * imagedata.height * 4);
+    var bufarray = new ArrayBuffer(a.width * a.height * 4);
     buf8   = new Uint8Array(bufarray);
     buf32  = new Uint32Array(bufarray);
 
