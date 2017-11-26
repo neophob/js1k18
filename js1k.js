@@ -1,3 +1,6 @@
+// based on https://github.com/s-macke/VoxelSpace
+
+
 // ---------------------------------------------
 // Viewer information
 var camera =
@@ -69,8 +72,7 @@ function UpdateCamera()
 // ---------------------------------------------
 // The main render routine
 
-function Render()
-{
+function Render() {
     var sinang = Math.sin(camera.angle);
     var cosang = Math.cos(camera.angle);
     var hiddeny = new Uint32Array(a.width);
@@ -93,11 +95,12 @@ function Render()
         ply += camera.y;
         var invz = 1 / z * 240;
         for (var i=0; i<a.width; i++) {
-            var mapoffset = ((Math.floor(ply) & 1023) << 10) + (Math.floor(plx) & 1023)|0;
+            // |0 is math floor
+            var mapoffset = ( ((ply|0) & 1023) << 10) + ( (plx|0) & 1023);
             var heightonscreen = (camera.height - heightmap[mapoffset]) * invz + camera.horizon|0;
+
             //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
             // Fast way to draw vertical lines
-
             if (heightonscreen < 0) heightonscreen = 0;
             if (heightonscreen <= hiddeny[i]) {
               // get offset on screen for the vertical line
@@ -107,6 +110,7 @@ function Render()
                   offset += a.width;
               }
             }
+            //DrawVerticalLine end
 
             if (heightonscreen < hiddeny[i]) hiddeny[i] = heightonscreen;
             plx += dx;
@@ -119,13 +123,13 @@ function Render()
 // ---------------------------------------------
 // Draw the next frame
 
-function Draw()
-{
+function Draw(){
+
     updaterunning = true;
     UpdateCamera();
 
     // DrawBackground
-    var color = 0xFFE09090
+    var color = 0xFFE09090;
     //for (var i = 0; i < buf32.length; i++) buf32[i] = color;
     buf32.fill(color);
 
@@ -146,7 +150,7 @@ function Draw()
 // Init routines
 
 // Util class for downloading the png
-function DownloadImagesAsync(urls, OnSuccess) {
+/*function DownloadImagesAsync(urls, OnSuccess) {
     var pending = urls.length;
     var result = [];
     if (pending === 0) {
@@ -186,14 +190,76 @@ function OnLoadedImages(result)
     }
     Draw();
 }
+*/
 
+function ter() {
+  var seed = 7;
 
-function Init() {
+    function fract(n) {
+        return n - Math.floor(n);
+      }
+      function lerp(a, b, t) {
+        return (1 - t) * a + t * b;
+      }
+
+      function hash2d(x, y) {
+            x = 50 * fract(x * 0.3183099 + 0.71);
+            y = 50 * fract(y * 0.3183099 + 0.113);
+            return -1 + 2 * fract(1.375986 * seed + x * y * (x + y));
+          }
+          function noise2d(x, y) {
+            let ix = Math.floor(x);
+            let iy = Math.floor(y);
+            let fx = fract(x);
+            let fy = fract(y);
+            let ux = fx * fx * (3 - 2 * fx);
+            return lerp(
+              lerp(hash2d(ix, iy), hash2d(ix + 1, iy), ux),
+              lerp(hash2d(ix, iy + 1), hash2d(ix + 1, iy + 1), ux),
+              fy * fy * (3 - 2 * fy)
+            );
+          }
+
+          function fractal2d (x, y, octaves) {
+                var val = 0;
+                for (let i = 0; i < octaves; i++) {
+                  val += noise2d(x, y) / Math.pow(2, 0.5 + i - 0.5 * i);
+                  x -= i * 19;
+                  y += i * 7;
+                  x *= 1.4;
+                  y *= 1.4;
+                }
+                return val;
+              }
+
+  ofs=0;
+  var res=[];
+  for (x=0;x<1024;x++) {
+    for (y=0;y<1024;y++) {
+      var l = ((0.3 + fractal2d(x / 255, y / 255, 7) * 0.5) * 254)|0;
+      if (l<0) l=0;
+      res[ofs++] = l
+      if (l == undefined || l<0 || l > 255) console.log('err:',l);
+    }
+  }
+  return res;
+}
+
+var hm = ter();
+
+//function Init() {
     heightmap = new Uint8Array(1024*1024);
-    colormap = new Uint32Array(1024*1024) // 1024*1024 int array with RGB colors
+    colormap = new Uint32Array(1024*1024); // 1024*1024 int array with RGB colors
 
     // LOAD MAP
-    DownloadImagesAsync(["https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/C1W.png", "https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/D1.png"], OnLoadedImages);
+    //DownloadImagesAsync(["https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/C1W.png", "https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/D1.png"], OnLoadedImages);
+    for (var i=0; i<1024*1024; i++) {
+        //colormap[i] = 0xFF000000 | ((Math.random()*256 | 0) << 16) | ((Math.random()*256 | 0) << 8) | Math.random()*256 | 0;
+        var r = hm[i];
+        if (i<40)console.log(hm[i]);
+        colormap[i] = 0xFF000000 | (r << 16) | (r << 8) | r;
+        heightmap[i] = r;//Math.random()*256 | 0;
+    }
 
     var aspect = window.innerWidth / window.innerHeight;
     a.width = window.innerWidth<800?window.innerWidth:800;
@@ -227,7 +293,3 @@ function Init() {
       camera.horizon  = 100 + (input.mouseposition[1]-e.pageY)*0.5;
       input.updown    = (input.mouseposition[1]-e.pageY)*1e-2;
     }
-
-}
-
-Init();
