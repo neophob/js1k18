@@ -73,9 +73,9 @@ function Render()
 {
     var sinang = Math.sin(camera.angle);
     var cosang = Math.cos(camera.angle);
+    var hiddeny = new Uint32Array(a.width);
 
-    var hiddeny = new Int32Array(a.width);
-    for(var i=0; i<a.width; i++)
+    for (var i=0; i<a.width; i++)
         hiddeny[i] = a.height;
 
     // Draw from front to back
@@ -92,8 +92,7 @@ function Render()
         plx += camera.x;
         ply += camera.y;
         var invz = 1 / z * 240;
-        for(var i=0; i<a.width; i++)
-        {
+        for (var i=0; i<a.width; i++) {
             var mapoffset = ((Math.floor(ply) & 1023) << 10) + (Math.floor(plx) & 1023)|0;
             var heightonscreen = (camera.height - heightmap[mapoffset]) * invz + camera.horizon|0;
             //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
@@ -103,12 +102,10 @@ function Render()
             if (heightonscreen <= hiddeny[i]) {
               // get offset on screen for the vertical line
               var offset = ((heightonscreen * a.width) + i);
-              for (var k = heightonscreen; k < hiddeny[i]; k++)
-              {
+              for (var k = heightonscreen; k < hiddeny[i]; k++) {
                   buf32[offset] = colormap[mapoffset];
                   offset += a.width;
               }
-
             }
 
             if (heightonscreen < hiddeny[i]) hiddeny[i] = heightonscreen;
@@ -129,7 +126,8 @@ function Draw()
 
     // DrawBackground
     var color = 0xFFE09090
-    for (var i = 0; i < buf32.length; i++) buf32[i] = color;
+    //for (var i = 0; i < buf32.length; i++) buf32[i] = color;
+    buf32.fill(color);
 
     Render();
 
@@ -189,35 +187,24 @@ function OnLoadedImages(result)
     Draw();
 }
 
-function OnResizeWindow() {
-    var aspect = window.innerWidth / window.innerHeight;
-
-    a.width = window.innerWidth<800?window.innerWidth:800;
-    a.height = a.width / aspect;
-
-    if (a.getContext)
-    {
-        context = a.getContext('2d');
-        imagedata = context.createImageData(a.width, a.height);
-    }
-
-    var bufarray = new ArrayBuffer(imagedata.width * imagedata.height * 4);
-    buf8   = new Uint8Array(bufarray);
-    buf32  = new Uint32Array(bufarray);
-    Draw();
-}
 
 function Init() {
     heightmap = new Uint8Array(1024*1024);
     colormap = new Uint32Array(1024*1024) // 1024*1024 int array with RGB colors
-    for (var i=0; i<1024*1024; i++) {
-      colormap[i] = 0xFF007050;
-      heightmap[i] = 0;
-    }
 
     // LOAD MAP
     DownloadImagesAsync(["https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/C1W.png", "https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/D1.png"], OnLoadedImages);
-    OnResizeWindow();
+
+    var aspect = window.innerWidth / window.innerHeight;
+    a.width = window.innerWidth<800?window.innerWidth:800;
+    a.height = a.width / aspect;
+
+    context = a.getContext('2d');
+    imagedata = context.createImageData(a.width, a.height);
+    var bufarray = new ArrayBuffer(imagedata.width * imagedata.height * 4);
+    buf8   = new Uint8Array(bufarray);
+    buf32  = new Uint32Array(bufarray);
+    Draw();
 
     // set event handlers for keyboard, mouse, touchscreen and window resize
     document.onmousedown = (e) => {
@@ -241,7 +228,6 @@ function Init() {
       input.updown    = (input.mouseposition[1]-e.pageY)*1e-2;
     }
 
-    window.onresize       = OnResizeWindow;
 }
 
 Init();
