@@ -1,8 +1,5 @@
-
-
 // ---------------------------------------------
 // Viewer information
-
 var camera =
 {
     x:        512, // x position on the map
@@ -60,64 +57,29 @@ function UpdateCamera()
         camera.height += input.updown * (current-time)*0.03;
         input.keypressed = true;
     }
-/*    if (input.lookup)
-    {
-        camera.horizon += 2 * (current-time)*0.03;
-        input.keypressed = true;
-    }
-/*    if (input.lookdown)
-    {
-        camera.horizon -= 2 * (current-time)*0.03;
-        input.keypressed = true;
-    }*/
 
     // Collision detection. Don't fly below the surface.
     var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
     if ((heightmap[mapoffset]+10) > camera.height) camera.height = heightmap[mapoffset] + 10;
 
     time = current;
-
 }
 
-
-// ---------------------------------------------
-// Fast way to draw vertical lines
-
-function DrawVerticalLine(x, ytop, ybottom, col) {
-    x = x;
-    ytop = ytop;
-    ybottom = ybottom;
-    col = col;
-    var screenwidth = a.width;
-    if (ytop < 0) ytop = 0;
-    if (ytop > ybottom) return;
-
-    // get offset on screen for the vertical line
-    var offset = ((ytop * screenwidth) + x);
-    for (var k = ytop; k < ybottom|0; k++)
-    {
-        buf32[offset] = col;
-        offset = offset + screenwidth;
-    }
-}
 
 // ---------------------------------------------
 // The main render routine
 
 function Render()
 {
-    var screenwidth = a.width|0;
     var sinang = Math.sin(camera.angle);
     var cosang = Math.cos(camera.angle);
 
-    var hiddeny = new Int32Array(screenwidth);
-    for(var i=0; i<a.width|0; i=i+1|0)
+    var hiddeny = new Int32Array(a.width);
+    for(var i=0; i<a.width; i++)
         hiddeny[i] = a.height;
 
-    var dz = 1.;
-
     // Draw from front to back
-    for (var z=1; z<camera.distance; z+=dz)
+    for (var z=1; z<camera.distance; z++)
     {
         // 90 degree field of view
         var plx =  -cosang * z - sinang * z;
@@ -125,22 +87,35 @@ function Render()
         var prx =   cosang * z - sinang * z;
         var pry =  -sinang * z - cosang * z;
 
-        var dx = (prx - plx) / screenwidth;
-        var dy = (pry - ply) / screenwidth;
+        var dx = (prx - plx) / a.width;
+        var dy = (pry - ply) / a.width;
         plx += camera.x;
         ply += camera.y;
-        var invz = 1. / z * 240.;
-        for(var i=0; i<screenwidth|0; i=i+1|0)
+        var invz = 1 / z * 240;
+        for(var i=0; i<a.width; i++)
         {
             var mapoffset = ((Math.floor(ply) & 1023) << 10) + (Math.floor(plx) & 1023)|0;
             var heightonscreen = (camera.height - heightmap[mapoffset]) * invz + camera.horizon|0;
-            DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
+            //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
+            // Fast way to draw vertical lines
+
+            if (heightonscreen < 0) heightonscreen = 0;
+            if (heightonscreen <= hiddeny[i]) {
+              // get offset on screen for the vertical line
+              var offset = ((heightonscreen * a.width) + i);
+              for (var k = heightonscreen; k < hiddeny[i]; k++)
+              {
+                  buf32[offset] = colormap[mapoffset];
+                  offset += a.width;
+              }
+
+            }
+
             if (heightonscreen < hiddeny[i]) hiddeny[i] = heightonscreen;
             plx += dx;
             ply += dy;
         }
     }
-    dz += 0.01;
 }
 
 
