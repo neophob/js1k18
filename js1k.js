@@ -123,13 +123,13 @@ function Render() {
 // ---------------------------------------------
 // Draw the next frame
 
-function Draw(){
+function Draw(color){
 
     updaterunning = true;
     UpdateCamera();
 
     // DrawBackground
-    var color = 0xFFE09090;
+    //var color = 0xFFFFD68A;
     //for (var i = 0; i < buf32.length; i++) buf32[i] = color;
     buf32.fill(color);
 
@@ -236,7 +236,9 @@ function ter() {
   var res=[];
   for (x=0;x<1024;x++) {
     for (y=0;y<1024;y++) {
-      var l = ((0.3 + fractal2d(x / 255, y / 255, 7) * 0.5) * 254)|0;
+//      var l = ((0.3 + fractal2d(x / 255, y / 255, 9) * 0.5) * 254)|0;
+      var l = ((0.5 + fractal2d(x / 512, y / 512, 17) * 0.5) * 254)|0;
+
       if (l<0) l=0;
       res[ofs++] = l
       if (l == undefined || l<0 || l > 255) console.log('err:',l);
@@ -245,7 +247,47 @@ function ter() {
   return res;
 }
 
+function colorset(colors) {
+  function calcSmoothColor(col1, col2, pos) {
+		var b= col1&255;
+		var g=(col1>>8)&255;
+		var r=(col1>>16)&255;
+		var b2= col2&255;
+		var g2=(col2>>8)&255;
+		var r2=(col2>>16)&255;
+
+		var mul=pos*colors.length;
+		var oppositeColor = 255-mul;
+
+		r=(r*mul + r2*oppositeColor) >> 8;
+		g=(g*mul + g2*oppositeColor) >> 8;
+		b=(b*mul + b2*oppositeColor) >> 8;
+
+		return 0xff000000 | (r << 16) | (g << 8) | (b);
+  }
+
+  	var boarderCount = 255 / colors.length;
+		var precalc = [];
+		for (var i=0; i<256; i++) {
+			var ofs=0;
+			var pos = i;
+			while (pos > boarderCount) {
+				pos -= boarderCount;
+				ofs++;
+			}
+
+			var targetOfs = ofs+1;
+			precalc[i] = calcSmoothColor(colors[targetOfs%colors.length], colors[ofs%colors.length], pos);
+		}
+  	return precalc ;
+}
+
+
 var hm = ter();
+//var col = colorset([0xff0000,0x00ff00,0x0000ff]);
+//var col = colorset([0x113231, 0x44655E, 0x4C3F11, 0x865E15, 0xFED28C, 0xF5692A]);
+var col = colorset([0x113231, 0x4C3F11, 0x865E15, 0xFED28C]);
+//var col = colorset([0x113231, 0xF5692A]);
 
 //function Init() {
     heightmap = new Uint8Array(1024*1024);
@@ -257,7 +299,7 @@ var hm = ter();
         //colormap[i] = 0xFF000000 | ((Math.random()*256 | 0) << 16) | ((Math.random()*256 | 0) << 8) | Math.random()*256 | 0;
         var r = hm[i];
         if (i<40)console.log(hm[i]);
-        colormap[i] = 0xFF000000 | (r << 16) | (r << 8) | r;
+        colormap[i] = col[r];//0xFF000000 | (r << 16) | (r << 8) | r;
         heightmap[i] = r;//Math.random()*256 | 0;
     }
 
@@ -270,7 +312,7 @@ var hm = ter();
     var bufarray = new ArrayBuffer(imagedata.width * imagedata.height * 4);
     buf8   = new Uint8Array(bufarray);
     buf32  = new Uint32Array(bufarray);
-    Draw();
+    Draw(col[0]);
 
     // set event handlers for keyboard, mouse, touchscreen and window resize
     document.onmousedown = (e) => {

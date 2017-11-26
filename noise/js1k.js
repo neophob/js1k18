@@ -83,7 +83,7 @@ function ter() {
     var res=[];
     for (x=0;x<1024;x++) {
       for (y=0;y<1024;y++) {
-        var l = ((0.3 + fractal2d(x / 255, y / 255, 7) * 0.5) * 254)|0;
+        var l = ((0.5 + fractal2d(x / 512, y / 512, 17) * 0.5) * 254)|0;
         if (l<0) l=0;
         res[ofs++] = l
         if (l == undefined || l<0 || l > 255) console.log('err:',l);
