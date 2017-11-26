@@ -152,143 +152,98 @@ function Draw(){
 // ---------------------------------------------
 // Init routines
 
-// Util class for downloading the png
-/*function DownloadImagesAsync(urls, OnSuccess) {
-    var pending = urls.length;
-    var result = [];
-    if (pending === 0) {
-        setTimeout(onsuccess.bind(null, result), 0);
-        return;
-    }
-    urls.forEach(function(url, i) {
-        var image = new Image();
-        //image.addEventListener("load", function() {
-        image.onload = function() {
-            var tempcanvas = document.createElement("canvas");
-            var tempcontext = tempcanvas.getContext("2d");
-            tempcanvas.width = 1024;
-            tempcanvas.height = 1024;
-            tempcontext.drawImage(image, 0, 0, 1024, 1024 );
 
-            result[i] = tempcontext.getImageData(0, 0, 1024, 1024).data;
-            pending--;
-            if (pending === 0) {
-                OnSuccess(result);
-            }
-        };
-        image.src = url;
-        image.crossOrigin = "Anonymous";
-
-    });
+// GENERATE HEIGHTMAP START
+function fract(n) {
+  return n - Math.floor(n);
+}
+function lerp(a, b, t) {
+  return (1 - t) * a + t * b;
 }
 
-function OnLoadedImages(result)
-{
-    var datac = result[0];
-    var datah = result[1];
-    for(var i=0; i<1024*1024; i++)
-    {
-        colormap[i] = 0xFF000000 | (datac[(i<<2) + 2] << 16) | (datac[(i<<2) + 1] << 8) | datac[(i<<2) + 0];
-        heightmap[i] = datah[i<<2];
-    }
-    Draw();
+function hash2d(x, y) {
+  x = 50 * fract(x * 0.3183099 + 0.71);
+  y = 50 * fract(y * 0.3183099 + 0.113);
+  // SEED is 7
+  return -1 + 2 * fract(1.375986 * 7 + x * y * (x + y));
 }
-*/
+function noise2d(x, y) {
+  let ix = Math.floor(x);
+  let iy = Math.floor(y);
+  let fx = fract(x);
+  let fy = fract(y);
+  let ux = fx * fx * (3 - 2 * fx);
+  return lerp(
+    lerp(hash2d(ix, iy), hash2d(ix + 1, iy), ux),
+    lerp(hash2d(ix, iy + 1), hash2d(ix + 1, iy + 1), ux),
+    fy * fy * (3 - 2 * fy)
+  );
+}
 
-function ter() {
-  var seed = 7;
+function fractal2d (x, y, octaves) {
+  var val = 0;
+  for (let i = 0; i < octaves; i++) {
+    val += noise2d(x, y) / Math.pow(2, 0.5 + i - 0.5 * i);
+    x -= i * 19;
+    y += i * 7;
+    x *= 1.4;
+    y *= 1.4;
+  }
+  return val;
+}
 
-    function fract(n) {
-        return n - Math.floor(n);
-      }
-      function lerp(a, b, t) {
-        return (1 - t) * a + t * b;
-      }
-
-      function hash2d(x, y) {
-            x = 50 * fract(x * 0.3183099 + 0.71);
-            y = 50 * fract(y * 0.3183099 + 0.113);
-            return -1 + 2 * fract(1.375986 * seed + x * y * (x + y));
-          }
-          function noise2d(x, y) {
-            let ix = Math.floor(x);
-            let iy = Math.floor(y);
-            let fx = fract(x);
-            let fy = fract(y);
-            let ux = fx * fx * (3 - 2 * fx);
-            return lerp(
-              lerp(hash2d(ix, iy), hash2d(ix + 1, iy), ux),
-              lerp(hash2d(ix, iy + 1), hash2d(ix + 1, iy + 1), ux),
-              fy * fy * (3 - 2 * fy)
-            );
-          }
-
-          function fractal2d (x, y, octaves) {
-                var val = 0;
-                for (let i = 0; i < octaves; i++) {
-                  val += noise2d(x, y) / Math.pow(2, 0.5 + i - 0.5 * i);
-                  x -= i * 19;
-                  y += i * 7;
-                  x *= 1.4;
-                  y *= 1.4;
-                }
-                return val;
-              }
-
-  ofs=0;
-  var res=[];
-  for (x=0;x<1024;x++) {
-    for (y=0;y<1024;y++) {
+ofs=0;
+var hm=[];
+for (x=0;x<1024;x++) {
+  for (y=0;y<1024;y++) {
 //      var l = ((0.3 + fractal2d(x / 255, y / 255, 9) * 0.5) * 254)|0;
-      var l = ((0.5 + fractal2d(x / 512, y / 512, 17) * 0.5) * 254)|0;
+    var l = ((0.5 + fractal2d(x / 512, y / 512, 17) * 0.5) * 254)|0;
 
-      if (l<0) l=0;
-      res[ofs++] = l
-      if (l == undefined || l<0 || l > 255) console.log('err:',l);
-    }
+    if (l<0) l=0;
+    hm[ofs++] = l
+    //if (l == undefined || l<0 || l > 255) console.log('err:',l);
   }
-  return res;
+}
+// GENERATE HEIGHTMAP END
+
+
+
+// GENERATE COLORMAP START
+function calcSmoothColor(col1, col2, pos) {
+	var b= col1&255;
+	var g=(col1>>8)&255;
+	var r=(col1>>16)&255;
+	var b2= col2&255;
+	var g2=(col2>>8)&255;
+	var r2=(col2>>16)&255;
+
+	var mul=pos*pallete.length;
+	var oppositeColor = 255-mul;
+
+	r=(r*mul + r2*oppositeColor) >> 8;
+	g=(g*mul + g2*oppositeColor) >> 8;
+	b=(b*mul + b2*oppositeColor) >> 8;
+
+	return 0xff000000 | (r << 16) | (g << 8) | (b);
 }
 
-function colorset(colors) {
-  function calcSmoothColor(col1, col2, pos) {
-		var b= col1&255;
-		var g=(col1>>8)&255;
-		var r=(col1>>16)&255;
-		var b2= col2&255;
-		var g2=(col2>>8)&255;
-		var r2=(col2>>16)&255;
+var boarderCount = 255 / pallete.length;
+var col = [];
+for (var i=0; i<256; i++) {
+	var ofs=0;
+	var pos = i;
+	while (pos > boarderCount) {
+		pos -= boarderCount;
+		ofs++;
+	}
 
-		var mul=pos*colors.length;
-		var oppositeColor = 255-mul;
-
-		r=(r*mul + r2*oppositeColor) >> 8;
-		g=(g*mul + g2*oppositeColor) >> 8;
-		b=(b*mul + b2*oppositeColor) >> 8;
-
-		return 0xff000000 | (r << 16) | (g << 8) | (b);
-  }
-
-  	var boarderCount = 255 / colors.length;
-		var precalc = [];
-		for (var i=0; i<256; i++) {
-			var ofs=0;
-			var pos = i;
-			while (pos > boarderCount) {
-				pos -= boarderCount;
-				ofs++;
-			}
-
-			var targetOfs = ofs+1;
-			precalc[i] = calcSmoothColor(colors[targetOfs%colors.length], colors[ofs%colors.length], pos);
-		}
-  	return precalc ;
+	var targetOfs = ofs+1;
+	col[i] = calcSmoothColor(pallete[targetOfs%pallete.length], pallete[ofs%pallete.length], pos);
 }
+// GENERATE COLORMAP END
 
 
 //function Init() {
-    var hm = ter();
-    var col = colorset(pallete);
     heightmap = new Uint8Array(1024*1024);
     colormap = new Uint32Array(1024*1024); // 1024*1024 int array with RGB colors
 
