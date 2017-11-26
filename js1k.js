@@ -45,7 +45,7 @@ var pallete = [0xff113231, 0xff2d616e, 0xffFFD38C];
 // Update the camera for next frame. Dependent on keypresses
 function UpdateCamera()
 {
-    var current = new Date().getTime();
+    var current = Date.now();
 
     input.keypressed = false;
     if (input.leftright != 0)
@@ -315,7 +315,7 @@ function colorset(colors) {
     document.onmousedown = (e) => {
       input.forwardbackward = 3;
       input.mouseposition = [e.pageX, e.pageY];
-      time = new Date().getTime();
+      time = Date.now();
       if (!updaterunning) Draw();
     };
 
