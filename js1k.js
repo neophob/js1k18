@@ -25,7 +25,7 @@ var buf8, buf32, imagedata, context;
 
 // ---------------------------------------------
 // Keyboard and mouse interaction
-
+/*
 var input =
 {
     forwardbackward: 0,
@@ -34,8 +34,7 @@ var input =
     mouseposition:   null,
     keypressed:      false
 }
-
-var updaterunning = 0;
+*/
 var time = 0;
 
 //var pallete = [0xff113231, 0xff6E612D, 0xffFFD38C];
@@ -47,7 +46,19 @@ function UpdateCamera()
 {
     var current = Date.now();
 
-    input.keypressed = false;
+    camera.x -= 3 * Math.sin(camera.angle) * (current-time)*0.03;
+    camera.y -= 3 * Math.cos(camera.angle) * (current-time)*0.03;
+
+    var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
+    camera.height = heightmap[mapoffset]  + 64;
+
+/*
+//input.leftright -1 .. 1
+//camera.horizon -500 .. 500
+//input.updown init: -10 .. 10
+*/
+
+/*    input.keypressed = false;
     if (input.leftright != 0)
     {
         camera.angle += input.leftright*0.1*(current-time)*0.03;
@@ -63,11 +74,11 @@ function UpdateCamera()
     {
         camera.height += input.updown * (current-time)*0.03;
         input.keypressed = true;
-    }
+    }*/
 
     // Collision detection. Don't fly below the surface.
-    var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
-    if ((heightmap[mapoffset]+10) > camera.height) camera.height = heightmap[mapoffset] + 10;
+    //var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
+    //if ((heightmap[mapoffset]+10) > camera.height) camera.height = heightmap[mapoffset] + 10;
 
     time = current;
 }
@@ -128,7 +139,6 @@ function Render() {
 // Draw the next frame
 
 function Draw(){
-    updaterunning = true;
     UpdateCamera();
 
     // DrawBackground
@@ -142,11 +152,13 @@ function Draw(){
     imagedata.data.set(buf8);
     context.putImageData(imagedata, 0, 0);
 
-    if (!input.keypressed) {
+window.requestAnimationFrame(Draw);
+//window.setTimeout(Draw, 0);
+/*    if (!input.keypressed) {
       updaterunning = false;
     } else {
       window.setTimeout(Draw, 0);
-    }
+    }*/
 }
 
 // ---------------------------------------------
@@ -264,10 +276,11 @@ for (var i=0; i<256; i++) {
     var bufarray = new ArrayBuffer(imagedata.width * imagedata.height * 4);
     buf8   = new Uint8Array(bufarray);
     buf32  = new Uint32Array(bufarray);
+
     Draw();
 
     // set event handlers for keyboard, mouse, touchscreen and window resize
-    document.onmousedown = (e) => {
+    /*document.onmousedown = (e) => {
       input.forwardbackward = 3;
       input.mouseposition = [e.pageX, e.pageY];
       time = Date.now();
@@ -282,9 +295,11 @@ for (var i=0; i<256; i++) {
     }
 
     document.onmousemove  = (e) => {
-      if (input.mouseposition == null || input.forwardbackward == 0) return;
+      //if (input.mouseposition == null || input.forwardbackward == 0) return;
       input.leftright = (input.mouseposition[0]-e.pageX)*1e-3;
       camera.horizon  = 100 + (input.mouseposition[1]-e.pageY)*0.5;
       input.updown    = (input.mouseposition[1]-e.pageY)*1e-2;
-    }
+
+      console.log('input.updown',input.updown);
+    }*/
 })();
