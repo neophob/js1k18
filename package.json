@@ -12,5 +12,8 @@
   "devDependencies": {
     "babili": "0.0.10",
     "regpack": "git+https://github.com/Siorki/RegPack.git#master"
+  },
+  "dependencies": {
+    "babili": "0.0.10"
   }
 }

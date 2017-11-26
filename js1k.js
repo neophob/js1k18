@@ -1,5 +1,6 @@
 // based on https://github.com/s-macke/VoxelSpace
 
+(() => {
 
 // ---------------------------------------------
 // Viewer information
@@ -36,6 +37,9 @@ var input =
 
 var updaterunning = 0;
 var time = 0;
+
+//var pallete = [0xff113231, 0xff6E612D, 0xffFFD38C];
+var pallete = [0xff113231, 0xff2d616e, 0xffFFD38C];
 
 
 // Update the camera for next frame. Dependent on keypresses
@@ -123,15 +127,14 @@ function Render() {
 // ---------------------------------------------
 // Draw the next frame
 
-function Draw(color){
-
+function Draw(){
     updaterunning = true;
     UpdateCamera();
 
     // DrawBackground
     //var color = 0xFFFFD68A;
     //for (var i = 0; i < buf32.length; i++) buf32[i] = color;
-    buf32.fill(color);
+    buf32.fill(pallete[0]);
 
     Render();
 
@@ -283,22 +286,16 @@ function colorset(colors) {
 }
 
 
-var hm = ter();
-//var col = colorset([0xff0000,0x00ff00,0x0000ff]);
-//var col = colorset([0x113231, 0x44655E, 0x4C3F11, 0x865E15, 0xFED28C, 0xF5692A]);
-var col = colorset([0x113231, 0x4C3F11, 0x865E15, 0xFED28C]);
-//var col = colorset([0x113231, 0xF5692A]);
-
 //function Init() {
+    var hm = ter();
+    var col = colorset(pallete);
     heightmap = new Uint8Array(1024*1024);
     colormap = new Uint32Array(1024*1024); // 1024*1024 int array with RGB colors
 
     // LOAD MAP
     //DownloadImagesAsync(["https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/C1W.png", "https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/D1.png"], OnLoadedImages);
     for (var i=0; i<1024*1024; i++) {
-        //colormap[i] = 0xFF000000 | ((Math.random()*256 | 0) << 16) | ((Math.random()*256 | 0) << 8) | Math.random()*256 | 0;
         var r = hm[i];
-        if (i<40)console.log(hm[i]);
         colormap[i] = col[r];//0xFF000000 | (r << 16) | (r << 8) | r;
         heightmap[i] = r;//Math.random()*256 | 0;
     }
@@ -312,7 +309,7 @@ var col = colorset([0x113231, 0x4C3F11, 0x865E15, 0xFED28C]);
     var bufarray = new ArrayBuffer(imagedata.width * imagedata.height * 4);
     buf8   = new Uint8Array(bufarray);
     buf32  = new Uint32Array(bufarray);
-    Draw(col[0]);
+    Draw();
 
     // set event handlers for keyboard, mouse, touchscreen and window resize
     document.onmousedown = (e) => {
@@ -335,3 +332,4 @@ var col = colorset([0x113231, 0x4C3F11, 0x865E15, 0xFED28C]);
       camera.horizon  = 100 + (input.mouseposition[1]-e.pageY)*0.5;
       input.updown    = (input.mouseposition[1]-e.pageY)*1e-2;
     }
+})();
