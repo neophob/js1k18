@@ -4,7 +4,7 @@
 
 // ---------------------------------------------
 // Viewer information
-var camera =
+/*var camera =
 {
     x:        512, // x position on the map
     y:        800, // y position on the map
@@ -12,7 +12,13 @@ var camera =
     angle:      40, // direction of the camera
     horizon:  100, // horizon position (look up and down)
     distance: 2000   // distance of map
-};
+};*/
+var cameraX = 512;
+var cameraY = 800;
+var cameraHeight = 78;
+var cameraAngle = 40;
+var cameraHorizon = 100;
+var cameraDistance = 2000;
 
 // ---------------------------------------------
 // Landscape data
@@ -49,40 +55,40 @@ function Draw(){
 // ## UPDATE CAMERA START
     var current = Date.now();
 
-    camera.x -= 3 * Math.sin(camera.angle) * (current-time)*0.03;
-    camera.y -= 3 * Math.cos(camera.angle) * (current-time)*0.03;
+    cameraX -= 3 * Math.sin(cameraAngle) * (current-time)*0.03;
+    cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
-    var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
-//    camera.height = heightmap[mapoffset] + 64;
-    camera.height = 200 + heightmap[mapoffset]/3
+    var mapoffset = ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)|0;
+//    cameraHeight = heightmap[mapoffset] + 64;
+    cameraHeight = 200 + heightmap[mapoffset]/3
 
 /*
 //input.leftright -1 .. 1
-//camera.horizon -500 .. 500
+//cameraHorizon -500 .. 500
 //input.updown init: -10 .. 10
 */
 
 /*    input.keypressed = false;
     if (input.leftright != 0)
     {
-        camera.angle += input.leftright*0.1*(current-time)*0.03;
+        cameraAngle += input.leftright*0.1*(current-time)*0.03;
         input.keypressed = true;
     }
     if (input.forwardbackward != 0)
     {
-        camera.x -= input.forwardbackward * Math.sin(camera.angle) * (current-time)*0.03;
-        camera.y -= input.forwardbackward * Math.cos(camera.angle) * (current-time)*0.03;
+        cameraX -= input.forwardbackward * Math.sin(cameraAngle) * (current-time)*0.03;
+        cameraY -= input.forwardbackward * Math.cos(cameraAngle) * (current-time)*0.03;
         input.keypressed = true;
     }
     if (input.updown != 0)
     {
-        camera.height += input.updown * (current-time)*0.03;
+        cameraHeight += input.updown * (current-time)*0.03;
         input.keypressed = true;
     }*/
 
     // Collision detection. Don't fly below the surface.
-    //var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
-    //if ((heightmap[mapoffset]+10) > camera.height) camera.height = heightmap[mapoffset] + 10;
+    //var mapoffset = ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)|0;
+    //if ((heightmap[mapoffset]+10) > cameraHeight) cameraHeight = heightmap[mapoffset] + 10;
 
     time = current;
 // UPDATE CAMERA START
@@ -96,14 +102,14 @@ function Draw(){
 
 // ## RENDER START
 
-    var sinang = Math.sin(camera.angle);
-    var cosang = Math.cos(camera.angle);
+    var sinang = Math.sin(cameraAngle);
+    var cosang = Math.cos(cameraAngle);
 
     var hiddeny = new Uint32Array(a.width);
     hiddeny.fill(a.width);
 
     // Draw from front to back
-    for (var z=1; z<camera.distance; z++)
+    for (var z=1; z<cameraDistance; z++)
     {
 
         if (z > 300) z++;
@@ -117,15 +123,15 @@ function Draw(){
 
         var dx = (prx - plx) / a.width;
         var dy = (pry - ply) / a.width;
-        plx += camera.x;
-        ply += camera.y;
+        plx += cameraX;
+        ply += cameraY;
 
         // DEFINE HEIGHT
         var invz = 1 / z * 140;
         for (var i=0; i<a.width; i++) {
           // |0 is math floor
           var mapoffset = ( ((ply|0) & 1023) << 10) + ( (plx|0) & 1023);
-          var heightonscreen = (camera.height - heightmap[mapoffset]) * invz + camera.horizon|0;
+          var heightonscreen = (cameraHeight - heightmap[mapoffset]) * invz + cameraHorizon|0;
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
           // Fast way to draw vertical lines
@@ -303,7 +309,7 @@ for (var i=0; i<256; i++) {
     document.onmousemove  = (e) => {
       //if (input.mouseposition == null || input.forwardbackward == 0) return;
       input.leftright = (input.mouseposition[0]-e.pageX)*1e-3;
-      camera.horizon  = 100 + (input.mouseposition[1]-e.pageY)*0.5;
+      cameraHorizon  = 100 + (input.mouseposition[1]-e.pageY)*0.5;
       input.updown    = (input.mouseposition[1]-e.pageY)*1e-2;
 
       console.log('input.updown',input.updown);
