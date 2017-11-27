@@ -46,7 +46,7 @@ var imagedata = c.createImageData(a.width, a.height);
 
 //var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
 //var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
-var pallete = [0, 0xaa332d, 0xa2a7cc, 0];
+var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
 //var pallete = [0, 0xff, 0x00ff00, 0xFF0000];
 
 
