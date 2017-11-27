@@ -31,17 +31,18 @@ var cameraHorizon = 100;
 // ---------------------------------------------
 // Landscape data
 
-//uint8 would be enough, however uint32 is shorter
 var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
 var buf8   = new Uint8Array(tmpBuffer);
 var buf32  = new Uint32Array(tmpBuffer);
-var heightmap = new Uint32Array(1024*1024);
-var colormap = new Uint32Array(1024*1024);
+// where Uint32Array's - might be faster
+var heightmap = [];
+var colormap = [];
 
 // ---------------------------------------------
 // Screen data
 
-var imagedata = c.createImageData(a.width, a.height), time=0;
+var time=0;
+var imagedata = c.createImageData(a.width, a.height);
 
 //var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
 var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
@@ -112,7 +113,7 @@ var Draw = () => {
     hiddeny.fill(a.width);
 
     // Draw from front to back, 2000 is CAMERA DISTANCE
-    for (var z=1; z<2000; z++) {
+    for (var z=1; z<1024; z++) {
 
       //TODO inprove rendering, increase z as we go away from the front
 //        if (z > 800) z+=4;
@@ -158,7 +159,6 @@ var Draw = () => {
 
     // Flip, Show the back buffer on screen
     imagedata.data.set(buf8);
-    //NOTE: this is against the spec, dy and dx should be provided
     c.putImageData(imagedata,0,0);
     requestAnimationFrame(Draw);
 };
@@ -168,7 +168,8 @@ var Draw = () => {
 
 // GENERATE HEIGHTMAP START
 var tmp;
-var map = new Uint32Array(1025 * 1025);
+var map = [];
+map[1025 * 1025] = 0;
 map.fill(0);
 
 var divide = (size) => {
