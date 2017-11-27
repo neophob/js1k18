@@ -169,9 +169,8 @@ function Draw(){
     }*/
 }
 
-// ---------------------------------------------
-// Init routines
 
+// # INIT
 
 // GENERATE HEIGHTMAP START
 var map = new Float32Array(1025 * 1025);
@@ -266,52 +265,26 @@ for (var i=0; i<256; i++) {
 }
 // GENERATE COLORMAP END
 
+heightmap = new Uint8Array(1024*1024);
+colormap = new Uint32Array(heightmap.length);
 
-//function Init() {
-    heightmap = new Uint8Array(1024*1024);
-    colormap = new Uint32Array(1024*1024); // 1024*1024 int array with RGB colors
+// LOAD MAP
+for (var i=0; i<1024*1024; i++) {
+  var r = hm[i];
+  colormap[i] = col[r];
+  heightmap[i] = r;
+}
 
-    // LOAD MAP
-    //DownloadImagesAsync(["https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/C1W.png", "https://raw.githubusercontent.com/s-macke/VoxelSpace/master/maps/D1.png"], OnLoadedImages);
-    for (var i=0; i<1024*1024; i++) {
-      var r = hm[i];
-      colormap[i] = col[r];//0xFF000000 | (r << 16) | (r << 8) | r;
-      heightmap[i] = r;//Math.random()*256 | 0;
-    }
+var aspect = window.innerWidth / window.innerHeight;
+a.width = window.innerWidth<800?window.innerWidth:800;
+a.height = a.width / aspect;
 
-    var aspect = window.innerWidth / window.innerHeight;
-    a.width = window.innerWidth<800?window.innerWidth:800;
-    a.height = a.width / aspect;
+context = a.getContext('2d');
+imagedata = context.createImageData(a.width, a.height);
+var bufarray = new ArrayBuffer(a.width * a.height * 4);
+buf8   = new Uint8Array(bufarray);
+buf32  = new Uint32Array(bufarray);
 
-    context = a.getContext('2d');
-    imagedata = context.createImageData(a.width, a.height);
-    var bufarray = new ArrayBuffer(a.width * a.height * 4);
-    buf8   = new Uint8Array(bufarray);
-    buf32  = new Uint32Array(bufarray);
+Draw();
 
-    Draw();
-
-    // set event handlers for keyboard, mouse, touchscreen and window resize
-    /*document.onmousedown = (e) => {
-      input.forwardbackward = 3;
-      input.mouseposition = [e.pageX, e.pageY];
-      time = Date.now();
-      if (!updaterunning) Draw();
-    };
-
-    document.onmouseup = () => {
-      input.mouseposition = null;
-      input.forwardbackward = 0;
-      input.leftright = 0;
-      input.updown = 0;
-    }
-
-    document.onmousemove  = (e) => {
-      //if (input.mouseposition == null || input.forwardbackward == 0) return;
-      input.leftright = (input.mouseposition[0]-e.pageX)*1e-3;
-      cameraHorizon  = 100 + (input.mouseposition[1]-e.pageY)*0.5;
-      input.updown    = (input.mouseposition[1]-e.pageY)*1e-2;
-
-      console.log('input.updown',input.updown);
-    }*/
 })();
