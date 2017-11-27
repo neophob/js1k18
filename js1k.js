@@ -223,38 +223,21 @@ map.forEach((r,i)=>{
 // GENERATE HEIGHTMAP END
 
 
-// GENERATE COLORMAP START, fade between [color1, color2, colorN] in 256 steps
+// LOAD MAP + GENERATE COLORMAP ON DEMAND
+hm.forEach((r,i)=>{
+  //generate smooth color dynamically, 4 equals the size of the pallete array
+  var ofs = Math.floor(r/(255 / 4));
+  var col1 = pallete[(ofs+1)%4];
+  var col2 = pallete[(ofs)%4];
+  var selectedPalleteEntry = 4*(r%(255 / 4));
+  var oppositeColor = 255-selectedPalleteEntry;
 
-
-var calcSmoothColor = (col1, col2, selectedPalleteEntry) => {
-  //4 is pallete length
-  selectedPalleteEntry*=4;
-	var oppositeColor = 255-selectedPalleteEntry;
-	return 0xff000000 |
+  colormap[i] = 0xff000000 |
           (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
           (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
           (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
-}
-
-//4 is pallete length
-/*var col = [];
-// 256 colors per palette (8bit)
-for (var i=0; i<256; i++) {
-  var ofs = Math.floor(i/(256 / 4));
-  //4 is pallete length
-	col[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[(ofs)%4], i%(255 / 4));
-}
-col[256] = 0xff100b0b;
-*/
-// GENERATE COLORMAP END
-
-
-// LOAD MAP
-hm.forEach((r,i)=>{
-  r += (Math.random()*2)|0;
-
-  var ofs = Math.floor(r/(255 / 4));
-  colormap[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[(ofs)%4], r%(255 / 4));;
+  //cheat a bit, make brightest color visible
+  if (r>254) colormap[i]=0xff100b0b;
   heightmap[i] = r < 70 ? 70 : r;
 });
 //dont use requestAnimationFrame(Draw); anymore...
