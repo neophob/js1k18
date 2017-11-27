@@ -45,7 +45,8 @@ var time=0;
 var imagedata = c.createImageData(a.width, a.height);
 
 //var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
-var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
+//var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
+var pallete = [0, 0xaa332d, 0xa2a7cc, 0];
 //var pallete = [0, 0xff, 0x00ff00, 0xFF0000];
 
 
@@ -100,7 +101,9 @@ var Draw = () => {
 
 // ## DRAW BACKGROUND START
     //select first pallete entry but add alpha values
-    buf32.fill(0xff000ff0);
+    (Math.random() < .01) ? buf32.fill(0xffa2a7cc) : buf32.fill(0xff000000);
+
+//    buf32.fill(xff000ff0);
 // DRAW BACKGROUND END
 
 
@@ -185,7 +188,7 @@ var divide = (size) => {
         map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
         map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
-      ) / 4 + Math.random() * scale * 2 - scale;
+      ) / 4 + Math.random() * scale * 2.5 - scale;
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
@@ -197,11 +200,11 @@ var divide = (size) => {
         map[((x + half) & 1023) + (y & 1023) * 1025] +
         map[(x & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + (y & 1023) * 1025]
-      ) / 4 + Math.random() * scale * 2 - scale;
+      ) / 4 + Math.random() * scale * 2.5 - scale;
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
-  divide(size >>1);
+  divide(size /2);
 }
 //set initial points
 //map[0] = map[1024] = 1024;
@@ -242,15 +245,17 @@ for (var i=0; i<256; i++) {
   //4 is pallete length
 	col[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[(ofs)%4], selectedPalleteEntry);
 }
+col[256] = 0xff100b0b;
+
 // GENERATE COLORMAP END
 
 
 // LOAD MAP
 hm.forEach((r,i)=>{
+  r += (Math.random()*2)|0;
   colormap[i] = col[r];
-  heightmap[i] = r;
+  heightmap[i] = r < 70 ? 70 : r;
 });
-
 //dont use requestAnimationFrame(Draw); anymore...
 setInterval(Draw, 20);
 })();
