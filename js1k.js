@@ -35,8 +35,8 @@ var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
 var buf8   = new Uint8Array(tmpBuffer);
 var buf32  = new Uint32Array(tmpBuffer);
 // where Uint32Array's - might be faster
-var heightmap = [];
-var colormap = [];
+var heightmap = new Uint32Array(1024*1024);
+var colormap = new Uint32Array(1024*1024);
 
 // ---------------------------------------------
 // Screen data
@@ -112,11 +112,11 @@ var Draw = () => {
     var hiddeny = new Uint32Array(a.width);
     hiddeny.fill(a.width);
 
-    // Draw from front to back, 2000 is CAMERA DISTANCE
+    // Draw from front to back, 1024 is CAMERA DISTANCE
     for (var z=1; z<1024; z++) {
 
       //TODO inprove rendering, increase z as we go away from the front
-//        if (z > 800) z+=4;
+        //if (z > 500) z+=2;
         // 90 degree field of view
         //var prx =   cosang * z - sinang * z;
         var plx =  -cosang * z - sinang * z;
@@ -160,7 +160,6 @@ var Draw = () => {
     // Flip, Show the back buffer on screen
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
-    requestAnimationFrame(Draw);
 };
 
 
@@ -252,5 +251,6 @@ hm.forEach((r,i)=>{
   heightmap[i] = r;
 });
 
-requestAnimationFrame(Draw);
+//dont use requestAnimationFrame(Draw); anymore...
+setInterval(Draw, 20);
 })();
