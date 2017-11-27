@@ -237,22 +237,24 @@ var calcSmoothColor = (col1, col2, selectedPalleteEntry) => {
 }
 
 //4 is pallete length
-var col = [];
+/*var col = [];
 // 256 colors per palette (8bit)
 for (var i=0; i<256; i++) {
-  var ofs = Math.floor(i/(255 / 4));
+  var ofs = Math.floor(i/(256 / 4));
   //4 is pallete length
 	col[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[(ofs)%4], i%(255 / 4));
 }
 col[256] = 0xff100b0b;
-
+*/
 // GENERATE COLORMAP END
 
 
 // LOAD MAP
 hm.forEach((r,i)=>{
   r += (Math.random()*2)|0;
-  colormap[i] = col[r];
+
+  var ofs = Math.floor(r/(255 / 4));
+  colormap[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[(ofs)%4], r%(255 / 4));;
   heightmap[i] = r < 70 ? 70 : r;
 });
 //dont use requestAnimationFrame(Draw); anymore...
