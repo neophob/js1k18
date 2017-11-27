@@ -134,6 +134,7 @@ function Draw(){
             // get offset on screen for the vertical line
             var offset = ((heightonscreen * a.width) + i);
             for (var k = heightonscreen; k < hiddeny[i]; k++) {
+                //TODO add offset to mapoffset
                 buf32[offset] = colormap[mapoffset];
                 offset += a.width;
             }
@@ -167,125 +168,59 @@ function Draw(){
 
 
 // GENERATE HEIGHTMAP START
-/*function fract(n) {
-  return n - Math.floor(n);
-}
-function lerp(a, b, t) {
-  return (1 - t) * a + t * b;
-}
+var map = new Float32Array(1025 * 1025);
+map.fill(0);
 
-function hash2d(x, y) {
-  x = 50 * fract(x * 0.3183099 + 0.71);
-  y = 50 * fract(y * 0.3183099 + 0.113);
-  // SEED is 7
-  return -1 + 2 * fract(1.375986 * 7 + x * y * (x + y));
+function tget(x, y) {
+  // wrap around to make map tileable
+  return map[(x & 1023) + (y & 1023) * 1025];
 }
-function noise2d(x, y) {
-  let ix = Math.floor(x);
-  let iy = Math.floor(y);
-  let fx = fract(x);
-  let fy = fract(y);
-  let ux = fx * fx * (3 - 2 * fx);
-  return lerp(
-    lerp(hash2d(ix, iy), hash2d(ix + 1, iy), ux),
-    lerp(hash2d(ix, iy + 1), hash2d(ix + 1, iy + 1), ux),
-    fy * fy * (3 - 2 * fy)
-  );
-}
-
-function fractal2d (x, y, octaves) {
-  var val = 0;
-  for (let i = 0; i < octaves; i++) {
-    val += noise2d(x, y) / Math.pow(2, 0.5 + i - 0.5 * i);
-    x -= i * 19;
-    y += i * 7;
-    x *= 1.4;
-    y *= 1.4;
-  }
-  return val;
-}
-
-ofs=0;
-var hm=[];
-for (x=0;x<1024;x++) {
-  for (y=0;y<1024;y++) {
-//      var l = ((0.3 + fractal2d(x / 255, y / 255, 9) * 0.5) * 254)|0;
-    var l = ((0.5 + fractal2d(x / 512, y / 512, 15) * 0.5) * 254)|0;
-    if (l<0) l=0;
-    hm[ofs++] = l
-    //if (l == undefined || l<0 || l > 255) console.log('err:',l);
-  }
-}*/
-
-
-function Terrain() {
-  this.size = 1024 + 1;
-  this.max = this.size - 1;
-  this.map = new Float32Array(this.size * this.size);
-  this.map.fill(0);
-}
-Terrain.prototype.get = function(x, y) {
-  return this.map[(x & (this.max - 1)) + (y & (this.max - 1)) * this.size];
-};
-Terrain.prototype.set = function(x, y, val) {
+function tset(x, y, val) {
   if (val<0){val=0}
-  if (val>this.max){val=this.max}
-  this.map[x + this.size * y] = val;
-};
-Terrain.prototype.getMap = function() {
-  var ret = [];
-  var ofs = 0;
-  for(var i=0;i<this.map.length;i++){  //iterate over every pixel in the canvas
-    var o = Math.floor(255 * (this.map[i]/1024));
-    ret[ofs++] = o;
-    if (i%1024 === 1023) i+=1;
-  }
-  return ret;
-};
-Terrain.prototype.generate = function(roughness) {
-  var self = this;
-  this.set(0, 0, self.max);
-  this.set(this.max, 0, 0);
-  this.set(this.max, this.max, self.max / 2);
-  this.set(0, this.max, self.max / 2);
-  divide(this.max);
+  if (val>1024){val=1024}
+  map[x + 1025 * y] = val;
+}
+function divide(size) {
+  if (size < 2) return;
+  var half = size / 2;
+  //roughness
+  var x, y, scale = 2.4 * size;
 
-  function divide(size) {
-    var x, y, half = size / 2;
-    var scale = roughness * size;
-    if (half < 1) return;
-    for (y = half; y < self.max; y += size) {
-      for (x = half; x < self.max; x += size) {
-        //square(x, y, half, Math.random() * scale * 2 - scale);
-        var ave =
-          self.get(x - half, y - half) +   // upper left
-          self.get(x + half, y - half) +   // upper right
-          self.get(x + half, y + half) +   // lower right
-          self.get(x - half, y + half);    // lower left
-        var offset = Math.random() * scale * 2 - scale;
-        self.set(x, y, ave/4+ offset);
-      }
+  for (y = half; y < 1024; y += size) {
+    for (x = half; x < 1024; x += size) {
+      //SQUARE
+      tset(x, y, (
+        tget(x - half, y - half) +   // upper left
+        tget(x + half, y - half) +   // upper right
+        tget(x + half, y + half) +   // lower right
+        tget(x - half, y + half)    // lower left
+      ) / 4 + Math.random() * scale * 2 - scale);
     }
-    for (y = 0; y <= self.max; y += half) {
-      for (x = (y + half) % size; x <= self.max; x += size) {
-        //diamond(x, y, half, Math.random() * scale * 2 - scale);
-        var ave =
-          self.get(x, y - half) +     // top
-          self.get(x + half, y) +      // right
-          self.get(x, y + half) +     // bottom
-          self.get(x - half, y);       // left
-        var offset = Math.random() * scale * 2 - scale;
-        self.set(x, y, ave/4 + offset);
-      }
-    }
-    divide(size / 2);
   }
-};
-var terrain = new Terrain();
-terrain.generate(2.4);
-
-var hm = terrain.getMap();
-
+  for (y = 0; y <= 1024; y += half) {
+    for (x = (y + half) % size; x <= 1024; x += size) {
+      //DIAMOND
+      tset(x, y, (
+        tget(x, y - half) +     // top
+        tget(x + half, y) +      // right
+        tget(x, y + half) +     // bottom
+        tget(x - half, y)       // left
+      ) / 4 + Math.random() * scale * 2 - scale);
+    }
+  }
+  divide(size / 2);
+}
+tset(0, 0, 1024);
+tset(1024, 0, 1024);
+//tset(1024, 1024, 1024 / 2);
+//tset(0, 1024, 1024 / 2);
+divide(1024);
+var hm = [];
+var ofs = 0;
+for(var i=0;i<map.length;i++){  //iterate over every pixel in the canvas
+  hm[ofs++] = Math.floor(255 * (map[i]/1024));
+  if (!(i%1024)) i+=1;
+}
 
 // GENERATE HEIGHTMAP END
 
