@@ -30,7 +30,10 @@ var cameraHorizon = 100;
 // ---------------------------------------------
 // Landscape data
 
-var heightmap, colormap; // 1024*1024 byte array with height information
+//var heightmap, colormap; // 1024*1024 byte array with height information
+var heightmap = new Uint32Array(1024*1024);
+var colormap = new Uint32Array(1024*1024);
+
 // ---------------------------------------------
 // Screen data
 
@@ -199,6 +202,7 @@ var divide = (size) => {
   }
   divide(size / 2);
 }
+//set initial points
 map[0] = map[1024] = 1024;
 divide(1024);
 var hm = [];
@@ -239,8 +243,6 @@ for (var i=0; i<256; i++) {
 
 //uint8 would be enough, however uint32 is shorter
 //0xff000000 = 1024x1024
-heightmap = new Uint32Array(1024*1024);
-colormap = new Uint32Array(1024*1024);
 
 // LOAD MAP
 hm.forEach((r,i)=>{
