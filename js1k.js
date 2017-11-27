@@ -57,9 +57,10 @@ var Draw = () => {
     cameraX -= 3 * Math.sin(cameraAngle) * (current-time)*0.03;
     cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
-    var mapoffset = ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023);
 //    cameraHeight = heightmap[mapoffset] + 64;
-    cameraHeight = 256 + heightmap[mapoffset]/3
+    cameraHeight = 256 + heightmap[
+      /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
+    ]/3;
 
 /*
 //input.leftright -1 .. 1
@@ -171,8 +172,7 @@ var tget = (x,y) => {
 };
 var tset = (x,y,val) => {
   if (val<0) val=0;
-  if (val>1024) val=1024;
-  map[x + 1025 * y] = val;
+  map[x + 1025 * y] = val & 1023;
 };
 var divide = (size) => {
   if (size < 2) return;
