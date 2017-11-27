@@ -30,14 +30,16 @@ var cameraHorizon = 100;
 // ---------------------------------------------
 // Landscape data
 
-//var heightmap, colormap; // 1024*1024 byte array with height information
 var heightmap = new Uint32Array(1024*1024);
 var colormap = new Uint32Array(1024*1024);
+var tmp = new ArrayBuffer(a.width * a.height * 4);
+var buf8   = new Uint8Array(tmp);
+var buf32  = new Uint32Array(tmp);
 
 // ---------------------------------------------
 // Screen data
 
-var buf8, buf32, imagedata = c.createImageData(a.width, a.height), time=0;
+var imagedata = c.createImageData(a.width, a.height), time=0;
 
 //var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
 var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
@@ -249,10 +251,6 @@ hm.forEach((r,i)=>{
   colormap[i] = col[r];
   heightmap[i] = r;
 });
-
-tmp = new ArrayBuffer(a.width * a.height * 4);
-buf8   = new Uint8Array(tmp);
-buf32  = new Uint32Array(tmp);
 
 requestAnimationFrame(Draw);
 })();
