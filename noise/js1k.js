@@ -75,6 +75,7 @@ for (var i=0; i<256; i++) {
 var colormap = [];
 xx.forEach((r,i)=>{
   r += (Math.random()*2)|0;
+  if (i>1024*200 && i<1024*300) colormap[i] = col[127]; else
   colormap[i] = col[r];
 });
 
@@ -85,19 +86,10 @@ var ofs = 0;
 for(var i=0;i<imgdatalen/4;i++){  //iterate over every pixel in the canvas
   var o = colormap[i];//xx[ofs++];
   ofs++
-  if (i>1024*512) {
-    var h = xx[ofs]/128;
-    imgdata.data[4*i] = h*(colormap[i] & 255);
-    imgdata.data[4*i+1] = h*((colormap[i]>>8) & 255);
-    imgdata.data[4*i+2] = h*((colormap[i]>>16) & 255);    // BLUE (0-255)*/
-    imgdata.data[4*i+3] = 255;  // APLHA (0-255)
-
-  } else {
     imgdata.data[4*i] = colormap[i] & 255;
     imgdata.data[4*i+1] = (colormap[i]>>8) & 255;
     imgdata.data[4*i+2] = (colormap[i]>>16) & 255;    // BLUE (0-255)*/
     imgdata.data[4*i+3] = 255;  // APLHA (0-255)
-  }
 }
 
 

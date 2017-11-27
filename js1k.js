@@ -217,10 +217,7 @@ tmp = 0;
 map.forEach((r,i)=>{
   //convert the 1025*1025 map to a 1024*1024 map
   if (i%1025!=1024) {
-
-    if (i>1024*200 && i<1024*300) hm[tmp++] =144; else
     hm[tmp++] = Math.floor(255 * (r/1024));
-
   }
 });
 // GENERATE HEIGHTMAP END
