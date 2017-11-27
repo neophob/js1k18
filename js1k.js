@@ -152,7 +152,7 @@ var Draw = () => {
 // # INIT
 
 // GENERATE HEIGHTMAP START
-var map = new Float32Array(1025 * 1025);
+var map = new Uint32Array(1025 * 1025);
 map.fill(0);
 
 var tget = (x,y) => {

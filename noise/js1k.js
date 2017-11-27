@@ -1,4 +1,4 @@
-var map = new Float32Array(1025 * 1025);
+var map = new Uint32Array(1025 * 1025);
 map.fill(0);
 
 function tget(x, y) {
