@@ -211,8 +211,9 @@ divide(1024);
 var hm = [];
 var tmp = 0;
 map.forEach((r,i)=>{
-  if (i%1025!=1024)
+  if (i%1025!=1024) {
     hm[tmp++] = Math.floor(255 * (r/1024));
+  }
 });
 // GENERATE HEIGHTMAP END
 
@@ -225,9 +226,9 @@ var calcSmoothColor = (col1, col2, pos) => {
 	var oppositeColor = 255-pos;
 
 	return 0xff000000 |
-          (((((col1>>16)&255)*pos + ((col2>>16)&255)*oppositeColor) / 255) << 16) |
-          (((((col1>>8)&255)*pos + ((col2>>8)&255)*oppositeColor) / 255) << 8) |
-          (((col1&255)*pos + (col2&255)*oppositeColor) / 255);
+          (((((col1>>16)&255)*pos + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
+          (((((col1>>8)&255)*pos + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
+          (((col1&255)*pos + (col2&255)*oppositeColor) >>8);
 }
 
 //4 is pallete length
