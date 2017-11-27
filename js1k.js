@@ -57,8 +57,8 @@ var Draw = () => {
     var current = Date.now();
 
     cameraX -= 3 * Math.sin(cameraAngle) * (current-time)*0.03;
-    //cameraY -= 3 * Math.sin(cameraAngle + 90) * (current-time)*0.03;
-    cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
+    cameraY -= 3 * Math.sin(cameraAngle + 1.57) * (current-time)*0.03;
+    //cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
 //    cameraHeight = heightmap[mapoffset] + 64;
     cameraHeight = 256 + heightmap[
@@ -116,18 +116,18 @@ var Draw = () => {
       //TODO inprove rendering, increase z as we go away from the front
 //        if (z > 800) z+=4;
         // 90 degree field of view
-        var prx =   cosang * z - sinang * z;
-        var plx =  -prx;
+        //var prx =   cosang * z - sinang * z;
+        var plx =  -cosang * z - sinang * z;
         var ply =   sinang * z - cosang * z;
-        var pry =  -sinang * z - cosang * z;
+        //var pry =  -sinang * z - cosang * z;
 
-        var dx = (prx - plx) / a.width;
-        var dy = (pry - ply) / a.width;
+        var dx = ((cosang * z - sinang * z) - plx) / a.width;
+        var dy = ((-sinang * z - cosang * z) - ply) / a.width;
         plx += cameraX;
         ply += cameraY;
 
         // DEFINE HEIGHT (140)
-        var invz = 1 / z * 170;
+        var invz = 1 / z * 240;
         for (var i=0; i<a.width; i++) {
           // |0 is math floor
           var mapoffset = ((Math.floor(ply    ) & 1023) << 10) + (Math.floor(plx) & 1023);
@@ -174,7 +174,7 @@ var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
   //roughness is 2.4
-  var scale = 2.2 * size;
+  var scale = 1.7 * size;
 
   for (var y = half; y < 1024; y += size) {
     for (var x = half; x < 1024; x += size) {
