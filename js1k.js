@@ -211,7 +211,7 @@ var hm = [];
 var tmp = 0;
 for(var i=0;i<1024*1024;i++){  //iterate over every pixel in the canvas
   hm[tmp++] = Math.floor(255 * (map[i]/1024));
-  if (!(i%1024)) i+=1;
+  if (!(i%1024)) i++;
 }
 // GENERATE HEIGHTMAP END
 
