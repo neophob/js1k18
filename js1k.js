@@ -1,4 +1,12 @@
-// based on https://github.com/s-macke/VoxelSpace
+// voxel based on https://github.com/s-macke/VoxelSpace
+// heightmap based on http://www.playfuljs.com/realistic-terrain-in-130-lines/
+
+/*
+  ideas:
+    - add static shader to map
+    - add stranger things mode - different pallete and white "snow"
+    - more fancy camera path
+*/
 
 (() => {
 
@@ -217,19 +225,16 @@ var calcSmoothColor = (col1, col2, pos) => {
 }
 
 //4 is pallete length
-tmp = 255 / 4;
 var col = [];
 for (var i=0; i<256; i++) {
 	var ofs=0;
 	var pos = i;
-	while (pos > tmp) {
-		pos -= tmp;
+	while (pos > (255 / 4)) {
+		pos -= (255 / 4);
 		ofs++;
 	}
-
-	var targetOfs = ofs+1;
   //4 is pallete length
-	col[i] = calcSmoothColor(pallete[targetOfs%4], pallete[ofs%4], pos);
+	col[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[ofs%4], pos);
 }
 // GENERATE COLORMAP END
 
