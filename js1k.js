@@ -144,7 +144,6 @@ var Draw = () => {
     //NOTE: this is against the spec, dy and dx should be provided
     c.putImageData(imagedata,0,0);
     requestAnimationFrame(Draw);
-
 };
 
 
@@ -206,22 +205,15 @@ for(var i=0;i<1024*1024;i++){  //iterate over every pixel in the canvas
 
 // GENERATE COLORMAP START
 var calcSmoothColor = (col1, col2, pos) => {
-	var b= col1&255;
-	var g=(col1>>8)&255;
-	var r=(col1>>16)&255;
-	var b2= col2&255;
-	var g2=(col2>>8)&255;
-	var r2=(col2>>16)&255;
 
   //4 is pallete length
-	var mul=pos*4;
-	var oppositeColor = 255-mul;
+  pos*=4;
+	var oppositeColor = 255-pos;
 
-	r=(r*mul + r2*oppositeColor) / 255;
-	g=(g*mul + g2*oppositeColor) / 255;
-	b=(b*mul + b2*oppositeColor) / 255;
-
-	return 0xff000000 | (r << 16) | (g << 8) | (b);
+	return 0xff000000 |
+          (((((col1>>16)&255)*pos + ((col2>>16)&255)*oppositeColor) / 255) << 16) |
+          (((((col1>>8)&255)*pos + ((col2>>8)&255)*oppositeColor) / 255) << 8) |
+          (((col1&255)*pos + (col2&255)*oppositeColor) / 255);
 }
 
 //4 is pallete length
