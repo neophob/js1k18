@@ -18,7 +18,6 @@ var cameraY = 800;
 var cameraHeight = 78;
 var cameraAngle = 40;
 var cameraHorizon = 100;
-var cameraDistance = 2000;
 
 // ---------------------------------------------
 // Landscape data
@@ -27,7 +26,7 @@ var heightmap, colormap; // 1024*1024 byte array with height information
 // ---------------------------------------------
 // Screen data
 
-var buf8, buf32, imagedata, context, time;
+var buf8, buf32, imagedata, context, time=0;
 
 //var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
 var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
@@ -44,7 +43,7 @@ function Draw(){
     cameraX -= 3 * Math.sin(cameraAngle) * (current-time)*0.03;
     cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
-    var mapoffset = ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)|0;
+    var mapoffset = ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023);
 //    cameraHeight = heightmap[mapoffset] + 64;
     cameraHeight = 200 + heightmap[mapoffset]/3
 
@@ -94,8 +93,8 @@ function Draw(){
     var hiddeny = new Uint32Array(a.width);
     hiddeny.fill(a.width);
 
-    // Draw from front to back
-    for (var z=1; z<cameraDistance; z++) {
+    // Draw from front to back, 2000 is CAMERA DISTANCE
+    for (var z=1; z<2000; z++) {
 
         if (z > 300) z++;
         if (z > 600) z++;
@@ -242,8 +241,8 @@ for (var i=0; i<256; i++) {
 
 //uint8 would be enough, however uint32 is shorter
 //0xff000000 = 1024x1024
-heightmap = new Uint32Array(0xff000000);
-colormap = new Uint32Array(0xff000000);
+heightmap = new Uint32Array(1024*1024);
+colormap = new Uint32Array(1024*1024);
 
 // LOAD MAP
 hm.forEach((r,i)=>{
