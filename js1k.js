@@ -59,15 +59,14 @@ var Draw = () => {
 // ## UPDATE CAMERA START
     var current = Date.now();
 
-    if (current % 10 == 4)
-    cameraAngle += (Math.random())*0.1*(current-time)*0.03;
+    if (current % 8 == 4)
+    cameraAngle += (Math.random())*0.01*(current-time)*0.03;
 
 
     cameraX -= 3 * Math.sin(cameraAngle) * (current-time)*0.03;
     cameraY -= 3 * Math.sin(cameraAngle + 1.57) * (current-time)*0.03;
     //cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
-//    cameraHeight = heightmap[mapoffset] + 64;
     var cameraHeight = 255 + heightmap[
       /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
     ]/3;
@@ -140,7 +139,7 @@ var Draw = () => {
         for (var i=0; i<a.width; i++) {
           // |0 is math floor
           var mapoffset = ((Math.floor(ply    ) & 1023) << 10) + (Math.floor(plx) & 1023);
-          var heightonscreen = (cameraHeight - heightmap[mapoffset]) * invz + /*cameraHorizon|0*/150;
+          var heightonscreen = Math.floor((cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/);
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
           // Fast way to draw vertical lines
@@ -210,14 +209,18 @@ var divide = (size) => {
   }
   divide(size /2);
 }
-//set initial points
+//set initial points - not needed
 //map[0] = map[1024] = 1024;
 divide(1024);
 var hm = [];
 tmp = 0;
 map.forEach((r,i)=>{
+  //convert the 1025*1025 map to a 1024*1024 map
   if (i%1025!=1024) {
+
+    if (i>1024*200 && i<1024*300) hm[tmp++] =144; else
     hm[tmp++] = Math.floor(255 * (r/1024));
+
   }
 });
 // GENERATE HEIGHTMAP END
