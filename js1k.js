@@ -126,7 +126,7 @@ var Draw = () => {
         var invz = 1 / z * 140;
         for (var i=0; i<a.width; i++) {
           // |0 is math floor
-          var mapoffset = ( ((ply|0) & 1023) << 10) + ( (plx|0) & 1023);
+          var mapoffset = ((Math.floor(ply    ) & 1023) << 10) + (Math.floor(plx) & 1023);
           var heightonscreen = (cameraHeight - heightmap[mapoffset]) * invz + cameraHorizon|0;
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
