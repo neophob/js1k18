@@ -243,8 +243,9 @@ for (var i=0; i<256; i++) {
 // GENERATE COLORMAP END
 
 //uint8 would be enough, however uint32 is shorter
-heightmap = new Uint32Array(1024*1024);
-colormap = new Uint32Array(1024*1024);
+//0xff000000 = 1024x1024
+heightmap = new Uint32Array(0xff000000);
+colormap = new Uint32Array(0xff000000);
 
 // LOAD MAP
 hm.forEach((r,i)=>{
