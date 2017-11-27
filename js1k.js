@@ -125,7 +125,7 @@ var Draw = () => {
         ply += cameraY;
 
         // DEFINE HEIGHT (140)
-        var invz = 1 / z * 140;
+        var invz = 1 / z * 170;
         for (var i=0; i<a.width; i++) {
           // |0 is math floor
           var mapoffset = ((Math.floor(ply    ) & 1023) << 10) + (Math.floor(plx) & 1023);
@@ -164,6 +164,7 @@ var Draw = () => {
 // # INIT
 
 // GENERATE HEIGHTMAP START
+var tmp;
 var map = new Uint32Array(1025 * 1025);
 map.fill(0);
 
@@ -171,36 +172,34 @@ var tget = (x,y) => {
   // wrap around to make map tileable
   return map[(x & 1023) + (y & 1023) * 1025];
 };
-var tset = (x,y,val) => {
-  if (val<0) val=0;
-  map[x + 1025 * y] = val & 1023;
-};
 var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
   //roughness is 2.4
-  var scale = 2.4 * size;
+  var scale = 2.2 * size;
 
   for (var y = half; y < 1024; y += size) {
     for (var x = half; x < 1024; x += size) {
       //SQUARE
-      tset(x, y, (
+      tmp = (
         tget(x - half, y - half) +   // upper left
         tget(x + half, y - half) +   // upper right
         tget(x + half, y + half) +   // lower right
         tget(x - half, y + half)    // lower left
-      ) / 4 + Math.random() * scale * 2 - scale);
+      ) / 4 + Math.random() * scale * 2 - scale;
+      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
   for (var y = 0; y <= 1024; y += half) {
     for (var x = (y + half) % size; x <= 1024; x += size) {
       //DIAMOND
-      tset(x, y, (
+      tmp = (
         tget(x, y - half) +     // top
-        tget(x + half, y) +      // right
+        tget(x + half, y) +     // right
         tget(x, y + half) +     // bottom
         tget(x - half, y)       // left
-      ) / 4 + Math.random() * scale * 2 - scale);
+      ) / 4 + Math.random() * scale * 2 - scale;
+      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
   divide(size >>1);
@@ -209,7 +208,7 @@ var divide = (size) => {
 //map[0] = map[1024] = 1024;
 divide(1024);
 var hm = [];
-var tmp = 0;
+tmp = 0;
 map.forEach((r,i)=>{
   if (i%1025!=1024) {
     hm[tmp++] = Math.floor(255 * (r/1024));

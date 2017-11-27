@@ -6,42 +6,48 @@ function tget(x, y) {
   //TODO 1023 should be 1025?
   return map[(x & 1023) + (y & 1023) * 1025];
 }
-function tset(x, y, val) {
-  if (val<0){val=0}
-  if (val>1024){val=1024}
-  map[x + 1025 * y] = val;
-}
-function divide(size) {
+var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
-  //roughness
-  var x, y, scale = 2.4 * size;
-  for (y = half; y < 1024; y += size) {
-    for (x = half; x < 1024; x += size) {
-      //square(x, y, half, Math.random() * scale * 2 - scale);
-      var avg =
-        tget(x - half, y - half) +   // upper left
-        tget(x + half, y - half) +   // upper right
-        tget(x + half, y + half) +   // lower right
-        tget(x - half, y + half);    // lower left
-      var offset = Math.random() * scale * 2 - scale;
-      tset(x, y, avg/4+ offset);
+  //roughness is 2.4
+  var scale = 2.2 * size;
+
+  for (var y = half; y < 1024; y += size) {
+    for (var x = half; x < 1024; x += size) {
+      //SQUARE
+      tmp = (
+        //tget(x - half, y - half) +   // upper left
+        //tget(x + half, y - half) +   // upper right
+        //tget(x + half, y + half) +   // lower right
+        //tget(x - half, y + half)    // lower left
+        map[((x - half) & 1023) + ((y - half) & 1023) * 1025] +
+        map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
+        map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
+        map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
+      ) / 4 + Math.random() * scale * 2 - scale;
+
+      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
-  for (y = 0; y <= 1024; y += half) {
-    for (x = (y + half) % size; x <= 1024; x += size) {
-      //diamond(x, y, half, Math.random() * scale * 2 - scale);
-      var avg =
-        tget(x, y - half) +     // top
-        tget(x + half, y) +      // right
-        tget(x, y + half) +     // bottom
-        tget(x - half, y);       // left
-      var offset = Math.random() * scale * 2 - scale;
-      tset(x, y, avg/4 + offset);
+  for (var y = 0; y <= 1024; y += half) {
+    for (var x = (y + half) % size; x <= 1024; x += size) {
+      //DIAMOND
+      tmp = (
+//        tget(x, y - half) +     // top
+//        tget(x + half, y) +      // right
+//        tget(x, y + half) +     // bottom
+//        tget(x - half, y)       // left
+        map[(x & 1023) + ((y - half) & 1023) * 1025] +
+        map[((x + half) & 1023) + (y & 1023) * 1025] +
+        map[(x & 1023) + ((y + half) & 1023) * 1025] +
+        map[((x - half) & 1023) + (y & 1023) * 1025]
+      ) / 4 + Math.random() * scale * 2 - scale;
+      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
   divide(size / 2);
-}
+};
+
 //map[0] = map[0] = 1024;
 divide(1024);
 var xx = [];
