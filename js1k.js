@@ -25,18 +25,18 @@
 var cameraX = 512;
 var cameraY = 800;
 var cameraHeight = 78;
-var cameraAngle = 40;
+var cameraAngle = 78;
 var cameraHorizon = 100;
 
 // ---------------------------------------------
 // Landscape data
 
 //uint8 would be enough, however uint32 is shorter
-var heightmap = new Uint32Array(1024*1024);
-var colormap = new Uint32Array(1024*1024);
 var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
 var buf8   = new Uint8Array(tmpBuffer);
 var buf32  = new Uint32Array(tmpBuffer);
+var heightmap = new Uint32Array(1024*1024);
+var colormap = new Uint32Array(1024*1024);
 
 // ---------------------------------------------
 // Screen data
@@ -45,6 +45,7 @@ var imagedata = c.createImageData(a.width, a.height), time=0;
 
 //var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
 var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
+//var pallete = [0, 0xff, 0x00ff00, 0xFF0000];
 
 
 
@@ -61,7 +62,7 @@ var Draw = () => {
     //cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
 //    cameraHeight = heightmap[mapoffset] + 64;
-    cameraHeight = 256 + heightmap[
+    cameraHeight = 255 + heightmap[
       /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
     ]/3;
 
@@ -215,30 +216,31 @@ map.forEach((r,i)=>{
 // GENERATE HEIGHTMAP END
 
 
-// GENERATE COLORMAP START
-var calcSmoothColor = (col1, col2, pos) => {
+// GENERATE COLORMAP START, fade between [color1, color2, colorN] in 256 steps
 
+
+var calcSmoothColor = (col1, col2, selectedPalleteEntry) => {
   //4 is pallete length
-  pos*=4;
-	var oppositeColor = 255-pos;
-
+  selectedPalleteEntry*=4;
+	var oppositeColor = 255-selectedPalleteEntry;
 	return 0xff000000 |
-          (((((col1>>16)&255)*pos + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
-          (((((col1>>8)&255)*pos + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
-          (((col1&255)*pos + (col2&255)*oppositeColor) >>8);
+          (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
+          (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
+          (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
 }
 
 //4 is pallete length
 var col = [];
+// 256 colors per palette (8bit)
 for (var i=0; i<256; i++) {
 	var ofs=0;
-	var pos = i;
-	while (pos > (255 / 4)) {
-		pos -= (255 / 4);
+	var selectedPalleteEntry = i;
+	while (selectedPalleteEntry > (255 / 4)) {
+		selectedPalleteEntry -= (255 / 4);
 		ofs++;
 	}
   //4 is pallete length
-	col[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[ofs%4], pos);
+	col[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[(ofs)%4], selectedPalleteEntry);
 }
 // GENERATE COLORMAP END
 
