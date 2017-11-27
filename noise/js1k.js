@@ -52,11 +52,16 @@ var divide = (size) => {
 divide(1024);
 var xx = [];
 var ofs = 0;
+tmp = map[0];
 map.forEach((r,i)=>{
   if (i%1025!=1024) {
-    xx[ofs++] = Math.floor(255 * (r/1024));
+    t=r;
+    if (i>1025*300)t = ((r + map[i-1] + map[i+1])/4)|0;
+    xx[ofs++] = Math.floor(255 * (t/1024));
+    tmp = r;
   }
 });
+
 
 /*function Terrain() {
   this.size = 1024 + 1;

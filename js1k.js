@@ -6,6 +6,7 @@
     - add static shader to map
     - add stranger things mode - different pallete and white "snow"
     - more fancy camera path
+    - blur heightmap
 */
 
 (() => {
@@ -56,6 +57,7 @@ var Draw = () => {
     var current = Date.now();
 
     cameraX -= 3 * Math.sin(cameraAngle) * (current-time)*0.03;
+    //cameraY -= 3 * Math.sin(cameraAngle + 90) * (current-time)*0.03;
     cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
 //    cameraHeight = heightmap[mapoffset] + 64;
