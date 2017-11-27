@@ -30,6 +30,7 @@ var cameraHorizon = 100;
 // ---------------------------------------------
 // Landscape data
 
+//uint8 would be enough, however uint32 is shorter
 var heightmap = new Uint32Array(1024*1024);
 var colormap = new Uint32Array(1024*1024);
 var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
@@ -209,10 +210,10 @@ map[0] = map[1024] = 1024;
 divide(1024);
 var hm = [];
 var tmp = 0;
-for(var i=0;i<1024*1024;i++){  //iterate over every pixel in the canvas
-  hm[tmp++] = Math.floor(255 * (map[i]/1024));
-  if (!(i%1024)) i++;
-}
+map.forEach((r,i)=>{
+  if ((i%1025===1024)) {return;}
+  hm[tmp++] = Math.floor(255 * (r/1024));
+});
 // GENERATE HEIGHTMAP END
 
 
@@ -243,8 +244,6 @@ for (var i=0; i<256; i++) {
 }
 // GENERATE COLORMAP END
 
-//uint8 would be enough, however uint32 is shorter
-//0xff000000 = 1024x1024
 
 // LOAD MAP
 hm.forEach((r,i)=>{
