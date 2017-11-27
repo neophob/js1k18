@@ -211,8 +211,8 @@ divide(1024);
 var hm = [];
 var tmp = 0;
 map.forEach((r,i)=>{
-  if ((i%1025===1024)) {return;}
-  hm[tmp++] = Math.floor(255 * (r/1024));
+  if (i%1025!=1024)
+    hm[tmp++] = Math.floor(255 * (r/1024));
 });
 // GENERATE HEIGHTMAP END
 
