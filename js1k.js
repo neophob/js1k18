@@ -32,9 +32,9 @@ var cameraHorizon = 100;
 
 var heightmap = new Uint32Array(1024*1024);
 var colormap = new Uint32Array(1024*1024);
-var tmp = new ArrayBuffer(a.width * a.height * 4);
-var buf8   = new Uint8Array(tmp);
-var buf32  = new Uint32Array(tmp);
+var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
+var buf8   = new Uint8Array(tmpBuffer);
+var buf32  = new Uint32Array(tmpBuffer);
 
 // ---------------------------------------------
 // Screen data
