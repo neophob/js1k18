@@ -203,10 +203,10 @@ var divide = (size) => {
       ) / 4 + Math.random() * scale * 2 - scale);
     }
   }
-  divide(size / 2);
+  divide(size >>1);
 }
 //set initial points
-map[0] = map[1024] = 1024;
+//map[0] = map[1024] = 1024;
 divide(1024);
 var hm = [];
 var tmp = 0;

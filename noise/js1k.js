@@ -42,19 +42,15 @@ function divide(size) {
   }
   divide(size / 2);
 }
-tset(0, 0, 1024/2);
-tset(1024, 0, 1024 / 2);
-tset(1024, 1024, 1024 / 2);
-tset(0, 1024, 1024 / 2);
+//map[0] = map[0] = 1024;
 divide(1024);
 var xx = [];
 var ofs = 0;
-for(var i=0;i<map.length;i++){  //iterate over every pixel in the canvas
-  var o = Math.floor(255 * (map[i]/1024));
-  xx[ofs++] = o;
-//  if (i%1024 === 1023) i+=1;
-  if (!(i%1024)) i+=1;
-}
+map.forEach((r,i)=>{
+  if (i%1025!=1024) {
+    xx[ofs++] = Math.floor(255 * (r/1024));
+  }
+});
 
 /*function Terrain() {
   this.size = 1024 + 1;
