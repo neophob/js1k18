@@ -54,7 +54,7 @@ var Draw = () => {
 
     var mapoffset = ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023);
 //    cameraHeight = heightmap[mapoffset] + 64;
-    cameraHeight = 200 + heightmap[mapoffset]/3
+    cameraHeight = 256 + heightmap[mapoffset]/3
 
 /*
 //input.leftright -1 .. 1
@@ -104,9 +104,8 @@ var Draw = () => {
     // Draw from front to back, 2000 is CAMERA DISTANCE
     for (var z=1; z<2000; z++) {
 
-        if (z > 300) z++;
-        if (z > 600) z++;
-        if (z > 800) z+=4;
+      //TODO inprove rendering, increase z as we go away from the front
+//        if (z > 800) z+=4;
         // 90 degree field of view
         var prx =   cosang * z - sinang * z;
         var plx =  -prx;
@@ -166,14 +165,14 @@ var tget = (x,y) => {
   return map[(x & 1023) + (y & 1023) * 1025];
 };
 var tset = (x,y,val) => {
-  if (val<0){val=0}
-  if (val>1024){val=1024}
+  if (val<0) val=0;
+  if (val>1024) val=1024;
   map[x + 1025 * y] = val;
 };
 var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
-  //roughness
+  //roughness is 2.4
   var scale = 2.4 * size;
 
   for (var y = half; y < 1024; y += size) {
