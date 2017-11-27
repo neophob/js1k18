@@ -170,10 +170,10 @@ function divide(size) {
   if (size < 2) return;
   var half = size / 2;
   //roughness
-  var x, y, scale = 2.4 * size;
+  var scale = 2.4 * size;
 
-  for (y = half; y < 1024; y += size) {
-    for (x = half; x < 1024; x += size) {
+  for (var y = half; y < 1024; y += size) {
+    for (var x = half; x < 1024; x += size) {
       //SQUARE
       tset(x, y, (
         tget(x - half, y - half) +   // upper left
@@ -183,8 +183,8 @@ function divide(size) {
       ) / 4 + Math.random() * scale * 2 - scale);
     }
   }
-  for (y = 0; y <= 1024; y += half) {
-    for (x = (y + half) % size; x <= 1024; x += size) {
+  for (var y = 0; y <= 1024; y += half) {
+    for (var x = (y + half) % size; x <= 1024; x += size) {
       //DIAMOND
       tset(x, y, (
         tget(x, y - half) +     // top
@@ -196,10 +196,7 @@ function divide(size) {
   }
   divide(size / 2);
 }
-tset(0, 0, 1024);
-tset(1024, 0, 1024);
-//tset(1024, 1024, 1024 / 2);
-//tset(0, 1024, 1024 / 2);
+map[0] = map[1024] = 1024;
 divide(1024);
 var hm = [];
 var ofs = 0;
@@ -223,9 +220,9 @@ function calcSmoothColor(col1, col2, pos) {
 	var mul=pos*pallete.length;
 	var oppositeColor = 255-mul;
 
-	r=(r*mul + r2*oppositeColor) >> 8;
-	g=(g*mul + g2*oppositeColor) >> 8;
-	b=(b*mul + b2*oppositeColor) >> 8;
+	r=(r*mul + r2*oppositeColor) / 255;
+	g=(g*mul + g2*oppositeColor) / 255;
+	b=(b*mul + b2*oppositeColor) / 255;
 
 	return 0xff000000 | (r << 16) | (g << 8) | (b);
 }
