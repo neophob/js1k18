@@ -27,9 +27,7 @@ var heightmap, colormap; // 1024*1024 byte array with height information
 // ---------------------------------------------
 // Screen data
 
-var buf8, buf32, imagedata, context;
-
-var time = 0;
+var buf8, buf32, imagedata, context, time;
 
 //var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
 var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
