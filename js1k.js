@@ -168,10 +168,6 @@ var tmp;
 var map = new Uint32Array(1025 * 1025);
 map.fill(0);
 
-var tget = (x,y) => {
-  // wrap around to make map tileable
-  return map[(x & 1023) + (y & 1023) * 1025];
-};
 var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
@@ -182,10 +178,10 @@ var divide = (size) => {
     for (var x = half; x < 1024; x += size) {
       //SQUARE
       tmp = (
-        tget(x - half, y - half) +   // upper left
-        tget(x + half, y - half) +   // upper right
-        tget(x + half, y + half) +   // lower right
-        tget(x - half, y + half)    // lower left
+        map[((x - half) & 1023) + ((y - half) & 1023) * 1025] +
+        map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
+        map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
+        map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
       ) / 4 + Math.random() * scale * 2 - scale;
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
@@ -194,10 +190,10 @@ var divide = (size) => {
     for (var x = (y + half) % size; x <= 1024; x += size) {
       //DIAMOND
       tmp = (
-        tget(x, y - half) +     // top
-        tget(x + half, y) +     // right
-        tget(x, y + half) +     // bottom
-        tget(x - half, y)       // left
+        map[(x & 1023) + ((y - half) & 1023) * 1025] +
+        map[((x + half) & 1023) + (y & 1023) * 1025] +
+        map[(x & 1023) + ((y + half) & 1023) * 1025] +
+        map[((x - half) & 1023) + (y & 1023) * 1025]
       ) / 4 + Math.random() * scale * 2 - scale;
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
