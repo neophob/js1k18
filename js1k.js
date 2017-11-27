@@ -24,9 +24,9 @@
 };*/
 var cameraX = 512;
 var cameraY = 800;
-var cameraHeight = 78;
+//var cameraHeight = 70;
 var cameraAngle = 78;
-var cameraHorizon = 150;
+//var cameraHorizon = 150;
 
 // ---------------------------------------------
 // Landscape data
@@ -68,7 +68,7 @@ var Draw = () => {
     //cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
 //    cameraHeight = heightmap[mapoffset] + 64;
-    cameraHeight = 255 + heightmap[
+    var cameraHeight = 255 + heightmap[
       /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
     ]/3;
 
@@ -140,7 +140,7 @@ var Draw = () => {
         for (var i=0; i<a.width; i++) {
           // |0 is math floor
           var mapoffset = ((Math.floor(ply    ) & 1023) << 10) + (Math.floor(plx) & 1023);
-          var heightonscreen = (cameraHeight - heightmap[mapoffset]) * invz + cameraHorizon|0;
+          var heightonscreen = (cameraHeight - heightmap[mapoffset]) * invz + /*cameraHorizon|0*/150;
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
           // Fast way to draw vertical lines
@@ -236,8 +236,8 @@ hm.forEach((r,i)=>{
           (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
           (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
           (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
-  //cheat a bit, make brightest color visible
-  if (r>254) colormap[i]=0xff100b0b;
+  //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
+  if (r>254) colormap[i]|=0x100b0b;
   heightmap[i] = r < 70 ? 70 : r;
 });
 //dont use requestAnimationFrame(Draw); anymore...
