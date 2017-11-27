@@ -11,7 +11,7 @@ var camera =
     height:    78, // height of the camera
     angle:      40, // direction of the camera
     horizon:  100, // horizon position (look up and down)
-    distance: 800   // distance of map
+    distance: 2000   // distance of map
 };
 
 // ---------------------------------------------
@@ -38,7 +38,7 @@ var input =
 var time = 0;
 
 //var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
-var pallete = [0xff113231, 0xff2d616e, 0xffFFD38C];
+var pallete = [0xff000ff0, 0xff113231, 0xff2d616e, 0xffFFD38C];
 
 
 
@@ -53,7 +53,8 @@ function Draw(){
     camera.y -= 3 * Math.cos(camera.angle) * (current-time)*0.03;
 
     var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
-    camera.height = heightmap[mapoffset] + 64 + Math.random()*4;
+//    camera.height = heightmap[mapoffset] + 64;
+    camera.height = 200 + heightmap[mapoffset]/3
 
 /*
 //input.leftright -1 .. 1
@@ -104,6 +105,10 @@ function Draw(){
     // Draw from front to back
     for (var z=1; z<camera.distance; z++)
     {
+
+        if (z > 300) z++;
+        if (z > 600) z++;
+        if (z > 800) z+=4;
         // 90 degree field of view
         var prx =   cosang * z - sinang * z;
         var plx =  -prx;
@@ -114,7 +119,9 @@ function Draw(){
         var dy = (pry - ply) / a.width;
         plx += camera.x;
         ply += camera.y;
-        var invz = 1 / z * 240;
+
+        // DEFINE HEIGHT
+        var invz = 1 / z * 140;
         for (var i=0; i<a.width; i++) {
           // |0 is math floor
           var mapoffset = ( ((ply|0) & 1023) << 10) + ( (plx|0) & 1023);
@@ -215,6 +222,7 @@ function Terrain() {
   this.size = 1024 + 1;
   this.max = this.size - 1;
   this.map = new Float32Array(this.size * this.size);
+  this.map.fill(0);
 }
 Terrain.prototype.get = function(x, y) {
   return this.map[(x & (this.max - 1)) + (y & (this.max - 1)) * this.size];
@@ -236,8 +244,8 @@ Terrain.prototype.getMap = function() {
 };
 Terrain.prototype.generate = function(roughness) {
   var self = this;
-  this.set(0, 0, self.max /2);
-  this.set(this.max, 0, self.max / 2);
+  this.set(0, 0, self.max);
+  this.set(this.max, 0, 0);
   this.set(this.max, this.max, self.max / 2);
   this.set(0, this.max, self.max / 2);
   divide(this.max);
@@ -274,7 +282,7 @@ Terrain.prototype.generate = function(roughness) {
   }
 };
 var terrain = new Terrain();
-terrain.generate(1.2);
+terrain.generate(2.4);
 
 var hm = terrain.getMap();
 
