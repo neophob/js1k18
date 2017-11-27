@@ -1,10 +1,10 @@
 #!/bin/bash
 
-BABILI=./node_modules/.bin/babili
+BABILI=./node_modules/.bin/babel-minify
 REGPACK=./node_modules/.bin/regpack
 OUT=./dist
 
-UGLIFY_OPT="--compress --screw-ie8 -v --mangle --"
+BABELMINIFY_OPT="--tdz --numericLiterals --propertyLiterals --builtIns"
 REGPACK_OPT1="- --useES6 true --hash2DContext --contextVariableName c --crushGainFactor 5 --crushLengthFactor 1 --crushCopiesFactor 0 --crushTiebreakerFactor 0"
 REGPACK_OPT2="- --useES6 true --hash2DContext --contextVariableName c --crushGainFactor 3 --crushLengthFactor 2 --crushCopiesFactor 1"
 REGPACK_OPT3="- --useES6 true --hash2DContext --contextVariableName 'c' --crushGainFactor 4 --crushLengthFactor 4 --crushCopiesFactor 1"
@@ -24,30 +24,32 @@ mkdir -p $OUT
 
 BAB_PACK() {
   OPT=$1
-  $BABILI js1k.js | $REGPACK $OPT > $OUT/js1k-babili-regpacked-$2.js
+  $REGPACK $OUT/in $OPT > $OUT/js1k-babili-regpacked-$2.js
 }
 
 REGPACK_PACK() {
-  $REGPACK js1k.js $REGPACK_OPT1 > $OUT/js1k-regpacked-1.js
+  OPT=$1
+  $REGPACK js1k.js $OPT > $OUT/js1k-regpacked-1.js
 }
 
 echo "[MINIME] START"
-#REGPACK_PACK&
-BAB_PACK "$REGPACK_OPT1" 1&
-BAB_PACK "$REGPACK_OPT2" 2&
-#BAB_PACK "$REGPACK_OPT3" 3&
-BAB_PACK "$REGPACK_OPT4" 4&
-BAB_PACK "$REGPACK_OPT5" 5&
-BAB_PACK "$REGPACK_OPT6" 6&
-#BAB_PACK "$REGPACK_OPT7" 7&
-BAB_PACK "$REGPACK_OPT8" 8&
-BAB_PACK "$REGPACK_OPT9" 9&
-BAB_PACK "$REGPACK_OPTA" A&
-BAB_PACK "$REGPACK_OPTB" B&
-BAB_PACK "$REGPACK_OPTC" C&
-#BAB_PACK "$REGPACK_OPTD" D&
-BAB_PACK "$REGPACK_OPTE" E&
+rm -f $OUT/*
+
+$BABILI js1k.js $BABELMINIFY_OPT > $OUT/in
+BAB_PACK "$REGPACK_OPT1" 1
+BAB_PACK "$REGPACK_OPT2" 2
+BAB_PACK "$REGPACK_OPT3" 3
+BAB_PACK "$REGPACK_OPT4" 4
+BAB_PACK "$REGPACK_OPT5" 5
+BAB_PACK "$REGPACK_OPT6" 6
+BAB_PACK "$REGPACK_OPT7" 7
+BAB_PACK "$REGPACK_OPT8" 8
+BAB_PACK "$REGPACK_OPT9" 9
+BAB_PACK "$REGPACK_OPTA" A
+BAB_PACK "$REGPACK_OPTB" B
+BAB_PACK "$REGPACK_OPTC" C
+BAB_PACK "$REGPACK_OPTD" D
+BAB_PACK "$REGPACK_OPTE" E
 echo "[MINIME] WAIT"
-wait
 
 ls -alS $OUT/* | sort -k 5 -n

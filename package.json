@@ -10,10 +10,7 @@
   "author": "Michael Vogt",
   "license": "MIT",
   "devDependencies": {
-    "babili": "0.1.4",
+    "babel-minify": "0.2.0",
     "regpack": "git+https://github.com/Siorki/RegPack.git#master"
-  },
-  "dependencies": {
-    "babili": "0.0.10"
   }
 }
