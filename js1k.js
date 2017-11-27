@@ -3,7 +3,7 @@
 
 /*
   ideas:
-    - add static shader to map
+    - add static shade to map
     - add stranger things mode - different pallete and white "snow"
     - more fancy camera path
     - blur heightmap
@@ -26,7 +26,7 @@ var cameraX = 512;
 var cameraY = 800;
 var cameraHeight = 78;
 var cameraAngle = 78;
-var cameraHorizon = 100;
+var cameraHorizon = 150;
 
 // ---------------------------------------------
 // Landscape data
@@ -58,6 +58,10 @@ var Draw = () => {
 
 // ## UPDATE CAMERA START
     var current = Date.now();
+
+    if (current % 10 == 4)
+    cameraAngle += (Math.random())*0.1*(current-time)*0.03;
+
 
     cameraX -= 3 * Math.sin(cameraAngle) * (current-time)*0.03;
     cameraY -= 3 * Math.sin(cameraAngle + 1.57) * (current-time)*0.03;
@@ -116,7 +120,7 @@ var Draw = () => {
     hiddeny.fill(a.width);
 
     // Draw from front to back, 1024 is CAMERA DISTANCE
-    for (var z=1; z<1024; z++) {
+    for (var z=1; z<1500; z++) {
 
       //TODO inprove rendering, increase z as we go away from the front
         //if (z > 500) z+=2;
@@ -236,14 +240,9 @@ var calcSmoothColor = (col1, col2, selectedPalleteEntry) => {
 var col = [];
 // 256 colors per palette (8bit)
 for (var i=0; i<256; i++) {
-	var ofs=0;
-	var selectedPalleteEntry = i;
-	while (selectedPalleteEntry > (255 / 4)) {
-		selectedPalleteEntry -= (255 / 4);
-		ofs++;
-	}
+  var ofs = Math.floor(i/(255 / 4));
   //4 is pallete length
-	col[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[(ofs)%4], selectedPalleteEntry);
+	col[i] = calcSmoothColor(pallete[(ofs+1)%4], pallete[(ofs)%4], i%(255 / 4));
 }
 col[256] = 0xff100b0b;
 
