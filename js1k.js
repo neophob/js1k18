@@ -80,9 +80,8 @@ var Draw = () => {
 // UPDATE CAMERA START
 
 // ## DRAW BACKGROUND START
-    //var color = 0xFFFFD68A;
-    //for (var i = 0; i < buf32.length; i++) buf32[i] = color;
-    buf32.fill(0xff000000|pallete[0]);
+    //select first pallete entry but add alpha values
+    buf32.fill(0xff000ff0);
 // DRAW BACKGROUND END
 
 
@@ -140,11 +139,11 @@ var Draw = () => {
 
   // ## RENDER END
 
-
     // Flip, Show the back buffer on screen
     imagedata.data.set(buf8);
-    c.putImageData(imagedata, 0, 0);
-}
+    //NOTE: this is against the spec, dy and dx should be provided
+    c.putImageData(imagedata);
+};
 
 
 // # INIT
@@ -196,7 +195,7 @@ map[0] = map[1024] = 1024;
 divide(1024);
 var hm = [];
 var tmp = 0;
-for(var i=0;i<map.length;i++){  //iterate over every pixel in the canvas
+for(var i=0;i<1024*1024;i++){  //iterate over every pixel in the canvas
   hm[tmp++] = Math.floor(255 * (map[i]/1024));
   if (!(i%1024)) i+=1;
 }
@@ -212,7 +211,8 @@ var calcSmoothColor = (col1, col2, pos) => {
 	var g2=(col2>>8)&255;
 	var r2=(col2>>16)&255;
 
-	var mul=pos*pallete.length;
+  //4 is pallete length
+	var mul=pos*4;
 	var oppositeColor = 255-mul;
 
 	r=(r*mul + r2*oppositeColor) / 255;
@@ -222,7 +222,8 @@ var calcSmoothColor = (col1, col2, pos) => {
 	return 0xff000000 | (r << 16) | (g << 8) | (b);
 }
 
-tmp = 255 / pallete.length;
+//4 is pallete length
+tmp = 255 / 4;
 var col = [];
 for (var i=0; i<256; i++) {
 	var ofs=0;
@@ -233,7 +234,8 @@ for (var i=0; i<256; i++) {
 	}
 
 	var targetOfs = ofs+1;
-	col[i] = calcSmoothColor(pallete[targetOfs%pallete.length], pallete[ofs%pallete.length], pos);
+  //4 is pallete length
+	col[i] = calcSmoothColor(pallete[targetOfs%4], pallete[ofs%4], pos);
 }
 // GENERATE COLORMAP END
 
