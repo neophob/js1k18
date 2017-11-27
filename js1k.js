@@ -9,7 +9,7 @@ var camera =
     x:        512, // x position on the map
     y:        800, // y position on the map
     height:    78, // height of the camera
-    angle:      0, // direction of the camera
+    angle:      40, // direction of the camera
     horizon:  100, // horizon position (look up and down)
     distance: 800   // distance of map
 };
@@ -37,8 +37,8 @@ var input =
 */
 var time = 0;
 
-var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
-//var pallete = [0xff113231, 0xff2d616e, 0xffFFD38C];
+//var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
+var pallete = [0xff113231, 0xff2d616e, 0xffFFD38C];
 
 
 
@@ -53,7 +53,7 @@ function Draw(){
     camera.y -= 3 * Math.cos(camera.angle) * (current-time)*0.03;
 
     var mapoffset = ((Math.floor(camera.y) & 1023) << 10) + (Math.floor(camera.x) & 1023)|0;
-    camera.height = heightmap[mapoffset] + 64;
+    camera.height = heightmap[mapoffset] + 64 + Math.random()*4;
 
 /*
 //input.leftright -1 .. 1
@@ -160,7 +160,7 @@ function Draw(){
 
 
 // GENERATE HEIGHTMAP START
-function fract(n) {
+/*function fract(n) {
   return n - Math.floor(n);
 }
 function lerp(a, b, t) {
@@ -208,7 +208,77 @@ for (x=0;x<1024;x++) {
     hm[ofs++] = l
     //if (l == undefined || l<0 || l > 255) console.log('err:',l);
   }
+}*/
+
+
+function Terrain() {
+  this.size = 1024 + 1;
+  this.max = this.size - 1;
+  this.map = new Float32Array(this.size * this.size);
 }
+Terrain.prototype.get = function(x, y) {
+  return this.map[(x & (this.max - 1)) + (y & (this.max - 1)) * this.size];
+};
+Terrain.prototype.set = function(x, y, val) {
+  if (val<0){val=0}
+  if (val>this.max){val=this.max}
+  this.map[x + this.size * y] = val;
+};
+Terrain.prototype.getMap = function() {
+  var ret = [];
+  var ofs = 0;
+  for(var i=0;i<this.map.length;i++){  //iterate over every pixel in the canvas
+    var o = Math.floor(255 * (this.map[i]/1024));
+    ret[ofs++] = o;
+    if (i%1024 === 1023) i+=1;
+  }
+  return ret;
+};
+Terrain.prototype.generate = function(roughness) {
+  var self = this;
+  this.set(0, 0, self.max /2);
+  this.set(this.max, 0, self.max / 2);
+  this.set(this.max, this.max, self.max / 2);
+  this.set(0, this.max, self.max / 2);
+  divide(this.max);
+
+  function divide(size) {
+    var x, y, half = size / 2;
+    var scale = roughness * size;
+    if (half < 1) return;
+    for (y = half; y < self.max; y += size) {
+      for (x = half; x < self.max; x += size) {
+        //square(x, y, half, Math.random() * scale * 2 - scale);
+        var ave =
+          self.get(x - half, y - half) +   // upper left
+          self.get(x + half, y - half) +   // upper right
+          self.get(x + half, y + half) +   // lower right
+          self.get(x - half, y + half);    // lower left
+        var offset = Math.random() * scale * 2 - scale;
+        self.set(x, y, ave/4+ offset);
+      }
+    }
+    for (y = 0; y <= self.max; y += half) {
+      for (x = (y + half) % size; x <= self.max; x += size) {
+        //diamond(x, y, half, Math.random() * scale * 2 - scale);
+        var ave =
+          self.get(x, y - half) +     // top
+          self.get(x + half, y) +      // right
+          self.get(x, y + half) +     // bottom
+          self.get(x - half, y);       // left
+        var offset = Math.random() * scale * 2 - scale;
+        self.set(x, y, ave/4 + offset);
+      }
+    }
+    divide(size / 2);
+  }
+};
+var terrain = new Terrain();
+terrain.generate(1.2);
+
+var hm = terrain.getMap();
+
+
 // GENERATE HEIGHTMAP END
 
 

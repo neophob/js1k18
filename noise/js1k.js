@@ -89,20 +89,78 @@ function ter() {
         if (l == undefined || l<0 || l > 255) console.log('err:',l);
       }
     }
-/*    for (x=0;x<512;x++) {
-      for (y=0;y<512;y++) {
-//        var m = (0.5 + fractal2d(x / 128, y / 128, 7) * 0.5) * 255;
-
-        res[x + 1024 * y] = m;
-        res[(1023-x) + 1024 * y] = m;
-        res[x + 1024 * (1023-y)] = m;
-        res[(1023-x) + 1024 * (1023-y)] = m;
-      }
-    }*/
     return res;
 }
 
-var xx = ter(10);
+
+function Terrain() {
+  this.size = 1024 + 1;
+  this.max = this.size - 1;
+  this.map = new Float32Array(this.size * this.size);
+}
+Terrain.prototype.get = function(x, y) {
+  return this.map[(x & (this.max - 1)) + (y & (this.max - 1)) * this.size];
+};
+Terrain.prototype.set = function(x, y, val) {
+  if (val<0){val=0}
+  if (val>this.max){val=this.max}
+  this.map[x + this.size * y] = val;
+};
+Terrain.prototype.getMap = function() {
+  var ret = [];
+  var ofs = 0;
+  for(var i=0;i<this.map.length;i++){  //iterate over every pixel in the canvas
+    var o = Math.floor(255 * (this.map[i]/1024));
+    ret[ofs++] = o;
+    if (i%1024 === 1023) i+=1;
+  }
+  return ret;
+};
+Terrain.prototype.generate = function(roughness) {
+  var self = this;
+  this.set(0, 0, self.max /2);
+  this.set(this.max, 0, self.max / 2);
+  this.set(this.max, this.max, self.max / 2);
+  this.set(0, this.max, self.max / 2);
+  divide(this.max);
+
+  function divide(size) {
+    var x, y, half = size / 2;
+    var scale = roughness * size;
+    if (half < 1) return;
+    for (y = half; y < self.max; y += size) {
+      for (x = half; x < self.max; x += size) {
+        //square(x, y, half, Math.random() * scale * 2 - scale);
+        var ave =
+          self.get(x - half, y - half) +   // upper left
+          self.get(x + half, y - half) +   // upper right
+          self.get(x + half, y + half) +   // lower right
+          self.get(x - half, y + half);    // lower left
+        var offset = Math.random() * scale * 2 - scale;
+        self.set(x, y, ave/4+ offset);
+      }
+    }
+    for (y = 0; y <= self.max; y += half) {
+      for (x = (y + half) % size; x <= self.max; x += size) {
+        //diamond(x, y, half, Math.random() * scale * 2 - scale);
+        var ave =
+          self.get(x, y - half) +     // top
+          self.get(x + half, y) +      // right
+          self.get(x, y + half) +     // bottom
+          self.get(x - half, y);       // left
+        var offset = Math.random() * scale * 2 - scale;
+        self.set(x, y, ave/4 + offset);
+      }
+    }
+    divide(size / 2);
+  }
+};
+
+var terrain = new Terrain(10);
+terrain.generate(1.2);
+
+var xx = terrain.getMap();
+//var xx = contoliNoise();
 
 var imgdata = c.getImageData(0,0, 1024, 1024);
 var imgdatalen = imgdata.data.length;
