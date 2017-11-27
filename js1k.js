@@ -199,9 +199,9 @@ function divide(size) {
 map[0] = map[1024] = 1024;
 divide(1024);
 var hm = [];
-var ofs = 0;
+var tmp = 0;
 for(var i=0;i<map.length;i++){  //iterate over every pixel in the canvas
-  hm[ofs++] = Math.floor(255 * (map[i]/1024));
+  hm[tmp++] = Math.floor(255 * (map[i]/1024));
   if (!(i%1024)) i+=1;
 }
 // GENERATE HEIGHTMAP END
@@ -227,13 +227,13 @@ function calcSmoothColor(col1, col2, pos) {
 	return 0xff000000 | (r << 16) | (g << 8) | (b);
 }
 
-var boarderCount = 255 / pallete.length;
+tmp = 255 / pallete.length;
 var col = [];
 for (var i=0; i<256; i++) {
 	var ofs=0;
 	var pos = i;
-	while (pos > boarderCount) {
-		pos -= boarderCount;
+	while (pos > tmp) {
+		pos -= tmp;
 		ofs++;
 	}
 
@@ -242,7 +242,8 @@ for (var i=0; i<256; i++) {
 }
 // GENERATE COLORMAP END
 
-heightmap = new Uint8Array(1024*1024);
+//uint8 would be enough, however uint32 is shorter
+heightmap = new Uint32Array(1024*1024);
 colormap = new Uint32Array(1024*1024);
 
 // LOAD MAP
@@ -251,15 +252,11 @@ hm.forEach((r,i)=>{
   heightmap[i] = r;
 });
 
-var aspect = window.innerWidth / window.innerHeight;
-a.width = window.innerWidth<800?window.innerWidth:800;
-a.height = a.width / aspect;
-
 context = a.getContext('2d');
 imagedata = context.createImageData(a.width, a.height);
-var bufarray = new ArrayBuffer(a.width * a.height * 4);
-buf8   = new Uint8Array(bufarray);
-buf32  = new Uint32Array(bufarray);
+tmp = new ArrayBuffer(a.width * a.height * 4);
+buf8   = new Uint8Array(tmp);
+buf32  = new Uint32Array(tmp);
 
 Draw();
 
