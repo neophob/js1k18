@@ -36,7 +36,8 @@ var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
 // ---------------------------------------------
 // Draw the next frame
 
-function Draw(){
+var Draw = () => {
+
 // ## UPDATE CAMERA START
     var current = Date.now();
 
@@ -154,16 +155,16 @@ function Draw(){
 var map = new Float32Array(1025 * 1025);
 map.fill(0);
 
-function tget(x, y) {
+var tget = (x,y) => {
   // wrap around to make map tileable
   return map[(x & 1023) + (y & 1023) * 1025];
-}
-function tset(x, y, val) {
+};
+var tset = (x,y,val) => {
   if (val<0){val=0}
   if (val>1024){val=1024}
   map[x + 1025 * y] = val;
-}
-function divide(size) {
+};
+var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
   //roughness
@@ -204,9 +205,8 @@ for(var i=0;i<map.length;i++){  //iterate over every pixel in the canvas
 // GENERATE HEIGHTMAP END
 
 
-
 // GENERATE COLORMAP START
-function calcSmoothColor(col1, col2, pos) {
+var calcSmoothColor = (col1, col2, pos) => {
 	var b= col1&255;
 	var g=(col1>>8)&255;
 	var r=(col1>>16)&255;
