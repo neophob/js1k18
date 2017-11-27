@@ -29,22 +29,10 @@ var heightmap, colormap; // 1024*1024 byte array with height information
 
 var buf8, buf32, imagedata, context;
 
-// ---------------------------------------------
-// Keyboard and mouse interaction
-/*
-var input =
-{
-    forwardbackward: 0,
-    leftright:       0,
-    updown:          0,
-    mouseposition:   null,
-    keypressed:      false
-}
-*/
 var time = 0;
 
 //var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
-var pallete = [0xff000ff0, 0xff113231, 0xff2d616e, 0xffFFD38C];
+var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
 
 
 
@@ -96,7 +84,7 @@ function Draw(){
 // ## DRAW BACKGROUND START
     //var color = 0xFFFFD68A;
     //for (var i = 0; i < buf32.length; i++) buf32[i] = color;
-    buf32.fill(pallete[0]);
+    buf32.fill(0xff000000|pallete[0]);
 // DRAW BACKGROUND END
 
 
@@ -109,8 +97,7 @@ function Draw(){
     hiddeny.fill(a.width);
 
     // Draw from front to back
-    for (var z=1; z<cameraDistance; z++)
-    {
+    for (var z=1; z<cameraDistance; z++) {
 
         if (z > 300) z++;
         if (z > 600) z++;
@@ -126,7 +113,7 @@ function Draw(){
         plx += cameraX;
         ply += cameraY;
 
-        // DEFINE HEIGHT
+        // DEFINE HEIGHT (140)
         var invz = 1 / z * 140;
         for (var i=0; i<a.width; i++) {
           // |0 is math floor
@@ -161,12 +148,6 @@ function Draw(){
     context.putImageData(imagedata, 0, 0);
 
     window.requestAnimationFrame(Draw);
-//window.setTimeout(Draw, 0);
-/*    if (!input.keypressed) {
-      updaterunning = false;
-    } else {
-      window.setTimeout(Draw, 0);
-    }*/
 }
 
 
@@ -226,7 +207,6 @@ for(var i=0;i<map.length;i++){  //iterate over every pixel in the canvas
   hm[ofs++] = Math.floor(255 * (map[i]/1024));
   if (!(i%1024)) i+=1;
 }
-
 // GENERATE HEIGHTMAP END
 
 
@@ -266,14 +246,13 @@ for (var i=0; i<256; i++) {
 // GENERATE COLORMAP END
 
 heightmap = new Uint8Array(1024*1024);
-colormap = new Uint32Array(heightmap.length);
+colormap = new Uint32Array(1024*1024);
 
 // LOAD MAP
-for (var i=0; i<1024*1024; i++) {
-  var r = hm[i];
+hm.forEach((r,i)=>{
   colormap[i] = col[r];
   heightmap[i] = r;
-}
+});
 
 var aspect = window.innerWidth / window.innerHeight;
 a.width = window.innerWidth<800?window.innerWidth:800;
