@@ -142,7 +142,9 @@ var Draw = () => {
     // Flip, Show the back buffer on screen
     imagedata.data.set(buf8);
     //NOTE: this is against the spec, dy and dx should be provided
-    c.putImageData(imagedata);
+    c.putImageData(imagedata,0,0);
+    requestAnimationFrame(Draw);
+
 };
 
 
