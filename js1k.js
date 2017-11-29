@@ -89,7 +89,9 @@ map.forEach((r,i)=>{
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
   if (i%1025!=1024) {
     //hm[tmp++] =
-    var heightMapEntry = Math.floor(255 * (r/1024));
+//    var heightMapEntry = Math.floor(255 * (r/1024));
+    var heightMapEntry = Math.floor(r/4);
+
     //var pallete = [0, 0x113231, 0x2d616e, 0];
     //var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
 
@@ -167,7 +169,6 @@ setInterval(() => {
 
     // Draw from front to back, 1024 is CAMERA DISTANCE
     for (var z=1; z<1500; z++) {
-
       //TODO improve rendering, increase z as we go away from the front
         //if (z > 500) z+=2;
         // 90 degree field of view
