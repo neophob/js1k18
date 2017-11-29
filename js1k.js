@@ -57,14 +57,14 @@ var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
 var Draw = () => {
 
 // ## UPDATE CAMERA START
-    var current = Date.now();
+    time = Date.now()-time;
 
-    if (current % 8 == 4)
-    cameraAngle += (Math.random())*0.01*(current-time)*0.03;
+    if (time % 8 == 4)
+    cameraAngle += (Math.random())*0.01*(time)*0.03;
 
 
-    cameraX -= 3 * Math.sin(cameraAngle) * (current-time)*0.03;
-    cameraY -= 3 * Math.sin(cameraAngle + 1.57) * (current-time)*0.03;
+    cameraX -= 3 * Math.sin(cameraAngle) * (time)*0.03;
+    cameraY -= 3 * Math.sin(cameraAngle + 1.57) * (time)*0.03;
     //cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
     var cameraHeight = 255 + heightmap[
@@ -98,8 +98,8 @@ var Draw = () => {
     // Collision detection. Don't fly below the surface.
     //var mapoffset = ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)|0;
     //if ((heightmap[mapoffset]+10) > cameraHeight) cameraHeight = heightmap[mapoffset] + 10;
-
-    time = current;
+    time = Date.now();
+    //time = current;
 // UPDATE CAMERA START
 
 // ## DRAW BACKGROUND START
