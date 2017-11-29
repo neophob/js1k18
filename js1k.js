@@ -87,7 +87,8 @@ var divide = (size) => {
     }
   }
   divide(half);
-}
+};
+
 //set initial points - not needed
 //map[0] = map[1024] = 1024;
 divide(1024);
@@ -111,7 +112,7 @@ hm.forEach((r,i)=>{
   var selectedPalleteEntry = 4*(r%(255 / 4));
   var oppositeColor = 255-selectedPalleteEntry;
 
-  colormap[i] = 0xff000000 |
+  colormap[i] = 255 <<24 |
           (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
           (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
           (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
