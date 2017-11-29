@@ -69,7 +69,7 @@ var divide = (size) => {
         map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
         map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
-      ) / 4 + Math.random() * (1.7 * size) * 2.5 - (1.7 * size);
+      ) / 4 + Math.random() * 4.3 * size - (1.7 * size);
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
@@ -81,7 +81,7 @@ var divide = (size) => {
         map[((x + half) & 1023) + (y & 1023) * 1025] +
         map[(x & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + (y & 1023) * 1025]
-      ) / 4 + Math.random() * (1.7 * size) * 2.5 - (1.7 * size);
+      ) / 4 + Math.random() * 4.3 * size - (1.7 * size);
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
