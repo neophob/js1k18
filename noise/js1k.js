@@ -75,19 +75,28 @@ map.forEach((r,i)=>{
     if (heightMapEntry==255) colormap[i]|=0x100b0b;
 */
 
+r -= 5;
     imgdata.data[4*tmp+2] = (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) );
     imgdata.data[4*tmp+1] = (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) );
     imgdata.data[4*tmp+0] = (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
     imgdata.data[4*tmp+3] = 255;  // APLHA (0-255)
 
-    if (heightMapEntry > black) black = false;
-
-    if (black || tmp > 2 && map[(tmp - 2) & map.length] > heightMapEntry ) {
-      imgdata.data[4*tmp+0]=0;
-      imgdata.data[4*tmp+1]=222;
-      //imgdata.data[4*tmp+3]=90;
-      black = heightMapEntry;
+    // this is the dead cheap shadow mapper
+    if (i > 2 && heightMapEntry>70 && map[(i - 1)] < r) {
+      imgdata.data[4*tmp+3]=0xe0
     }
+/*    if (heightMapEntry - 20 > black ) black = false;
+
+    if (black || tmp > 2 && heightMapEntry>70 && map[(tmp - 1) & map.length] + 4 > heightMapEntry) {
+      if (tmp % 1024 > 512) {
+        //imgdata.data[4*tmp+3]=0;//=0;
+        //imgdata.data[4*tmp+1]/=2;//=222;
+        imgdata.data[4*tmp+0]=0;
+        //imgdata.data[4*tmp+1]/=2;
+        //imgdata.data[4*tmp+2]/=2;
+      }
+      if (!black) black = heightMapEntry;
+    }*/
   } else black=false;
 });
 

@@ -85,6 +85,7 @@ var divide = (size) => {
 // generate heigthmap
 divide(1024);
 tmp=0;
+
 map.forEach((r,i)=>{
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
   if (i%1025!=1024) {
@@ -102,8 +103,8 @@ map.forEach((r,i)=>{
     var selectedPalleteEntry = 4*(heightMapEntry%(255 / 4));
     var oppositeColor = 255-selectedPalleteEntry;
 
-    colormap[tmp] = (heightMapEntry==255) ? 0xFF100b0b :
-           0xff000000 |
+    //the alpha channel is used as a dead cheap shadow map
+    colormap[tmp] = ((i > 2 && heightMapEntry>70 && map[(i - 1)] < r) ? 0xf2000000 : 0xff000000) |
            (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16 ) |
            (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
            ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8);
