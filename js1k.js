@@ -27,27 +27,14 @@ var cameraY = 800;
 //var cameraHeight = 70;
 var cameraAngle = 78;
 //var cameraHorizon = 150;
-
-// ---------------------------------------------
-// Landscape data
-
 var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
 var buf8   = new Uint8Array(tmpBuffer);
 var buf32  = new Uint32Array(tmpBuffer);
 // was Uint32Array's - might be slower now
 var heightmap = [];//new Uint32Array(1024*1024);
 var colormap = [];//new Uint32Array(1024*1024);
-
-// ---------------------------------------------
-// Screen data
-
 var time=0;
 var imagedata = c.createImageData(a.width, a.height);
-
-//var pallete = [0xff000000, 0xff000099,  0xff000000];// 0xff0000ff, 0xffFFD38C];
-//var pallete = [0x000ff0, 0x113231, 0x2d616e, 0xFFD38C];
-var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
-//var pallete = [0, 0xff, 0x00ff00, 0xFF0000];
 
 // # INIT
 
@@ -98,11 +85,13 @@ map.forEach((r,i)=>{
   if (i%1025!=1024) {
     //hm[tmp++] =
     var heightMapEntry = Math.floor(255 * (r/1024));
+    //var pallete = [0, 0x113231, 0x2d616e, 0];
+    //var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
 
     //generate smooth color dynamically, 4 equals the size of the pallete array
     var ofs = Math.floor(heightMapEntry/(255 / 4));
-    var col1 = pallete[(ofs+1)%4];
-    var col2 = pallete[(ofs)%4];
+    var col1 = [0, 0x2d33aa, 0x9718A0, 0][(ofs+1)%4];
+    var col2 = [0, 0x2d33aa, 0x9718A0, 0][(ofs)%4];
     var selectedPalleteEntry = 4*(heightMapEntry%(255 / 4));
     var oppositeColor = 255-selectedPalleteEntry;
 
@@ -160,7 +149,7 @@ setInterval(() => {
 // UPDATE CAMERA START
 
 // ## DRAW BACKGROUND START
-    time%16 ? buf32.fill(0xff000000) : buf32.fill(0xffa2a7cc);
+    time%16 ? buf32.fill(0xff000000) : buf32.fill(0xFFaa332d);
 
 //    buf32.fill(xff000ff0);
 // DRAW BACKGROUND END
@@ -218,7 +207,7 @@ setInterval(() => {
     // Flip, Show the back buffer on screen
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
-}, 20);
+}, 0);
 
 //dont use requestAnimationFrame(Draw); anymore...
 })();
