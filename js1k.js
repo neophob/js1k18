@@ -106,12 +106,12 @@ map.forEach((r,i)=>{
     var selectedPalleteEntry = 4*(heightMapEntry%(255 / 4));
     var oppositeColor = 255-selectedPalleteEntry;
 
-    colormap[tmp] = 0xff000000 |
-            (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
-            (((((col1>>8)&255)*selectedPalleteEntry  + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
-            ((  (col1&255)*selectedPalleteEntry      + (col2&255)*oppositeColor) >>8);
-    //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
-    if (heightMapEntry==255) colormap[tmp]|=0x100b0b;
+    colormap[tmp] = (heightMapEntry==255) ? 0xFF100b0b :
+           0xff000000 |
+           (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
+           (((((col1>>8)&255)*selectedPalleteEntry  + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
+           ((  (col1&255)*selectedPalleteEntry      + (col2&255)*oppositeColor) >>8);
+
     heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
   }
 });
