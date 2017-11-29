@@ -34,6 +34,11 @@ var buf32  = new Uint32Array(tmpBuffer);
 var heightmap = [];//new Uint32Array(1024*1024);
 var colormap = [];//new Uint32Array(1024*1024);
 var time=0;
+
+// Mechanized Abbreviation - thanks to https://marijnhaverbeke.nl/js1k/slides/#12
+//for($ in a) a[$[0]+($[1]||'')]=a[$];
+//console.log('A',a);
+
 var imagedata = c.createImageData(a.width, a.height);
 
 // # INIT
@@ -90,16 +95,16 @@ map.forEach((r,i)=>{
 
     //generate smooth color dynamically, 4 equals the size of the pallete array
     var ofs = Math.floor(heightMapEntry/(255 / 4));
-    var col1 = [0, 0x2d33aa, 0x9718A0, 0][(ofs+1)%4];
-    var col2 = [0, 0x2d33aa, 0x9718A0, 0][(ofs)%4];
+    var col1 = [0, 0xaa332d, 0xA01897, 0][(ofs+1)%4];
+    var col2 = [0, 0xaa332d, 0xA01897, 0][(ofs)%4];
     var selectedPalleteEntry = 4*(heightMapEntry%(255 / 4));
     var oppositeColor = 255-selectedPalleteEntry;
 
     colormap[tmp] = (heightMapEntry==255) ? 0xFF100b0b :
            0xff000000 |
-           (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) ) |
+           (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16 ) |
            (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
-           ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8) << 16;
+           ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8);
 
     heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
   }
@@ -115,13 +120,13 @@ setInterval(() => {
     var cosang = Math.sin(cameraAngle + 1.57);
     //var cosang = Math.cos(cameraAngle);
 
-    cameraX -=  sinang * time * 0.09;
-    cameraY -=  cosang * time * 0.09;
+    cameraX -=  sinang * time * 0.1;
+    cameraY -=  cosang * time * 0.1;
     //cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
     var cameraHeight = heightmap[
       /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
-    ]/3;
+    ]/2;
 
     time = Date.now();
     cameraAngle += Math.sin(0.0008*time)/cameraHeight;
@@ -187,7 +192,7 @@ setInterval(() => {
           if (heightonscreen < 0) heightonscreen = 0;
           if (heightonscreen <= hiddeny[i]) {
             // get offset on screen for the vertical line
-            var offset = ((heightonscreen * a.width) + i);
+            var offset = (heightonscreen * a.width) + i;
             for (var k = heightonscreen; k < hiddeny[i]; k++) {
                 //TODO add offset to mapoffset
                 buf32[offset] = colormap[mapoffset];
