@@ -68,7 +68,7 @@ var Draw = () => {
     ]/3;
 
     time = Date.now();
-    cameraAngle += Math.sin(0.0004*time)/cameraHeight;
+    cameraAngle += Math.sin(0.0008*time)/cameraHeight;
 /*
 //input.leftright -1 .. 1
 //cameraHorizon -500 .. 500
@@ -179,7 +179,6 @@ var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
   //roughness is 2.4
-  var scale = 1.7 * size;
 
   for (var y = half; y < 1024; y += size) {
     for (var x = half; x < 1024; x += size) {
@@ -189,7 +188,7 @@ var divide = (size) => {
         map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
         map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
-      ) / 4 + Math.random() * scale * 2.5 - scale;
+      ) / 4 + Math.random() * (1.7 * size) * 2.5 - (1.7 * size);
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
@@ -201,7 +200,7 @@ var divide = (size) => {
         map[((x + half) & 1023) + (y & 1023) * 1025] +
         map[(x & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + (y & 1023) * 1025]
-      ) / 4 + Math.random() * scale * 2.5 - scale;
+      ) / 4 + Math.random() * (1.7 * size) * 2.5 - (1.7 * size);
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
