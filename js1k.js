@@ -59,8 +59,12 @@ var Draw = () => {
 // ## UPDATE CAMERA START
     time = Date.now()-time;
 
-    cameraX -= 3 * Math.sin(cameraAngle) * (time)*0.03;
-    cameraY -= 3 * Math.sin(cameraAngle + 1.57) * (time)*0.03;
+    var sinang = Math.sin(cameraAngle);
+    var cosang = Math.sin(cameraAngle + 1.57);
+    //var cosang = Math.cos(cameraAngle);
+
+    cameraX -=  sinang * time * 0.09;
+    cameraY -=  cosang * time * 0.09;
     //cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
     var cameraHeight = heightmap[
@@ -73,15 +77,7 @@ var Draw = () => {
 //input.leftright -1 .. 1
 //cameraHorizon -500 .. 500
 //input.updown init: -10 .. 10
-*/
 
-/*    input.keypressed = false;
-    if (input.leftright != 0)
-    {
-        cameraAngle += input.leftright*0.1*(current-time)*0.03;
-        input.keypressed = true;
-    }
-    if (input.forwardbackward != 0)
     {
         cameraX -= input.forwardbackward * Math.sin(cameraAngle) * (current-time)*0.03;
         cameraY -= input.forwardbackward * Math.cos(cameraAngle) * (current-time)*0.03;
@@ -100,7 +96,6 @@ var Draw = () => {
 // UPDATE CAMERA START
 
 // ## DRAW BACKGROUND START
-    //select first pallete entry but add alpha values
     time%16 ? buf32.fill(0xff000000) : buf32.fill(0xffa2a7cc);
 
 //    buf32.fill(xff000ff0);
@@ -108,10 +103,6 @@ var Draw = () => {
 
 
 // ## RENDER START
-
-    var sinang = Math.sin(cameraAngle);
-    var cosang = Math.sin(cameraAngle + 1.57);
-    //var cosang = Math.cos(cameraAngle);
 
     var hiddeny = new Uint32Array(a.width);
     hiddeny.fill(a.width);
