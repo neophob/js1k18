@@ -127,7 +127,7 @@ setInterval(() => {
 
     var cameraHeight = heightmap[
       /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
-    ]/2;
+    ];
 
     time = Date.now();
     cameraAngle += Math.sin(0.0008*time)/cameraHeight;
@@ -155,7 +155,7 @@ setInterval(() => {
 // UPDATE CAMERA START
 
 // ## DRAW BACKGROUND START
-    time%16 ? buf32.fill(0xff000000) : buf32.fill(0xff000538);
+    time%16 ? buf32.fill(0xff000000) : buf32.fill(0xf4000538);
 
 //    buf32.fill(xff000ff0);
 // DRAW BACKGROUND END
@@ -167,9 +167,9 @@ setInterval(() => {
     hiddeny.fill(a.height);
 
     // Draw from front to back, 1024 is CAMERA DISTANCE
-    for (var z=1; z<1500; z++) {
+    for (var z=1; z<4048; z++) {
       //TODO improve rendering, increase z as we go away from the front
-        //if (z > 500) z+=2;
+        if (z > 700) z+=2;
         // 90 degree field of view
         //var prx =   cosang * z - sinang * z;
         var plx =  -cosang * z - sinang * z;
