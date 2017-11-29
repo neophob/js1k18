@@ -53,8 +53,7 @@ var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
 
 // GENERATE HEIGHTMAP START
 var tmp;
-var map = [];
-map[1025 * 1025] = 0;
+var map = new Array(1025 * 1025);
 map.fill(0);
 
 var divide = (size) => {
@@ -126,7 +125,6 @@ setInterval(() => {
     var sinang = Math.sin(cameraAngle);
     var cosang = Math.sin(cameraAngle + 1.57);
     //var cosang = Math.cos(cameraAngle);
-  //  console.log('>>',sinang, time, cameraAngle)
 
     cameraX -=  sinang * time * 0.09;
     cameraY -=  cosang * time * 0.09;
@@ -170,7 +168,7 @@ setInterval(() => {
 
 // ## RENDER START
 
-    var hiddeny = new Uint32Array(a.width);
+    var hiddeny = new Array(a.width);
     hiddeny.fill(a.width);
 
     // Draw from front to back, 1024 is CAMERA DISTANCE
