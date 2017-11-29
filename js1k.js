@@ -165,7 +165,7 @@ setInterval(() => {
 // ## RENDER START
 
     var hiddeny = new Array(a.width);
-    hiddeny.fill(a.width);
+    hiddeny.fill(a.height);
 
     // Draw from front to back, 1024 is CAMERA DISTANCE
     for (var z=1; z<1500; z++) {
