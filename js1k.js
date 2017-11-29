@@ -3,10 +3,8 @@
 
 /*
   ideas:
-    - add static shade to map
-    - add stranger things mode - different pallete and white "snow"
-    - more fancy camera path
     - blur heightmap
+    - increase map from 1024x1024 to 2048x2048
 */
 
 (() => {
@@ -165,11 +163,11 @@ setInterval(() => {
 
     var hiddeny = new Array(a.width);
     hiddeny.fill(a.height);
-
     // Draw from front to back, 1024 is CAMERA DISTANCE
-    for (var z=1; z<4048; z++) {
-      //TODO improve rendering, increase z as we go away from the front
+    for (var z=1; z<3500; z++) {
+        //improve rendering speed, increase z as we go away from the front
         if (z > 700) z+=2;
+
         // 90 degree field of view
         //var prx =   cosang * z - sinang * z;
         var plx =  -cosang * z - sinang * z;
@@ -184,29 +182,27 @@ setInterval(() => {
         // DEFINE HEIGHT (140)
         var invz = 1 / z * 240;
         for (var i=0; i<a.width; i++) {
-          // |0 is math floor
-          var mapoffset = ((Math.floor(ply    ) & 1023) << 10) + (Math.floor(plx) & 1023);
-          var heightonscreen = Math.floor((255 + cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/);
+          // |0 is math floor - way faster here than Math.floor
+          var mapoffset = (((ply|0    ) & 1023) << 10) + ((plx|0) & 1023);
+          var heightonscreen = ((255 + cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/)|0;
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
-          if (heightonscreen < 0) heightonscreen = 0;
-          if (heightonscreen <= hiddeny[i]) {
+          if (heightonscreen < hiddeny[i]) {
+            if (heightonscreen < 0) heightonscreen = 0;
             // get offset on screen for the vertical line
             var offset = (heightonscreen * a.width) + i;
             for (var k = heightonscreen; k < hiddeny[i]; k++) {
-                //TODO add offset to mapoffset
                 buf32[offset] = colormap[mapoffset];
                 offset += a.width;
             }
+            hiddeny[i] = heightonscreen;
           }
           //DrawVerticalLine end
 
-          if (heightonscreen < hiddeny[i]) hiddeny[i] = heightonscreen;
           plx += dx;
           ply += dy;
         }
     }
-
   // ## RENDER END
 
     // Flip, Show the back buffer on screen
