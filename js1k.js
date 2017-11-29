@@ -34,7 +34,7 @@ var cameraAngle = 78;
 var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
 var buf8   = new Uint8Array(tmpBuffer);
 var buf32  = new Uint32Array(tmpBuffer);
-// where Uint32Array's - might be faster
+// was Uint32Array's - might be slower now
 var heightmap = [];//new Uint32Array(1024*1024);
 var colormap = [];//new Uint32Array(1024*1024);
 
@@ -113,7 +113,8 @@ var Draw = () => {
 // ## RENDER START
 
     var sinang = Math.sin(cameraAngle);
-    var cosang = Math.cos(cameraAngle);
+    var cosang = Math.sin(cameraAngle + 1.57);
+    //var cosang = Math.cos(cameraAngle);
 
     var hiddeny = new Uint32Array(a.width);
     hiddeny.fill(a.width);
