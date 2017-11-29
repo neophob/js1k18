@@ -207,7 +207,7 @@ var divide = (size) => {
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
-  divide(size /2);
+  divide(half);
 }
 //set initial points - not needed
 //map[0] = map[1024] = 1024;
