@@ -52,6 +52,7 @@ var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
 // # INIT
 
 // GENERATE HEIGHTMAP START
+var tmp;
 var map = [];
 map[1025 * 1025] = 0;
 map.fill(0);
@@ -59,7 +60,6 @@ map.fill(0);
 var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
-  var tmp;
   //roughness is 2.4
 
   for (var y = half; y < 1024; y += size) {
@@ -93,6 +93,7 @@ var divide = (size) => {
 //map[0] = map[1024] = 1024;
 // generate heigthmap
 divide(1024);
+tmp=0;
 map.forEach((r,i)=>{
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
   if (i%1025!=1024) {
@@ -106,13 +107,13 @@ map.forEach((r,i)=>{
     var selectedPalleteEntry = 4*(heightMapEntry%(255 / 4));
     var oppositeColor = 255-selectedPalleteEntry;
 
-    colormap[i] = 0xff000000 |
+    colormap[tmp] = 0xff000000 |
             (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
             (((((col1>>8)&255)*selectedPalleteEntry  + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
             ((  (col1&255)*selectedPalleteEntry      + (col2&255)*oppositeColor) >>8);
     //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
-    if (heightMapEntry==255) colormap[i]|=0x100b0b;
-    heightmap[i] = heightMapEntry < 70 ? 70 : heightMapEntry;
+    if (heightMapEntry==255) colormap[tmp]|=0x100b0b;
+    heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
   }
 });
 // GENERATE HEIGHTMAP END
@@ -125,6 +126,7 @@ setInterval(() => {
     var sinang = Math.sin(cameraAngle);
     var cosang = Math.sin(cameraAngle + 1.57);
     //var cosang = Math.cos(cameraAngle);
+  //  console.log('>>',sinang, time, cameraAngle)
 
     cameraX -=  sinang * time * 0.09;
     cameraY -=  cosang * time * 0.09;
@@ -136,6 +138,7 @@ setInterval(() => {
 
     time = Date.now();
     cameraAngle += Math.sin(0.0008*time)/cameraHeight;
+
 /*
 //input.leftright -1 .. 1
 //cameraHorizon -500 .. 500
@@ -173,7 +176,7 @@ setInterval(() => {
     // Draw from front to back, 1024 is CAMERA DISTANCE
     for (var z=1; z<1500; z++) {
 
-      //TODO inprove rendering, increase z as we go away from the front
+      //TODO improve rendering, increase z as we go away from the front
         //if (z > 500) z+=2;
         // 90 degree field of view
         //var prx =   cosang * z - sinang * z;
@@ -194,7 +197,6 @@ setInterval(() => {
           var heightonscreen = Math.floor((255 + cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/);
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
-          // Fast way to draw vertical lines
           if (heightonscreen < 0) heightonscreen = 0;
           if (heightonscreen <= hiddeny[i]) {
             // get offset on screen for the vertical line

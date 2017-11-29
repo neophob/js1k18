@@ -37,6 +37,41 @@ var divide = (size) => {
 
 //map[0] = map[0] = 2048;
 divide(2048);
+var pallete = [0, 0x2d33aa, 0xa2a7cc, 0x000558, 0x00ffff];
+var tmp=0;
+var imgdata = c.getImageData(0,0, 2048, 2048);
+
+map.forEach((r,i)=>{
+  //convert the 1025*1025 map to a 1024*1024 heightmap and color map
+  if (i%2049!=2048) {
+    //hm[tmp++] =
+    tmp++;
+    var heightMapEntry = Math.floor(255 * (r/1024));
+
+    //generate smooth color dynamically, 4 equals the size of the pallete array
+    var ofs = Math.floor(heightMapEntry/(255 / 4));
+    var col1 = pallete[(ofs+1)%4];
+    var col2 = pallete[(ofs)%4];
+    var selectedPalleteEntry = 4*(heightMapEntry%(255 / 4));
+    var oppositeColor = 255-selectedPalleteEntry;
+
+/*    colormap[i] = 0xff000000 |
+            (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
+            (((((col1>>8)&255)*selectedPalleteEntry  + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
+            ((  (col1&255)*selectedPalleteEntry      + (col2&255)*oppositeColor) >>8);
+    //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
+    if (heightMapEntry==255) colormap[i]|=0x100b0b;
+*/
+
+    imgdata.data[4*tmp+2] = (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) );
+    imgdata.data[4*tmp+1] = (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) );
+    imgdata.data[4*tmp+0] = (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
+    imgdata.data[4*tmp+3] = 255;  // APLHA (0-255)
+
+  }
+});
+
+/*
 var xx = [];
 var ofs = 0;
 tmp = 0;
@@ -44,9 +79,7 @@ map.forEach((r,i)=>{
   if (i%2049!=2048) {
     xx[tmp++] = Math.floor(255 * (r/2048));
   }
-});
-
-var pallete = [0, 0x2d33aa, 0xa2a7cc, 0x000558, 0x00ffff];
+});*/
 
 /*
 var colormap = [];
@@ -70,34 +103,5 @@ for(var i=0;i<imgdatalen/4;i++){  //iterate over every pixel in the canvas
     imgdata.data[4*i+3] = 255;  // APLHA (0-255)
 }
 */
-var imgdata = c.getImageData(0,0, 2048, 2048);
-var blackPixel = 0;
-
-xx.forEach((r,i)=>{
-  //generate smooth color dynamically, 4 equals the size of the pallete array
-  var ofs = Math.floor(r/(255 / 5));
-  var col1 = pallete[(ofs+1)%5];
-  var col2 = pallete[(ofs)%5];
-  var selectedPalleteEntry = 5*(r%(255 / 5));
-  var oppositeColor = 255-selectedPalleteEntry;
-/*
-  var color = 0xff000000 |
-          (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
-          (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
-          (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
-  //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
-  if (r>254) color|=0x100b0b;
-  //heightmap[i] = r < 70 ? 70 : r;
-*/
-  imgdata.data[4*i+2] = (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) );
-  imgdata.data[4*i+1] = (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) );
-  imgdata.data[4*i+0] = (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
-  imgdata.data[4*i+3] = 255;  // APLHA (0-255)
-  if (r>250) blackPixel++;
-
-
-});
-console.log('blackPixel',blackPixel);
-
 
 c.putImageData(imgdata,0,0);
