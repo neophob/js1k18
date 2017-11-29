@@ -104,7 +104,7 @@ var Draw = () => {
 
 // ## DRAW BACKGROUND START
     //select first pallete entry but add alpha values
-    (Math.random() < .01) ? buf32.fill(0xffa2a7cc) : buf32.fill(0xff000000);
+    time%16 ? buf32.fill(0xff000000) : buf32.fill(0xffa2a7cc);
 
 //    buf32.fill(xff000ff0);
 // DRAW BACKGROUND END
