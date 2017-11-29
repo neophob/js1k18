@@ -5,6 +5,7 @@
   ideas:
     - blur heightmap
     - increase map from 1024x1024 to 2048x2048
+    - add geometric form (house? wall?) to the map
 */
 
 (() => {
@@ -79,7 +80,7 @@ var divide = (size) => {
 };
 
 //set initial points - not needed
-//map[0] = map[1024] = 1024;
+//map[0] = 1024;
 // generate heigthmap
 divide(1024);
 tmp=0;
@@ -95,7 +96,6 @@ map.forEach((r,i)=>{
     var ofs = Math.floor(heightMapEntry/(255 / 5));
     var col1 = [0, 0x2d33aa, 0x2d33aa, 0x000558, 0][(ofs+1)%5];
     var col2 = [0, 0x2d33aa, 0x2d33aa, 0x000558, 0][(ofs)%5];
-//    var col2 = [0, 0x2d33aa, 0x2d33aa, 0x000558, 0][(ofs)%5];
     var selectedPalleteEntry = 5*(heightMapEntry%(255 / 5));
     var oppositeColor = 255-selectedPalleteEntry;
 
@@ -210,5 +210,4 @@ setInterval(() => {
     c.putImageData(imagedata,0,0);
 }, 0);
 
-//dont use requestAnimationFrame(Draw); anymore...
 })();
