@@ -37,7 +37,7 @@ var divide = (size) => {
 
 //map[0] = map[0] = 1024;
 divide(1024);
-var pallete = [0, 0x2d33aa, 0xa2a7cc, 0x000558, 0x00ffff];
+var pallete = [0, 0x2d33aa, 0xa2a7cc, 0x000558, 0];
 var tmp=0;
 var imgdata = c.getImageData(0,0, 1024, 1024);
 

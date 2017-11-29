@@ -93,18 +93,16 @@ map.forEach((r,i)=>{
 //    var heightMapEntry = Math.floor(255 * (r/1024));
     var heightMapEntry = Math.floor(r/4);
 
-    //var pallete = [0, 0x113231, 0x2d616e, 0];
-    //var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
-
     //generate smooth color dynamically, 4 equals the size of the pallete array
-    var ofs = Math.floor(heightMapEntry/(255 / 4));
-    var col1 = [0, 0xaa332d, 0xA01897, 0][(ofs+1)%4];
-    var col2 = [0, 0xaa332d, 0xA01897, 0][(ofs)%4];
-    var selectedPalleteEntry = 4*(heightMapEntry%(255 / 4));
+    var ofs = Math.floor(heightMapEntry/(255 / 5));
+    var col1 = [0, 0x2d33aa, 0x2d33aa, 0x000558, 0][(ofs+1)%5];
+    var col2 = [0, 0x2d33aa, 0x2d33aa, 0x000558, 0][(ofs)%5];
+//    var col2 = [0, 0x2d33aa, 0x2d33aa, 0x000558, 0][(ofs)%5];
+    var selectedPalleteEntry = 5*(heightMapEntry%(255 / 5));
     var oppositeColor = 255-selectedPalleteEntry;
 
     //the alpha channel is used as a dead cheap shadow map
-    colormap[tmp] = ((i > 2 && heightMapEntry>70 && map[(i - 1)] < r) ? 0xf2000000 : 0xff000000) |
+    colormap[tmp] = ((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xf4000000 : 0xff000000) |
            (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16 ) |
            (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
            ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8);
@@ -157,7 +155,7 @@ setInterval(() => {
 // UPDATE CAMERA START
 
 // ## DRAW BACKGROUND START
-    time%16 ? buf32.fill(0xff000000) : buf32.fill(0xFFaa332d);
+    time%16 ? buf32.fill(0xff000000) : buf32.fill(0xff000538);
 
 //    buf32.fill(xff000ff0);
 // DRAW BACKGROUND END
