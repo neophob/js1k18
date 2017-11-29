@@ -59,18 +59,16 @@ var Draw = () => {
 // ## UPDATE CAMERA START
     time = Date.now()-time;
 
-    if (time % 8 == 4)
-    cameraAngle += (Math.random())*0.01*(time)*0.03;
-
-
     cameraX -= 3 * Math.sin(cameraAngle) * (time)*0.03;
     cameraY -= 3 * Math.sin(cameraAngle + 1.57) * (time)*0.03;
     //cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
-    var cameraHeight = 255 + heightmap[
+    var cameraHeight = heightmap[
       /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
     ]/3;
 
+    time = Date.now();
+    cameraAngle += Math.sin(0.0004*time)/cameraHeight;
 /*
 //input.leftright -1 .. 1
 //cameraHorizon -500 .. 500
@@ -98,7 +96,6 @@ var Draw = () => {
     // Collision detection. Don't fly below the surface.
     //var mapoffset = ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)|0;
     //if ((heightmap[mapoffset]+10) > cameraHeight) cameraHeight = heightmap[mapoffset] + 10;
-    time = Date.now();
     //time = current;
 // UPDATE CAMERA START
 
@@ -140,7 +137,7 @@ var Draw = () => {
         for (var i=0; i<a.width; i++) {
           // |0 is math floor
           var mapoffset = ((Math.floor(ply    ) & 1023) << 10) + (Math.floor(plx) & 1023);
-          var heightonscreen = Math.floor((cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/);
+          var heightonscreen = Math.floor((255 + cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/);
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
           // Fast way to draw vertical lines
@@ -238,7 +235,7 @@ hm.forEach((r,i)=>{
           (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
           (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
   //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
-  if (r>254) colormap[i]|=0x100b0b;
+  if (r==255) colormap[i]|=0x100b0b;
   heightmap[i] = r < 70 ? 70 : r;
 });
 //dont use requestAnimationFrame(Draw); anymore...
