@@ -52,7 +52,6 @@ var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
 // # INIT
 
 // GENERATE HEIGHTMAP START
-var tmp;
 var map = [];
 map[1025 * 1025] = 0;
 map.fill(0);
@@ -60,6 +59,7 @@ map.fill(0);
 var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
+  var tmp;
   //roughness is 2.4
 
   for (var y = half; y < 1024; y += size) {
@@ -91,35 +91,31 @@ var divide = (size) => {
 
 //set initial points - not needed
 //map[0] = map[1024] = 1024;
+// generate heigthmap
 divide(1024);
-var hm = [];
-tmp = 0;
 map.forEach((r,i)=>{
-  //convert the 1025*1025 map to a 1024*1024 map
+  //convert the 1025*1025 map to a 1024*1024 heightmap and color map
   if (i%1025!=1024) {
-    hm[tmp++] = Math.floor(255 * (r/1024));
+    //hm[tmp++] =
+    var heightMapEntry = Math.floor(255 * (r/1024));
+
+    //generate smooth color dynamically, 4 equals the size of the pallete array
+    var ofs = Math.floor(heightMapEntry/(255 / 4));
+    var col1 = pallete[(ofs+1)%4];
+    var col2 = pallete[(ofs)%4];
+    var selectedPalleteEntry = 4*(heightMapEntry%(255 / 4));
+    var oppositeColor = 255-selectedPalleteEntry;
+
+    colormap[i] = 0xff000000 |
+            (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
+            (((((col1>>8)&255)*selectedPalleteEntry  + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
+            ((  (col1&255)*selectedPalleteEntry      + (col2&255)*oppositeColor) >>8);
+    //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
+    if (heightMapEntry==255) colormap[i]|=0x100b0b;
+    heightmap[i] = heightMapEntry < 70 ? 70 : heightMapEntry;
   }
 });
 // GENERATE HEIGHTMAP END
-
-
-// LOAD MAP + GENERATE COLORMAP ON DEMAND
-hm.forEach((r,i)=>{
-  //generate smooth color dynamically, 4 equals the size of the pallete array
-  var ofs = Math.floor(r/(255 / 4));
-  var col1 = pallete[(ofs+1)%4];
-  var col2 = pallete[(ofs)%4];
-  var selectedPalleteEntry = 4*(r%(255 / 4));
-  var oppositeColor = 255-selectedPalleteEntry;
-
-  colormap[i] = 255 <<24 |
-          (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
-          (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
-          (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
-  //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
-  if (r==255) colormap[i]|=0x100b0b;
-  heightmap[i] = r < 70 ? 70 : r;
-});
 
 setInterval(() => {
 
