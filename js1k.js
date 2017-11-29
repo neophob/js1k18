@@ -108,9 +108,9 @@ map.forEach((r,i)=>{
 
     colormap[tmp] = (heightMapEntry==255) ? 0xFF100b0b :
            0xff000000 |
-           (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
-           (((((col1>>8)&255)*selectedPalleteEntry  + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
-           ((  (col1&255)*selectedPalleteEntry      + (col2&255)*oppositeColor) >>8);
+           (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) ) |
+           (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
+           ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8) << 16;
 
     heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
   }
