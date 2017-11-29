@@ -49,12 +49,78 @@ var imagedata = c.createImageData(a.width, a.height);
 var pallete = [0, 0x2d33aa, 0xa2a7cc, 0];
 //var pallete = [0, 0xff, 0x00ff00, 0xFF0000];
 
+// # INIT
+
+// GENERATE HEIGHTMAP START
+var tmp;
+var map = [];
+map[1025 * 1025] = 0;
+map.fill(0);
+
+var divide = (size) => {
+  if (size < 2) return;
+  var half = size / 2;
+  //roughness is 2.4
+
+  for (var y = half; y < 1024; y += size) {
+    for (var x = half; x < 1024; x += size) {
+      //SQUARE
+      tmp = (
+        map[((x - half) & 1023) + ((y - half) & 1023) * 1025] +
+        map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
+        map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
+        map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
+      ) / 4 + Math.random() * (1.7 * size) * 2.5 - (1.7 * size);
+      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
+    }
+  }
+  for (var y = 0; y <= 1024; y += half) {
+    for (var x = (y + half) % size; x <= 1024; x += size) {
+      //DIAMOND
+      tmp = (
+        map[(x & 1023) + ((y - half) & 1023) * 1025] +
+        map[((x + half) & 1023) + (y & 1023) * 1025] +
+        map[(x & 1023) + ((y + half) & 1023) * 1025] +
+        map[((x - half) & 1023) + (y & 1023) * 1025]
+      ) / 4 + Math.random() * (1.7 * size) * 2.5 - (1.7 * size);
+      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
+    }
+  }
+  divide(half);
+}
+//set initial points - not needed
+//map[0] = map[1024] = 1024;
+divide(1024);
+var hm = [];
+tmp = 0;
+map.forEach((r,i)=>{
+  //convert the 1025*1025 map to a 1024*1024 map
+  if (i%1025!=1024) {
+    hm[tmp++] = Math.floor(255 * (r/1024));
+  }
+});
+// GENERATE HEIGHTMAP END
 
 
-// ---------------------------------------------
-// Draw the next frame
+// LOAD MAP + GENERATE COLORMAP ON DEMAND
+hm.forEach((r,i)=>{
+  //generate smooth color dynamically, 4 equals the size of the pallete array
+  var ofs = Math.floor(r/(255 / 4));
+  var col1 = pallete[(ofs+1)%4];
+  var col2 = pallete[(ofs)%4];
+  var selectedPalleteEntry = 4*(r%(255 / 4));
+  var oppositeColor = 255-selectedPalleteEntry;
 
-var Draw = () => {
+  colormap[i] = 0xff000000 |
+          (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
+          (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
+          (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
+  //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
+  if (r==255) colormap[i]|=0x100b0b;
+  heightmap[i] = r < 70 ? 70 : r;
+});
+
+setInterval(() => {
 
 // ## UPDATE CAMERA START
     time = Date.now()-time;
@@ -155,79 +221,7 @@ var Draw = () => {
     // Flip, Show the back buffer on screen
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
-};
+}, 20);
 
-
-// # INIT
-
-// GENERATE HEIGHTMAP START
-var tmp;
-var map = [];
-map[1025 * 1025] = 0;
-map.fill(0);
-
-var divide = (size) => {
-  if (size < 2) return;
-  var half = size / 2;
-  //roughness is 2.4
-
-  for (var y = half; y < 1024; y += size) {
-    for (var x = half; x < 1024; x += size) {
-      //SQUARE
-      tmp = (
-        map[((x - half) & 1023) + ((y - half) & 1023) * 1025] +
-        map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
-        map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
-        map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
-      ) / 4 + Math.random() * (1.7 * size) * 2.5 - (1.7 * size);
-      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
-    }
-  }
-  for (var y = 0; y <= 1024; y += half) {
-    for (var x = (y + half) % size; x <= 1024; x += size) {
-      //DIAMOND
-      tmp = (
-        map[(x & 1023) + ((y - half) & 1023) * 1025] +
-        map[((x + half) & 1023) + (y & 1023) * 1025] +
-        map[(x & 1023) + ((y + half) & 1023) * 1025] +
-        map[((x - half) & 1023) + (y & 1023) * 1025]
-      ) / 4 + Math.random() * (1.7 * size) * 2.5 - (1.7 * size);
-      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
-    }
-  }
-  divide(half);
-}
-//set initial points - not needed
-//map[0] = map[1024] = 1024;
-divide(1024);
-var hm = [];
-tmp = 0;
-map.forEach((r,i)=>{
-  //convert the 1025*1025 map to a 1024*1024 map
-  if (i%1025!=1024) {
-    hm[tmp++] = Math.floor(255 * (r/1024));
-  }
-});
-// GENERATE HEIGHTMAP END
-
-
-// LOAD MAP + GENERATE COLORMAP ON DEMAND
-hm.forEach((r,i)=>{
-  //generate smooth color dynamically, 4 equals the size of the pallete array
-  var ofs = Math.floor(r/(255 / 4));
-  var col1 = pallete[(ofs+1)%4];
-  var col2 = pallete[(ofs)%4];
-  var selectedPalleteEntry = 4*(r%(255 / 4));
-  var oppositeColor = 255-selectedPalleteEntry;
-
-  colormap[i] = 0xff000000 |
-          (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16) |
-          (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) << 8) |
-          (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
-  //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
-  if (r==255) colormap[i]|=0x100b0b;
-  heightmap[i] = r < 70 ? 70 : r;
-});
 //dont use requestAnimationFrame(Draw); anymore...
-setInterval(Draw, 20);
 })();
