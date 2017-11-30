@@ -85,12 +85,6 @@ r -= 5;
     if (i > 2 && heightMapEntry>100 && map[(i - 1)] < r) {
       imgdata.data[4*tmp+3]=0xe0;
     }
-    if (i > 2 && heightMapEntry<100 && map[(i - 1)] < r) {
-      //0x000558
-      imgdata.data[4*tmp+2]=0x00;
-      imgdata.data[4*tmp+1]=0x05;
-      imgdata.data[4*tmp+0]=0x58;
-    }
 /*    if (heightMapEntry - 20 > black ) black = false;
 
     if (black || tmp > 2 && heightMapEntry>70 && map[(tmp - 1) & map.length] + 4 > heightMapEntry) {
@@ -103,7 +97,7 @@ r -= 5;
       }
       if (!black) black = heightMapEntry;
     }*/
-  } else black=false;
+  }
 });
 
 /*

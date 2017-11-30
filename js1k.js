@@ -10,8 +10,8 @@
 
 (() => {
 
-var cameraX = 512;
-var cameraY = 800;
+var cameraX = 0;
+var cameraY = 0;
 var cameraAngle = 78;
 var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
 var buf8   = new Uint8Array(tmpBuffer);
@@ -28,9 +28,12 @@ var time=0;
 var imagedata = c.createImageData(a.width, a.height);
 
 // GENERATE HEIGHTMAP START
-var tmp;
-var map = new Array(1025 * 1025);
+
+// array size is 1025x1025 - however 2 millions can be written much shorter
+var map = new Array(2000000);
 map.fill(0);
+
+var tmp;
 
 var divide = (size) => {
   if (size < 2) return;
