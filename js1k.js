@@ -100,10 +100,25 @@ map.forEach((r,i)=>{
     var oppositeColor = 255-selectedPalleteEntry;
 
     //the alpha channel is used as a dead cheap shadow map
-    colormap[tmp] = ((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xf4000000 : 0xff000000) |
+    colormap[tmp] = ((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7000000 : 0xff000000) |
            (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16 ) |
            (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
            ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8);
+
+     colormap[tmp+2000000] = ((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5000000 : 0xff000000) |
+          (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16 ) |
+          (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
+          ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8);
+
+    //the alpha channel is used as a dead cheap shadow map
+    /*var alpha = (i > 2 && heightMapEntry>100 && map[(i - 1)] < r);
+    colormap[tmp+2000000] = colormap[tmp] = (alpha ? 0xf7000000 : 0xff000000) |
+         (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16 ) |
+         (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
+         ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8);
+
+     if (alpha) colormap[tmp+2000000] &= 0xe5ffffff;*/
+
 
     heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
   }
@@ -153,9 +168,9 @@ setInterval(() => {
 // UPDATE CAMERA START
 
 // ## DRAW BACKGROUND START
+    var blitz = time%16 ? false : true;
     time%16 ? buf32.fill(0xff000000) : buf32.fill(0xf4000538);
 
-//    buf32.fill(xff000ff0);
 // DRAW BACKGROUND END
 
 
@@ -180,7 +195,7 @@ setInterval(() => {
         ply += cameraY;
 
         // DEFINE HEIGHT (140)
-        var invz = 1 / z * 240;
+        var invz = 240 / z;
         for (var i=0; i<a.width; i++) {
           // |0 is math floor - way faster here than Math.floor
           var mapoffset = (((ply|0    ) & 1023) << 10) + ((plx|0) & 1023);
@@ -192,7 +207,7 @@ setInterval(() => {
             // get offset on screen for the vertical line
             var offset = (heightonscreen * a.width) + i;
             for (var k = heightonscreen; k < hiddeny[i]; k++) {
-                buf32[offset] = colormap[mapoffset];
+                buf32[offset] = colormap[blitz*2000000+mapoffset];
                 offset += a.width;
             }
             hiddeny[i] = heightonscreen;
