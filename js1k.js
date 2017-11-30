@@ -12,13 +12,12 @@
 
 var cameraX = 0;
 var cameraY = 0;
-var cameraAngle = 78;
+var cameraAngle = 0;
 var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
 var buf8   = new Uint8Array(tmpBuffer);
 var buf32  = new Uint32Array(tmpBuffer);
-// was Uint32Array's - might be slower now
-var heightmap = [];//new Uint32Array(1024*1024);
-var colormap = [];//new Uint32Array(1024*1024);
+var heightmap = [];
+var colormap = [];
 var time=0;
 
 // Mechanized Abbreviation - thanks to https://marijnhaverbeke.nl/js1k/slides/#12
