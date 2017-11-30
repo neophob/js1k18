@@ -92,35 +92,28 @@ map.forEach((r,i)=>{
 //    var heightMapEntry = Math.floor(255 * (r/1024));
     var heightMapEntry = Math.floor(r/4);
 
-    //generate smooth color dynamically, 4 equals the size of the pallete array
+    //generate smooth color dynamically, 5 equals the size of the pallete array
     var ofs = Math.floor(heightMapEntry/(255 / 5));
-    var col1 = [0, 0x2d33aa, 0x2d33aa, 0x000558, 0][(ofs+1)%5];
-    var col2 = [0, 0x2d33aa, 0x2d33aa, 0x000558, 0][(ofs)%5];
+    
+    //fancy pallette - if no entry exists, its converted to 0
+    var col1 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5], []][(ofs+1)%5];
+    var col2 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5], []][(ofs)%5];
     var selectedPalleteEntry = 5*(heightMapEntry%(255 / 5));
     var oppositeColor = 255-selectedPalleteEntry;
 
     //the alpha channel is used as a dead cheap shadow map
-    colormap[tmp] = ((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7000000 : 0xff000000) |
-           (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16 ) |
-           (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
-           ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8);
+    colormap[tmp] = (((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
+      ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*oppositeColor) >>8)  ) |
+      ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*oppositeColor) >>8) << 8) |
+      (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*oppositeColor) >>8) << 16;
 
-     colormap[tmp+2000000] = ((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5000000 : 0xff000000) |
-          (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16 ) |
-          (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
-          ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8);
-
-    //the alpha channel is used as a dead cheap shadow map
-    /*var alpha = (i > 2 && heightMapEntry>100 && map[(i - 1)] < r);
-    colormap[tmp+2000000] = colormap[tmp] = (alpha ? 0xf7000000 : 0xff000000) |
-         (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) << 16 ) |
-         (((((col1>>8 )&255)*selectedPalleteEntry + ((col2>>8) &255)*oppositeColor) >>8) << 8) |
-         ((  (col1     &255)*selectedPalleteEntry + ( col2     &255)*oppositeColor) >>8);
-
-     if (alpha) colormap[tmp+2000000] &= 0xe5ffffff;*/
-
+    colormap[tmp+2000000] = (((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
+      ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*oppositeColor) >>8)  ) |
+      ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*oppositeColor) >>8) << 8) |
+      (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*oppositeColor) >>8) << 16;
 
     heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
+
   }
 });
 // GENERATE HEIGHTMAP END
@@ -132,11 +125,9 @@ setInterval(() => {
 
     var sinang = Math.sin(cameraAngle);
     var cosang = Math.sin(cameraAngle + 1.57);
-    //var cosang = Math.cos(cameraAngle);
 
     cameraX -=  sinang * time * 0.1;
     cameraY -=  cosang * time * 0.1;
-    //cameraY -= 3 * Math.cos(cameraAngle) * (current-time)*0.03;
 
     var cameraHeight = heightmap[
       /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
@@ -168,7 +159,7 @@ setInterval(() => {
 // UPDATE CAMERA START
 
 // ## DRAW BACKGROUND START
-    var blitz = time%16 ? false : true;
+
     time%16 ? buf32.fill(0xff000000) : buf32.fill(0xf4000538);
 
 // DRAW BACKGROUND END
@@ -176,10 +167,13 @@ setInterval(() => {
 
 // ## RENDER START
 
+    //if there's a blitz - select other colormap with highlighted colors
+    tmp = time%16 ? 0 : 2000000;
+
     var hiddeny = new Array(a.width);
     hiddeny.fill(a.height);
     // Draw from front to back, 1024 is CAMERA DISTANCE
-    for (var z=1; z<3500; z++) {
+    for (var z=1; z<3000; z++) {
         //improve rendering speed, increase z as we go away from the front
         if (z > 700) z+=2;
 
@@ -194,12 +188,13 @@ setInterval(() => {
         plx += cameraX;
         ply += cameraY;
 
-        // DEFINE HEIGHT (140)
+        // DEFINE HEIGHT (1/z * 240)
         var invz = 240 / z;
         for (var i=0; i<a.width; i++) {
           // |0 is math floor - way faster here than Math.floor
           var mapoffset = (((ply|0    ) & 1023) << 10) + ((plx|0) & 1023);
-          var heightonscreen = ((255 + cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/)|0;
+          //var heightonscreen = ((192 + cameraHeight - heightmap[mapoffset]) * invz + 127/*cameraHorizon|0*/)|0;
+          var heightonscreen = ((255 + cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/)|0
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
           if (heightonscreen < hiddeny[i]) {
@@ -207,7 +202,7 @@ setInterval(() => {
             // get offset on screen for the vertical line
             var offset = (heightonscreen * a.width) + i;
             for (var k = heightonscreen; k < hiddeny[i]; k++) {
-                buf32[offset] = colormap[blitz*2000000+mapoffset];
+                buf32[offset] = colormap[tmp + mapoffset];
                 offset += a.width;
             }
             hiddeny[i] = heightonscreen;

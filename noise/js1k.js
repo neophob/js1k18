@@ -37,7 +37,7 @@ var divide = (size) => {
 
 //map[0] = map[0] = 1024;
 divide(1024);
-var pallete = [0, 0x2d33aa, 0xa2a7cc, 0x000558, 0];
+var pallete = [0, 0x000558, 0xa2a7cc, 0x000558, 0];
 var tmp=0;
 var imgdata = c.getImageData(0,0, 1024, 1024);
 
@@ -82,8 +82,14 @@ r -= 5;
     imgdata.data[4*tmp+3] = 255;  // APLHA (0-255)
 
     // this is the dead cheap shadow mapper
-    if (i > 2 && heightMapEntry>70 && map[(i - 1)] < r) {
-      imgdata.data[4*tmp+3]=0xe0
+    if (i > 2 && heightMapEntry>100 && map[(i - 1)] < r) {
+      imgdata.data[4*tmp+3]=0xe0;
+    }
+    if (i > 2 && heightMapEntry<100 && map[(i - 1)] < r) {
+      //0x000558
+      imgdata.data[4*tmp+2]=0x00;
+      imgdata.data[4*tmp+1]=0x05;
+      imgdata.data[4*tmp+0]=0x58;
     }
 /*    if (heightMapEntry - 20 > black ) black = false;
 
