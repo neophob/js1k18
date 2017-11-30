@@ -115,7 +115,7 @@ setInterval(() => {
     time = Date.now()-time;
 
     var sinang = Math.sin(cameraAngle);
-    var cosang = Math.sin(cameraAngle + 1.57);
+    var cosang = Math.sin(cameraAngle + 1.6);
 
     cameraX -=  sinang * time * 0.1;
     cameraY -=  cosang * time * 0.1;
@@ -130,7 +130,7 @@ setInterval(() => {
 // ## DRAW BACKGROUND
 
     //show blitz in the background
-    buf32.fill(time%16 ? 0xff000000 : 0xf4000538);
+    buf32.fill(time%16 ? 0xff<<24 : 0xf4000538);
 
 // ## VOXEL START
 
