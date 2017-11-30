@@ -39,8 +39,8 @@ var divide = (size) => {
   var half = size / 2;
   //roughness is 2.4
 
-  for (var y = half; y < 1024; y += size) {
-    for (var x = half; x < 1024; x += size) {
+  for (var y = half; y < 1025; y += size) {
+    for (var x = half; x < 1025; x += size) {
       //SQUARE
       tmp = (
         map[((x - half) & 1023) + ((y - half) & 1023) * 1025] +
@@ -51,8 +51,8 @@ var divide = (size) => {
       map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
-  for (var y = 0; y <= 1024; y += half) {
-    for (var x = (y + half) % size; x <= 1024; x += size) {
+  for (var y = 0; y <= 1025; y += half) {
+    for (var x = (y + half) % size; x <= 1025; x += size) {
       //DIAMOND
       tmp = (
         map[(x & 1023) + ((y - half) & 1023) * 1025] +
@@ -74,7 +74,9 @@ tmp=0;
 
 map.forEach((r,i)=>{
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
-  if (i%1025!=1024) {
+  if (i%1025==1024) {
+    return
+  }
     //hm[tmp++] =
 //    var heightMapEntry = Math.floor(255 * (r/1024));
     var heightMapEntry = (r/4)|0;
@@ -100,8 +102,6 @@ map.forEach((r,i)=>{
       (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*oppositeColor) >>8) << 16;
 
     heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
-
-  }
 });
 // GENERATE HEIGHTMAP END
 
