@@ -75,14 +75,14 @@ map.forEach((r,i)=>{
   if (i%1025!=1024) {
     //hm[tmp++] =
 //    var heightMapEntry = Math.floor(255 * (r/1024));
-    var heightMapEntry = Math.floor(r/4);
+    var heightMapEntry = (r/4)|0;
 
     //generate smooth color dynamically, 5 equals the size of the pallete array
-    var ofs = Math.floor(heightMapEntry/(255 / 5));
+    var ofs = (heightMapEntry/(255 / 5))|0;
 
     //fancy pallette - if no entry exists, its converted to 0
-    var col1 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5], []][(ofs+1)%5];
-    var col2 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5], []][(ofs)%5];
+    var col1 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs+1)%5];
+    var col2 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs)%5];
     var selectedPalleteEntry = 5*(heightMapEntry%(255 / 5));
     var oppositeColor = 255-selectedPalleteEntry;
 
