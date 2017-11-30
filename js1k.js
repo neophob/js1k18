@@ -10,22 +10,9 @@
 
 (() => {
 
-// ---------------------------------------------
-// Viewer information
-/*var camera =
-{
-    x:        512, // x position on the map
-    y:        800, // y position on the map
-    height:    78, // height of the camera
-    angle:      40, // direction of the camera
-    horizon:  100, // horizon position (look up and down)
-    distance: 2000   // distance of map
-};*/
 var cameraX = 512;
 var cameraY = 800;
-//var cameraHeight = 70;
 var cameraAngle = 78;
-//var cameraHorizon = 150;
 var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
 var buf8   = new Uint8Array(tmpBuffer);
 var buf32  = new Uint32Array(tmpBuffer);
@@ -39,8 +26,6 @@ var time=0;
 //console.log('A',a);
 
 var imagedata = c.createImageData(a.width, a.height);
-
-// # INIT
 
 // GENERATE HEIGHTMAP START
 var tmp;
@@ -94,7 +79,7 @@ map.forEach((r,i)=>{
 
     //generate smooth color dynamically, 5 equals the size of the pallete array
     var ofs = Math.floor(heightMapEntry/(255 / 5));
-    
+
     //fancy pallette - if no entry exists, its converted to 0
     var col1 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5], []][(ofs+1)%5];
     var col2 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5], []][(ofs)%5];
@@ -120,7 +105,11 @@ map.forEach((r,i)=>{
 
 setInterval(() => {
 
-// ## UPDATE CAMERA START
+// ## UPDATE CAMERA
+//input.leftright -1 .. 1
+//cameraHorizon -500 .. 500
+//input.updown init: -10 .. 10
+
     time = Date.now()-time;
 
     var sinang = Math.sin(cameraAngle);
@@ -136,36 +125,12 @@ setInterval(() => {
     time = Date.now();
     cameraAngle += Math.sin(0.0008*time)/cameraHeight;
 
-/*
-//input.leftright -1 .. 1
-//cameraHorizon -500 .. 500
-//input.updown init: -10 .. 10
+// ## DRAW BACKGROUND
 
-    {
-        cameraX -= input.forwardbackward * Math.sin(cameraAngle) * (current-time)*0.03;
-        cameraY -= input.forwardbackward * Math.cos(cameraAngle) * (current-time)*0.03;
-        input.keypressed = true;
-    }
-    if (input.updown != 0)
-    {
-        cameraHeight += input.updown * (current-time)*0.03;
-        input.keypressed = true;
-    }*/
+    //show blitz in the background
+    buf32.fill(time%16 ? 0xff000000 : 0xf4000538);
 
-    // Collision detection. Don't fly below the surface.
-    //var mapoffset = ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)|0;
-    //if ((heightmap[mapoffset]+10) > cameraHeight) cameraHeight = heightmap[mapoffset] + 10;
-    //time = current;
-// UPDATE CAMERA START
-
-// ## DRAW BACKGROUND START
-
-    time%16 ? buf32.fill(0xff000000) : buf32.fill(0xf4000538);
-
-// DRAW BACKGROUND END
-
-
-// ## RENDER START
+// ## VOXEL START
 
     //if there's a blitz - select other colormap with highlighted colors
     tmp = time%16 ? 0 : 2000000;
@@ -213,9 +178,8 @@ setInterval(() => {
           ply += dy;
         }
     }
-  // ## RENDER END
+// ## FLIP SCREEN
 
-    // Flip, Show the back buffer on screen
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
 }, 0);
