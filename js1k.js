@@ -165,7 +165,7 @@ setInterval(() => {
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
           if (heightonscreen < hiddeny[i]) {
-            if (heightonscreen < 0) heightonscreen = 0;
+          //  if (heightonscreen < 0) heightonscreen = 0;
             // get offset on screen for the vertical line
             var offset = (heightonscreen * a.width) + i;
             for (var k = heightonscreen; k < hiddeny[i]; k++) {
