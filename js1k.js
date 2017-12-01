@@ -13,9 +13,11 @@
 var cameraX = 0;
 var cameraY = 0;
 var cameraAngle = 0;
-var tmpBuffer = new ArrayBuffer(a.width * a.height * 4);
-var buf8   = new Uint8Array(tmpBuffer);
+//buf32 and buf8 are just ArrayBuffer views to convert data
+var tmpBuffer = new ArrayBuffer(a.width * a.height << 2);
 var buf32  = new Uint32Array(tmpBuffer);
+var buf8   = new Uint8Array(tmpBuffer);
+
 var heightmap = [];
 var colormap = [];
 var time=0;
@@ -69,7 +71,7 @@ var divide = (size) => {
 //set initial points - not needed
 //map[0] = 1024;
 // generate heigthmap
-divide(1024);
+divide(1<<10);
 tmp=0;
 
 map.forEach((r,i)=>{
@@ -111,7 +113,6 @@ setInterval(() => {
 //input.leftright -1 .. 1
 //cameraHorizon -500 .. 500
 //input.updown init: -10 .. 10
-
     time = Date.now()-time;
 
     var sinang = Math.sin(cameraAngle);
@@ -181,7 +182,6 @@ setInterval(() => {
         }
     }
 // ## FLIP SCREEN
-
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
 }, 0);
