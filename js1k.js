@@ -17,6 +17,7 @@ var cameraAngle = 0;
 var tmpBuffer = new ArrayBuffer(a.width * a.height << 2);
 var buf32  = new Uint32Array(tmpBuffer);
 var buf8   = new Uint8Array(tmpBuffer);
+var hiddeny = new Uint32Array(a.width);
 
 var heightmap = [];
 var colormap = [];
@@ -138,7 +139,6 @@ setInterval(() => {
     //if there's a blitz - select other colormap with highlighted colors
     tmp = time%16 ? 0 : 2000000;
 
-    var hiddeny = new Array(a.width);
     hiddeny.fill(a.height);
     // Draw from front to back, 1024 is CAMERA DISTANCE
     for (var z=1; z<3000; z++) {
