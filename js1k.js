@@ -83,7 +83,7 @@ map.forEach((r,i)=>{
     return
   }
 //    var heightMapEntry = Math.floor(255 * (r/1024));
-  var heightMapEntry = (r/4)|0;
+  var heightMapEntry = r>>2;
   //generate smooth color dynamically, 5 equals the size of the pallete array
   var ofs = (heightMapEntry/(255 / 5))|0;
   //fancy pallette - if no entry exists, its converted to 0
@@ -92,12 +92,12 @@ map.forEach((r,i)=>{
   var selectedPalleteEntry = 5*(heightMapEntry%(255 / 5));
 
   //the alpha channel is used as a dead cheap shadow map
-  colormap[tmp] = (((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
+  colormap[tmp] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
     ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(255-selectedPalleteEntry)) >>8)  ) |
     ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(255-selectedPalleteEntry)) >>8) << 8) |
     (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(255-selectedPalleteEntry)) >>8) << 16;
 
-  colormap[tmp+2000000] = (((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
+  colormap[tmp+2000000] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
     ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(255-selectedPalleteEntry)) >>8)  ) |
     ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(255-selectedPalleteEntry)) >>8) << 8) |
     (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(255-selectedPalleteEntry)) >>8) << 16;
