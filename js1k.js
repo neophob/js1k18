@@ -89,18 +89,18 @@ map.forEach((r,i)=>{
   //fancy pallette - if no entry exists, its converted to 0
   var col1 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs+1)%5];
   var col2 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs)%5];
-  var selectedPalleteEntry = 5*(heightMapEntry%(255 / 5));
+  var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
-  //the alpha channel is used as a dead cheap shadow map
-  colormap[tmp] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
-    ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(255-selectedPalleteEntry)) >>8)  ) |
-    ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(255-selectedPalleteEntry)) >>8) << 8) |
-    (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(255-selectedPalleteEntry)) >>8) << 16;
+  //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
+  colormap[tmp        ] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
+    ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry)) )  ) |
+    ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) ) << 8) |
+    (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) ) << 16;
 
   colormap[tmp+2000000] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
-    ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(255-selectedPalleteEntry)) >>8)  ) |
-    ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(255-selectedPalleteEntry)) >>8) << 8) |
-    (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(255-selectedPalleteEntry)) >>8) << 16;
+    ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry)) )  ) |
+    ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) ) << 8) |
+    (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) ) << 16;
 
   heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
 });
