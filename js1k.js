@@ -21,6 +21,8 @@ var hiddeny = new Uint32Array(a.width);
 
 var heightmap = [];
 var colormap = [];
+//var colormap  = new Uint32Array(4000000);
+
 var time=0;
 
 // Mechanized Abbreviation - thanks to https://marijnhaverbeke.nl/js1k/slides/#12
@@ -80,31 +82,27 @@ map.forEach((r,i)=>{
   if (i%1025==1024) {
     return
   }
-    //hm[tmp++] =
 //    var heightMapEntry = Math.floor(255 * (r/1024));
-    var heightMapEntry = (r/4)|0;
+  var heightMapEntry = (r/4)|0;
+  //generate smooth color dynamically, 5 equals the size of the pallete array
+  var ofs = (heightMapEntry/(255 / 5))|0;
+  //fancy pallette - if no entry exists, its converted to 0
+  var col1 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs+1)%5];
+  var col2 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs)%5];
+  var selectedPalleteEntry = 5*(heightMapEntry%(255 / 5));
 
-    //generate smooth color dynamically, 5 equals the size of the pallete array
-    var ofs = (heightMapEntry/(255 / 5))|0;
+  //the alpha channel is used as a dead cheap shadow map
+  colormap[tmp] = (((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
+    ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(255-selectedPalleteEntry)) >>8)  ) |
+    ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(255-selectedPalleteEntry)) >>8) << 8) |
+    (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(255-selectedPalleteEntry)) >>8) << 16;
 
-    //fancy pallette - if no entry exists, its converted to 0
-    var col1 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs+1)%5];
-    var col2 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs)%5];
-    var selectedPalleteEntry = 5*(heightMapEntry%(255 / 5));
-    var oppositeColor = 255-selectedPalleteEntry;
+  colormap[tmp+2000000] = (((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
+    ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(255-selectedPalleteEntry)) >>8)  ) |
+    ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(255-selectedPalleteEntry)) >>8) << 8) |
+    (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(255-selectedPalleteEntry)) >>8) << 16;
 
-    //the alpha channel is used as a dead cheap shadow map
-    colormap[tmp] = (((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
-      ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*oppositeColor) >>8)  ) |
-      ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*oppositeColor) >>8) << 8) |
-      (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*oppositeColor) >>8) << 16;
-
-    colormap[tmp+2000000] = (((i > 2 && heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
-      ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*oppositeColor) >>8)  ) |
-      ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*oppositeColor) >>8) << 8) |
-      (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*oppositeColor) >>8) << 16;
-
-    heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
+  heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
 });
 // GENERATE HEIGHTMAP END
 
