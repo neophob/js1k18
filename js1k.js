@@ -130,7 +130,7 @@ setInterval(() => {
 // ## DRAW BACKGROUND
 
     //show lightning in the background
-    buf32.fill(time%16 ? 0xff<<24 : 0xf4000538);
+    buf32.fill(0xff<<24 | (time%16 ? 0 : 0x38));
 
 // ## VOXEL START
 
