@@ -16,8 +16,10 @@ var divide = (size) => {
         map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
         map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
-      ) / 4 + Math.random() * scale * 2.5 - scale;
-      map[x + 1025 * y] = tmp|0;//(tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
+      ) / 4 + [0.4,0.16,0.23,0.6,0.8][x%5] * 4.3 * size - 1.5 * size;
+      //) / 4 + Math.random() * 4.3 * size - (1.2 * size);
+
+      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
   for (var y = 0; y <= 1024; y += half) {
@@ -28,8 +30,10 @@ var divide = (size) => {
         map[((x + half) & 1023) + (y & 1023) * 1025] +
         map[(x & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + (y & 1023) * 1025]
-      ) / 4 + Math.random() * scale * 2.5 - scale;
-      map[x + 1025 * y] = tmp|0;//(tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
+      ) / 4 + [0.4,0.76,0.23,0.6,0.8,0.32][y%6] * 4.3 * size - 1.5 * size;
+//      ) / 4 + Math.random() * 4.3 * size - 1.5 * size;
+    //) / 4 + Math.random() * 4.3 * size - (1.2 * size);
+      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
     }
   }
   divide(size /2);

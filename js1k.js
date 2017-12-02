@@ -25,10 +25,6 @@ var colormap = [];
 
 var time=0;
 
-// Mechanized Abbreviation - thanks to https://marijnhaverbeke.nl/js1k/slides/#12
-//for($ in a) a[$[0]+($[1]||'')]=a[$];
-//console.log('A',a);
-
 var imagedata = c.createImageData(a.width, a.height);
 
 // GENERATE HEIGHTMAP START
@@ -42,7 +38,6 @@ var tmp;
 var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
-  //roughness is 2.4
 
   for (var y = half; y < 1025; y += size) {
     for (var x = half; x < 1025; x += size) {
@@ -52,8 +47,9 @@ var divide = (size) => {
         map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
         map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
-      ) / 4 + Math.random() * 4.3 * size - (1.7 * size);
-      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
+      ) / 4 + Math.random() * 4.3 * size - 1.7 * size;
+
+      map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
   for (var y = 0; y <= 1025; y += half) {
@@ -64,8 +60,9 @@ var divide = (size) => {
         map[((x + half) & 1023) + (y & 1023) * 1025] +
         map[(x & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + (y & 1023) * 1025]
-      ) / 4 + Math.random() * 4.3 * size - (1.7 * size);
-      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
+      ) / 4 + Math.random() * 4.3 * size - 1.7 * size;
+//) / 4 + [0.4,0.76,0.23,0.6,0.8,0.32][x%6] * 4.3 * size - 1.5 * size;
+      map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
   divide(half);
@@ -93,14 +90,14 @@ map.forEach((r,i)=>{
 
   //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
   colormap[tmp        ] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
-    ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry)) )  ) |
-    ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) ) << 8) |
-    (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) ) << 16;
+    (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
+    (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
+    ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
   colormap[tmp+2000000] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
-    ((((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry)) )  ) |
-    ((((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) ) << 8) |
-    (( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) ) << 16;
+    (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
+    (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
+    ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
   heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
 });
@@ -146,11 +143,12 @@ setInterval(() => {
 
         // 90 degree field of view
         //var prx =   cosang * z - sinang * z;
-        var plx =  -cosang * z - sinang * z;
-        var ply =   sinang * z - cosang * z;
+        var plx = -cosang * z - sinang * z;
+        var ply = sinang * z - cosang * z;
         //var pry =  -sinang * z - cosang * z;
 
         var dx = ((cosang * z - sinang * z) - plx) / a.width;
+        //TODO checkme
         var dy = ((-sinang * z - cosang * z) - ply) / a.width;
         plx += cameraX;
         ply += cameraY;
