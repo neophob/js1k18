@@ -131,13 +131,14 @@ setInterval(() => {
 
 // ## DRAW BACKGROUND
 
-    //show blitz in the background
+    //show lightning in the background
     buf32.fill(time%16 ? 0xff<<24 : 0xf4000538);
 
 // ## VOXEL START
 
-    //if there's a blitz - select other colormap with highlighted colors
+    //if there's a lightning - select other colormap with highlighted colors
     tmp = time%16 ? 0 : 2000000;
+    //cameraHeight += time%16 ? 0 : 50;
 
     hiddeny.fill(a.height);
     // Draw from front to back, 1024 is CAMERA DISTANCE
