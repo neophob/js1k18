@@ -2,6 +2,7 @@
 
 BABILI=./node_modules/.bin/babel-minify
 REGPACK=./node_modules/.bin/regpack
+UGLIFY=./node_modules/.bin/uglifyjs
 OUT=./dist
 
 BABELMINIFY_OPT="--tdz --numericLiterals --propertyLiterals --builtIns"
@@ -27,6 +28,11 @@ BAB_PACK() {
   $REGPACK $OUT/in $OPT > $OUT/js1k-babili-regpacked-$2.js
 }
 
+UGLIFY_PACK() {
+  $UGLIFY -c -m --timings --warn -o ./dist/uglify.js -- js1k.js
+  $REGPACK $OUT/uglify.js $REGPACK_OPT1 > $OUT/js1k-uglify-regpacked-1.js
+}
+
 REGPACK_PACK() {
   OPT=$1
   $REGPACK js1k.js $OPT > $OUT/js1k-regpacked-1.js
@@ -50,6 +56,7 @@ BAB_PACK "$REGPACK_OPTB" B
 BAB_PACK "$REGPACK_OPTC" C
 #BAB_PACK "$REGPACK_OPTD" D
 #BAB_PACK "$REGPACK_OPTE" E
+UGLIFY_PACK
 echo "[MINIME] WAIT"
 
 ls -alS $OUT/* | sort -k 5 -n
