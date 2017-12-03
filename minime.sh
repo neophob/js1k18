@@ -3,6 +3,7 @@
 BABILI=./node_modules/.bin/babel-minify
 REGPACK=./node_modules/.bin/regpack
 UGLIFY=./node_modules/.bin/uglifyjs
+CLOSURE=./node_modules/.bin/google-closure-compiler-js
 OUT=./dist
 
 BABELMINIFY_OPT="--tdz --numericLiterals --propertyLiterals --builtIns"
@@ -33,6 +34,11 @@ UGLIFY_PACK() {
   $REGPACK $OUT/uglify.js $REGPACK_OPT1 > $OUT/js1k-uglify-regpacked-1.js
 }
 
+CLOSURE_PACK() {
+  $CLOSURE --languageOut ES6 js1k.js > ./dist/closure.js
+  $REGPACK $OUT/closure.js $REGPACK_OPT1 > $OUT/js1k-closure-regpacked-1.js
+}
+
 REGPACK_PACK() {
   OPT=$1
   $REGPACK js1k.js $OPT > $OUT/js1k-regpacked-1.js
@@ -42,6 +48,7 @@ echo "[MINIME] START"
 rm -f $OUT/*
 
 $BABILI js1k.js $BABELMINIFY_OPT > $OUT/in
+CLOSURE_PACK&
 BAB_PACK "$REGPACK_OPT1" 1
 BAB_PACK "$REGPACK_OPT2" 2
 BAB_PACK "$REGPACK_OPT3" 3
