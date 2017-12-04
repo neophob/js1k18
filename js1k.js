@@ -114,8 +114,8 @@ setInterval(() => {
     var sinang = Math.sin(cameraAngle);
     var cosang = Math.sin(cameraAngle + 1.6);
 
-    cameraX -=  sinang * time * 0.1;
-    cameraY -=  cosang * time * 0.1;
+    cameraX -=  sinang * time / 10;
+    cameraY -=  cosang * time / 10;
 
     var cameraHeight = heightmap[
       /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
