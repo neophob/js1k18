@@ -7,6 +7,7 @@ CLOSURE=./node_modules/.bin/google-closure-compiler-js
 OUT=./dist
 
 BABELMINIFY_OPT="--tdz --numericLiterals --propertyLiterals --builtIns"
+REGPACK_OPT0="- --useES6 true --hash2DContext --contextVariableName c --crushGainFactor 2 --crushLengthFactor 1 --crushCopiesFactor 0 --crushTiebreakerFactor 0"
 REGPACK_OPT1="- --useES6 true --hash2DContext --contextVariableName c --crushGainFactor 5 --crushLengthFactor 1 --crushCopiesFactor 0 --crushTiebreakerFactor 0"
 REGPACK_OPT2="- --useES6 true --hash2DContext --contextVariableName c --crushGainFactor 3 --crushLengthFactor 2 --crushCopiesFactor 1"
 REGPACK_OPT3="- --useES6 true --hash2DContext --contextVariableName 'c' --crushGainFactor 4 --crushLengthFactor 4 --crushCopiesFactor 1"

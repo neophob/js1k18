@@ -30,7 +30,7 @@ var imagedata = c.createImageData(a.width, a.height);
 // GENERATE HEIGHTMAP START
 
 // array size is 1025x1025 - however 2 millions can be written much shorter
-var map = new Array(2000000);
+var map = new Array(2e6);
 map.fill(0);
 
 var tmp;
@@ -94,7 +94,7 @@ map.forEach((r,i)=>{
     (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
     ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
-  colormap[tmp+2000000] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
+  colormap[tmp+2e6] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
     (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
     (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
     ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
@@ -118,11 +118,11 @@ setInterval(() => {
     cameraY -=  cosang * time / 10;
 
     var cameraHeight = heightmap[
-      /* get map offset*/ ((Math.floor(cameraY) & 1023) << 10) + (Math.floor(cameraX) & 1023)
+      /* get map offset*/ (((cameraY|0) & 1023) << 10) + ((cameraX|0) & 1023)
     ];
 
     time = Date.now();
-    cameraAngle += Math.sin(0.0008*time)/cameraHeight;
+    cameraAngle += Math.sin(time/1250)/cameraHeight;
 
 // ## DRAW BACKGROUND
 
