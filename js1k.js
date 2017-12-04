@@ -137,9 +137,9 @@ setInterval(() => {
 
     hiddeny.fill(a.height);
     // Draw from front to back, 1024 is CAMERA DISTANCE
-    for (var z=1; z<3000; z++) {
+    for (var z=1; z<2000; z++) {
         //improve rendering speed, increase z as we go away from the front
-        if (z > 700) z+=2;
+        //if (z > 700) z+=2;
 
         // 90 degree field of view
         //var prx =   cosang * z - sinang * z;
@@ -155,11 +155,11 @@ setInterval(() => {
 
         // DEFINE HEIGHT (1/z * 240)
         var invz = 240 / z;
-        for (var i=0; i<a.width; i++) { 
+        for (var i=0; i<a.width; i++) {
           // |0 is math floor - way faster here than Math.floor
           var mapoffset = (((ply|0    ) & 1023) << 10) + ((plx|0) & 1023);
           //var heightonscreen = ((192 + cameraHeight - heightmap[mapoffset]) * invz + 127/*cameraHorizon|0*/)|0;
-          var heightonscreen = ((255 + cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/)|0
+          var heightonscreen = ((192 + cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/)|0
 
           //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
           if (heightonscreen < hiddeny[i]) {
