@@ -78,8 +78,8 @@ map.forEach((r,i)=>{
   //generate smooth color dynamically, 5 equals the size of the pallete array
   var ofs = (heightMapEntry/(255 / 5))|0;
   //fancy pallette - if no entry exists, its converted to 0
-  var col1 = [[], [0x58], [0xac,0x67,0x62], [0x58],[]][(ofs+1)%5];
-  var col2 = [[], [0x58], [0xac,0x67,0x62], [0x58],[]][(ofs)%5];
+  var col1 = [[], [0x60], [0xac,0x67,0x60], [0x60],[]][(ofs+1)%5];
+  var col2 = [[], [0x60], [0xac,0x67,0x60], [0x60],[]][(ofs)%5];
   var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
   //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
@@ -116,7 +116,7 @@ setInterval(() => {
     ];
 
     time = Date.now();
-    cameraAngle += Math.sin(time/1250)/cameraHeight;
+    cameraAngle += Math.sin(time/1000)/cameraHeight;
 
 // ## DRAW BACKGROUND
 
