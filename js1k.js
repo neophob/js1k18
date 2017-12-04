@@ -155,7 +155,7 @@ setInterval(() => {
 
         // DEFINE HEIGHT (1/z * 240)
         var invz = 240 / z;
-        for (var i=0; i<a.width; i++) {
+        for (var i=0; i<a.width; i++) { 
           // |0 is math floor - way faster here than Math.floor
           var mapoffset = (((ply|0    ) & 1023) << 10) + ((plx|0) & 1023);
           //var heightonscreen = ((192 + cameraHeight - heightmap[mapoffset]) * invz + 127/*cameraHorizon|0*/)|0;
