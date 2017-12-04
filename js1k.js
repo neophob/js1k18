@@ -18,11 +18,8 @@ var tmpBuffer = new ArrayBuffer(a.width * a.height << 2);
 var buf32  = new Uint32Array(tmpBuffer);
 var buf8   = new Uint8Array(tmpBuffer);
 var hiddeny = new Uint32Array(a.width);
-
 var heightmap = [];
 var colormap = [];
-//var colormap  = new Uint32Array(4000000);
-
 var time=0;
 
 var imagedata = c.createImageData(a.width, a.height);
@@ -31,7 +28,7 @@ var imagedata = c.createImageData(a.width, a.height);
 
 // array size is 1025x1025 - however 2 millions can be written much shorter
 var map = new Array(2e6);
-map.fill(0);
+map.fill(0xff);
 
 var tmp;
 
@@ -48,7 +45,6 @@ var divide = (size) => {
         map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
       ) / 4 + Math.random() * 4.3 * size - 1.7 * size;
-
       map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
@@ -61,7 +57,6 @@ var divide = (size) => {
         map[(x & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + (y & 1023) * 1025]
       ) / 4 + Math.random() * 4.3 * size - 1.7 * size;
-//) / 4 + [0.4,0.76,0.23,0.6,0.8,0.32][x%6] * 4.3 * size - 1.5 * size;
       map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
@@ -73,7 +68,6 @@ var divide = (size) => {
 // generate heigthmap
 divide(1<<10);
 tmp=0;
-
 map.forEach((r,i)=>{
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
   if (i%1025==1024) {
@@ -84,12 +78,12 @@ map.forEach((r,i)=>{
   //generate smooth color dynamically, 5 equals the size of the pallete array
   var ofs = (heightMapEntry/(255 / 5))|0;
   //fancy pallette - if no entry exists, its converted to 0
-  var col1 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs+1)%5];
-  var col2 = [[], [0x58,5], [0xac,0x67,0x62], [0x58,5],[]][(ofs)%5];
+  var col1 = [[], [0x58], [0xac,0x67,0x62], [0x58],[]][(ofs+1)%5];
+  var col2 = [[], [0x58], [0xac,0x67,0x62], [0x58],[]][(ofs)%5];
   var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
   //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
-  colormap[tmp        ] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
+  colormap[tmp    ] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
     (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
     (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
     ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
@@ -106,9 +100,9 @@ map.forEach((r,i)=>{
 setInterval(() => {
 
 // ## UPDATE CAMERA
-//input.leftright -1 .. 1
-//cameraHorizon -500 .. 500
-//input.updown init: -10 .. 10
+    //input.leftright -1 .. 1
+    //cameraHorizon -500 .. 500
+    //input.updown init: -10 .. 10
     time = Date.now()-time;
 
     var sinang = Math.sin(cameraAngle);
@@ -138,49 +132,46 @@ setInterval(() => {
     hiddeny.fill(a.height);
     // Draw from front to back, 1024 is CAMERA DISTANCE
     for (var z=1; z<2000; z++) {
-        //improve rendering speed, increase z as we go away from the front
-        //if (z > 700) z+=2;
+      //improve rendering speed, increase z as we go away from the front
+      //if (z > 700) z+=2;
 
-        // 90 degree field of view
-        //var prx =   cosang * z - sinang * z;
-        var plx = -cosang * z - sinang * z;
-        var ply = sinang * z - cosang * z;
-        //var pry =  -sinang * z - cosang * z;
+      // 90 degree field of view
+      var plx = -cosang * z - sinang * z;
+      var ply = sinang * z - cosang * z;
 
-        var dx = ((cosang * z - sinang * z) - plx) / a.width;
-        //TODO checkme
-        var dy = ((-sinang * z - cosang * z) - ply) / a.width;
-        plx += cameraX;
-        ply += cameraY;
+      var dx = ((cosang * z - sinang * z) - plx) / a.width;
+      //TODO checkme
+      var dy = ((-sinang * z - cosang * z) - ply) / a.width;
+      plx += cameraX;
+      ply += cameraY;
 
-        // DEFINE HEIGHT (1/z * 240)
-        var invz = 240 / z;
-        for (var i=0; i<a.width; i++) {
-          // |0 is math floor - way faster here than Math.floor
-          var mapoffset = (((ply|0    ) & 1023) << 10) + ((plx|0) & 1023);
-          //var heightonscreen = ((192 + cameraHeight - heightmap[mapoffset]) * invz + 127/*cameraHorizon|0*/)|0;
-          var heightonscreen = ((192 + cameraHeight - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/)|0
+      // DEFINE HEIGHT (1/z * 240)
+      var invz = 240 / z;
+      for (var i=0; i<a.width; i++) {
+        // |0 is math floor - way faster here than Math.floor
+        var mapoffset = (((ply|0) & 1023) << 10) + ((plx|0) & 1023);
+        //var heightonscreen = ((192 + cameraHeight - heightmap[mapoffset]) * invz + 127/*cameraHorizon|0*/)|0;
+        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/)|0
 
-          //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
-          if (heightonscreen < hiddeny[i]) {
-          //  if (heightonscreen < 0) heightonscreen = 0;
-            // get offset on screen for the vertical line
-            var offset = (heightonscreen * a.width) + i;
-            for (var k = heightonscreen; k < hiddeny[i]; k++) {
-                buf32[offset] = colormap[tmp + mapoffset];
-                offset += a.width;
-            }
-            hiddeny[i] = heightonscreen;
+        //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
+        if (heightonscreen < hiddeny[i]) {
+          // get offset on screen for the vertical line
+          var offset = (heightonscreen * a.width) + i;
+          for (var k = heightonscreen; k < hiddeny[i]; k++) {
+            buf32[offset] = colormap[tmp + mapoffset];
+            offset += a.width;
           }
-          //DrawVerticalLine end
-
-          plx += dx;
-          ply += dy;
+          hiddeny[i] = heightonscreen;
         }
+        //DrawVerticalLine end
+
+        plx += dx;
+        ply += dy;
+      }
     }
 // ## FLIP SCREEN
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
-}, 0);
+},0);
 
 })();
