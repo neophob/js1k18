@@ -14,14 +14,13 @@ var cameraX = 0;
 var cameraY = 0;
 var cameraAngle = 0;
 //buf32 and buf8 are just ArrayBuffer views to convert data
-var tmpBuffer = new ArrayBuffer(a.width * a.height << 2);
-var buf32  = new Uint32Array(tmpBuffer);
-var buf8   = new Uint8Array(tmpBuffer);
+var tmp = new ArrayBuffer(a.width * a.height << 2);
+var buf32  = new Uint32Array(tmp);
+var buf8   = new Uint8Array(tmp);
 var hiddeny = new Uint32Array(a.width);
 var heightmap = [];
 var colormap = [];
 var time=0;
-
 var imagedata = c.createImageData(a.width, a.height);
 
 // GENERATE HEIGHTMAP START
@@ -29,8 +28,6 @@ var imagedata = c.createImageData(a.width, a.height);
 // array size is 1025x1025 - however 2 millions can be written much shorter
 var map = new Array(2e6);
 map.fill(0xff);
-
-var tmp;
 
 var divide = (size) => {
   if (size < 2) return;
