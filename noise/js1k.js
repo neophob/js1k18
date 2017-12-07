@@ -1,47 +1,41 @@
-var map = [];
-map[1025 * 1025] = 0;
-map.fill(0);
+var map = new Array(2e6);
+map.fill(0xff);
 
 var divide = (size) => {
   if (size < 2) return;
   var half = size / 2;
-  //roughness is 2.4
-  var scale = 1.7 * size;
 
-  for (var y = half; y < 1024; y += size) {
-    for (var x = half; x < 1024; x += size) {
+  for (var y = half; y < 1025; y += size) {
+    for (var x = half; x < 1025; x += size) {
       //SQUARE
       tmp = (
         map[((x - half) & 1023) + ((y - half) & 1023) * 1025] +
         map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
         map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
-      ) / 4 + [0.4,0.16,0.23,0.6,0.8][x%5] * 4.3 * size - 1.5 * size;
-      //) / 4 + Math.random() * 4.3 * size - (1.2 * size);
-
-      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
+      ) / 4 + Math.random() * 4 * size - 1.5 * size;
+      map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
-  for (var y = 0; y <= 1024; y += half) {
-    for (var x = (y + half) % size; x <= 1024; x += size) {
+  for (var y = 0; y <= 1025; y += half) {
+    for (var x = (y + half) % size; x <= 1025; x += size) {
       //DIAMOND
       tmp = (
         map[(x & 1023) + ((y - half) & 1023) * 1025] +
         map[((x + half) & 1023) + (y & 1023) * 1025] +
         map[(x & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + (y & 1023) * 1025]
-      ) / 4 + [0.4,0.76,0.23,0.6,0.8,0.32][y%6] * 4.3 * size - 1.5 * size;
-//      ) / 4 + Math.random() * 4.3 * size - 1.5 * size;
-    //) / 4 + Math.random() * 4.3 * size - (1.2 * size);
-      map[x + 1025 * y] = (tmp<0) ? 0 : (tmp>1024) ? 1024 : tmp;
+      ) / 4 + Math.random() * 4 * size - 1.5 * size;
+      map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
-  divide(size /2);
-}
+  divide(half);
+};
 
 //map[0] = map[0] = 1024;
 divide(1024);
-var pallete = [0x00ff00, 0x000558, 0xa2a7cc, 0x000558, 0];
+//var pallete = [0x0, 0x60, 0x6067ac, 0x60, 0x00];
+var pallete = [0x0, 0x60, 0x103090, 0x60, 0x00];
 var tmp=0;
 var imgdata = c.getImageData(0,0, 1024, 1024);
 
@@ -55,10 +49,10 @@ map.forEach((r,i)=>{
     var heightMapEntry = Math.floor(r/4.01);
 
     //generate smooth color dynamically, 4 equals the size of the pallete array
-    var ofs = Math.floor(heightMapEntry/(255 / 4));
-    var col1 = pallete[(ofs+1)%4];
-    var col2 = pallete[(ofs)%4];
-    var selectedPalleteEntry = 4*(heightMapEntry%(255 / 4));
+    var ofs = Math.floor(heightMapEntry/(255 / 5));
+    var col1 = pallete[(ofs+1)%5];
+    var col2 = pallete[(ofs)%5];
+    var selectedPalleteEntry = 5*(heightMapEntry%(255 / 5));
     var oppositeColor = 255-selectedPalleteEntry;
 
 /*
@@ -86,7 +80,7 @@ r -= 5;
     imgdata.data[4*tmp+3] = 255;  // APLHA (0-255)
 
     // this is the dead cheap shadow mapper
-    if (i > 2 && heightMapEntry>100 && map[(i - 1)] < r) {
+    if (heightMapEntry>100 && map[(i - 1)] < r) {
       imgdata.data[4*tmp+3]=0xe0;
     }
 /*    if (heightMapEntry - 20 > black ) black = false;

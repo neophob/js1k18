@@ -41,7 +41,7 @@ var divide = (size) => {
         map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
         map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
-      ) / 4 + Math.random() * 4.3 * size - 1.7 * size;
+      ) / 4 + Math.random() * 4 * size - 1.5 * size;
       map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
@@ -53,7 +53,7 @@ var divide = (size) => {
         map[((x + half) & 1023) + (y & 1023) * 1025] +
         map[(x & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + (y & 1023) * 1025]
-      ) / 4 + Math.random() * 4.3 * size - 1.7 * size;
+      ) / 4 + Math.random() * 4 * size - 1.5 * size;
       map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
@@ -75,8 +75,9 @@ map.forEach((r,i)=>{
   //generate smooth color dynamically, 5 equals the size of the pallete array
   var ofs = (heightMapEntry/(255 / 5))|0;
   //fancy pallette - if no entry exists, its converted to 0
-  var col1 = [[], [0x60], [0xac,0x67,0x60], [0x60],[]][(ofs+1)%5];
-  var col2 = [[], [0x60], [0xac,0x67,0x60], [0x60],[]][(ofs)%5];
+  var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][(ofs+1)%5];
+  var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][(ofs)%5];
+
   var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
   //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
@@ -117,13 +118,13 @@ setInterval(() => {
 // ## DRAW BACKGROUND
 
     //show lightning in the background
-    buf32.fill(0xff<<24 | (time%16 ? 0 : 0x38));
+    buf32.fill(0xff<<24 | (time%16 ? 0 : 0x60));
 
 // ## VOXEL START
 
     //if there's a lightning - select other colormap with highlighted colors
     tmp = time%16 ? 0 : 2000000;
-    //cameraHeight += time%16 ? 0 : 50;
+    //cameraHeight += time%16 ? 0 : 10;
 
     hiddeny.fill(a.height);
     // Draw from front to back, 1024 is CAMERA DISTANCE
