@@ -151,7 +151,7 @@ setInterval(() => {
       ply += cameraY;
 
       // DEFINE HEIGHT (1/z * 240)
-      var invz = 240 / z;
+      var invz = a.width/4 / z;
       for (var i=0; i<a.width; i++) {
         // |0 is math floor - way faster here than Math.floor
         var mapoffset = (((ply|0) & 1023) << 10) + ((plx|0) & 1023);
