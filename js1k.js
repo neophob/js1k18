@@ -60,10 +60,12 @@ var divide = (size) => {
   divide(half);
 };
 
+
 //set initial points - not needed
 //map[0] = 1024;
 // generate heigthmap
 divide(1<<10);
+
 tmp=0;
 map.forEach((r,i)=>{
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
@@ -72,6 +74,7 @@ map.forEach((r,i)=>{
   }
 //    var heightMapEntry = Math.floor(255 * (r/1024));
   var heightMapEntry = r>>2;
+
   //generate smooth color dynamically, 5 equals the size of the pallete array
   var ofs = (heightMapEntry/(255 / 5))|0;
   //fancy pallette - if no entry exists, its converted to 0
@@ -94,7 +97,7 @@ map.forEach((r,i)=>{
   heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
 });
 // GENERATE HEIGHTMAP END
-
+var cameraHeight=0;
 setInterval(() => {
 
 // ## UPDATE CAMERA
@@ -108,9 +111,9 @@ setInterval(() => {
     cameraX -=  sinang * (Date.now()-time) / 10;
     cameraY -=  cosang * (Date.now()-time) / 10;
 
-    var cameraHeight = heightmap[
+    cameraHeight = (cameraHeight + heightmap[
       /* get map offset*/ (((cameraY|0) & 1023) << 10) + ((cameraX|0) & 1023)
-    ];
+    ])>>1;
 
     time = Date.now();
     cameraAngle += Math.sin(time/1000)/cameraHeight;
@@ -118,14 +121,17 @@ setInterval(() => {
 // ## DRAW BACKGROUND
 
     //show lightning in the background
-    buf32.fill(0xff<<24 | (time%16 ? 0 : 0x60));
+    buf32.fill((time%16 ? 0xff : 0xe5)<<24);
 
 // ## VOXEL START
 
     //if there's a lightning - select other colormap with highlighted colors
     tmp = time%16 ? 0 : 2000000;
+/*    if (tmp) {
+      cameraHeight += time%64;
+      //cameraAngle += time%32;
+    }*/
     //cameraHeight += time%16 ? 0 : 10;
-
     hiddeny.fill(a.height);
     // Draw from front to back, 1024 is CAMERA DISTANCE
     for (var z=1; z<2000; z++) {
@@ -138,7 +144,7 @@ setInterval(() => {
 
       var dx = ((cosang * z - sinang * z) - plx) / a.width;
       //TODO checkme
-      var dy = ((-sinang * z - cosang * z) - ply) / a.width;
+      var dy = ((-sinang * z - cosang * z) - ply) / a.height;
       plx += cameraX;
       ply += cameraY;
 
@@ -148,8 +154,8 @@ setInterval(() => {
         // |0 is math floor - way faster here than Math.floor
         var mapoffset = (((ply|0) & 1023) << 10) + ((plx|0) & 1023);
         //var heightonscreen = ((192 + cameraHeight - heightmap[mapoffset]) * invz + 127/*cameraHorizon|0*/)|0;
-        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 150/*cameraHorizon|0*/)|0
-
+        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0
+//if (heightonscreen<0) heightonscreen=0;//console.log('heightonscreen',heightonscreen);
         //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
         if (heightonscreen < hiddeny[i]) {
           // get offset on screen for the vertical line

@@ -34,6 +34,7 @@ var divide = (size) => {
 
 //map[0] = map[0] = 1024;
 divide(1024);
+
 //var pallete = [0x0, 0x60, 0x6067ac, 0x60, 0x00];
 var pallete = [0x0, 0x60, 0x103090, 0x60, 0x00];
 var tmp=0;
