@@ -73,15 +73,13 @@ map.forEach((r,i)=>{
     //cheat a bit, make brightest color visible - but cost about 8-12 bytes!
     if (heightMapEntry==255) colormap[i]|=0x100b0b;
 */
-
-r -= 5;
     imgdata.data[4*tmp+2] = (((((col1>>16)&255)*selectedPalleteEntry + ((col2>>16)&255)*oppositeColor) >>8) );
     imgdata.data[4*tmp+1] = (((((col1>>8)&255)*selectedPalleteEntry + ((col2>>8)&255)*oppositeColor) >>8) );
     imgdata.data[4*tmp+0] = (((col1&255)*selectedPalleteEntry + (col2&255)*oppositeColor) >>8);
     imgdata.data[4*tmp+3] = 255;  // APLHA (0-255)
 
     // this is the dead cheap shadow mapper
-    if (heightMapEntry>100 && map[(i - 1)] < r) {
+    if (ofs+heightMapEntry>100+r%16 && map[(i - 1)] < r) {
       imgdata.data[4*tmp+3]=0xe0;
     }
 /*    if (heightMapEntry - 20 > black ) black = false;

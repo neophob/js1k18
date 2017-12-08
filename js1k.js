@@ -10,7 +10,7 @@
 
 (() => {
 
-var cameraX = 0;
+var cameraX = 127;
 var cameraY = 0;
 var cameraAngle = 0;
 //buf32 and buf8 are just ArrayBuffer views to convert data
@@ -84,12 +84,12 @@ map.forEach((r,i)=>{
   var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
   //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
-  colormap[tmp    ] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
+  colormap[tmp    ] = (((heightMapEntry>100+r%16 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
     (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
     (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
     ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
-  colormap[tmp+2e6] = (((heightMapEntry>100 && map[(i - 1)] < r) ? 0xe5 : 0xff)<<24) |
+  colormap[tmp+2e6] = (((heightMapEntry>100+r%16 && map[(i - 1)] < r) ? 0xe7 : 0xff)<<24) |
     (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
     (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
     ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
@@ -121,12 +121,17 @@ setInterval(() => {
 // ## DRAW BACKGROUND
 
     //show lightning in the background
-    buf32.fill((time%16 ? 0xff : 0xe5)<<24);
+    buf32.fill((time%16 ?
+      //regular drawing
+      (tmp=0,   0xff) :
+
+      //lightning mode
+      (tmp=2e6, cameraHeight += 16, 0xe5))<<24);
 
 // ## VOXEL START
 
     //if there's a lightning - select other colormap with highlighted colors
-    tmp = time%16 ? 0 : 2000000;
+    //tmp = time%16 ? 0 : 2000000;
 /*    if (tmp) {
       cameraHeight += time%64;
       //cameraAngle += time%32;
@@ -153,9 +158,8 @@ setInterval(() => {
       for (var i=0; i<a.width; i++) {
         // |0 is math floor - way faster here than Math.floor
         var mapoffset = (((ply|0) & 1023) << 10) + ((plx|0) & 1023);
-        //var heightonscreen = ((192 + cameraHeight - heightmap[mapoffset]) * invz + 127/*cameraHorizon|0*/)|0;
+        // beware: if heightonscreen < 0 it will stop rendering!
         var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0
-//if (heightonscreen<0) heightonscreen=0;//console.log('heightonscreen',heightonscreen);
         //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
         if (heightonscreen < hiddeny[i]) {
           // get offset on screen for the vertical line
