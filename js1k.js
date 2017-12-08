@@ -13,6 +13,8 @@
 var cameraX = 127;
 var cameraY = 0;
 var cameraAngle = 0;
+var cameraHeight=0;
+
 //buf32 and buf8 are just ArrayBuffer views to convert data
 var tmp = new ArrayBuffer(a.width * a.height << 2);
 var buf32  = new Uint32Array(tmp);
@@ -98,7 +100,7 @@ map.forEach((r,i)=>{
   heightmap[tmp++] = heightMapEntry < 70 ? 70 : heightMapEntry;
 });
 // GENERATE HEIGHTMAP END
-var cameraHeight=0;
+
 setInterval(() => {
 
 // ## UPDATE CAMERA
