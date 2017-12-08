@@ -28,6 +28,8 @@ mkdir -p $OUT
 BAB_PACK() {
   OPT=$1
   $REGPACK $OUT/in $OPT > $OUT/js1k-babili-regpacked-$2.js
+  printf %s "$(cat $OUT/js1k-babili-regpacked-$2.js)" > $OUT/js1k-babili-regpacked-$2-no-newlines.js
+  rm $OUT/js1k-babili-regpacked-$2.js
 }
 
 UGLIFY_PACK() {

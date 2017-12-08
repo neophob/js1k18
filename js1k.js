@@ -28,8 +28,8 @@ var imagedata = c.createImageData(a.width, a.height);
 // GENERATE HEIGHTMAP START
 
 // array size is 1025x1025 - however 2 millions can be written much shorter
-var map = new Array(2e6);
-map.fill(0xff);
+var mapOrOffset = new Array(2e6);
+mapOrOffset.fill(0xff);
 
 var divide = (size) => {
   if (size < 2) return;
@@ -39,24 +39,24 @@ var divide = (size) => {
     for (var x = half; x < 1025; x += size) {
       //SQUARE
       tmp = (
-        map[((x - half) & 1023) + ((y - half) & 1023) * 1025] +
-        map[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
-        map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
-        map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
+        mapOrOffset[((x - half) & 1023) + ((y - half) & 1023) * 1025] +
+        mapOrOffset[((x + half) & 1023) + ((y - half) & 1023) * 1025] +
+        mapOrOffset[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
+        mapOrOffset[((x - half) & 1023) + ((y + half) & 1023) * 1025]
       ) / 4 + Math.random() * 4 * size - 1.5 * size;
-      map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
+      mapOrOffset[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
   for (var y = 0; y <= 1025; y += half) {
     for (var x = (y + half) % size; x <= 1025; x += size) {
       //DIAMOND
       tmp = (
-        map[(x & 1023) + ((y - half) & 1023) * 1025] +
-        map[((x + half) & 1023) + (y & 1023) * 1025] +
-        map[(x & 1023) + ((y + half) & 1023) * 1025] +
-        map[((x - half) & 1023) + (y & 1023) * 1025]
+        mapOrOffset[(x & 1023) + ((y - half) & 1023) * 1025] +
+        mapOrOffset[((x + half) & 1023) + (y & 1023) * 1025] +
+        mapOrOffset[(x & 1023) + ((y + half) & 1023) * 1025] +
+        mapOrOffset[((x - half) & 1023) + (y & 1023) * 1025]
       ) / 4 + Math.random() * 4 * size - 1.5 * size;
-      map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
+      mapOrOffset[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
     }
   }
   divide(half);
@@ -69,7 +69,7 @@ var divide = (size) => {
 divide(1<<10);
 
 tmp=0;
-map.forEach((r,i)=>{
+mapOrOffset.forEach((r,i)=>{
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
   if (i%1025==1024) {
     return
@@ -87,12 +87,12 @@ map.forEach((r,i)=>{
 
   //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
   //note: instead the "high resolution" shadowmap (i-1), use (i-10) to get a snowy map
-  colormap[tmp    ] = (((heightMapEntry>100+r%16 && map[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
+  colormap[tmp    ] = (((heightMapEntry>100+r%16 && mapOrOffset[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
     (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
     (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
     ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
-  colormap[tmp+2e6] = (((heightMapEntry>100+r%16 && map[(i - 1)] < r) ? 0xe7 : 0xff)<<24) |
+  colormap[tmp+2e6] = (((heightMapEntry>100+r%16 && mapOrOffset[(i - 1)] < r) ? 0xe7 : 0xff)<<24) |
     (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
     (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
     ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
@@ -128,18 +128,12 @@ setInterval(() => {
       //regular drawing
       (tmp=0,   0xff) :
 
-      //lightning mode
+      //lightning mode - select other colormap with highlighted colors and shake camera
       (tmp=2e6, cameraHeight += 16, 0xe5))<<24);
 
 // ## VOXEL START
 
-    //if there's a lightning - select other colormap with highlighted colors
-    //tmp = time%16 ? 0 : 2000000;
-/*    if (tmp) {
-      cameraHeight += time%64;
-      //cameraAngle += time%32;
-    }*/
-    //cameraHeight += time%16 ? 0 : 10;
+    //if there's a lightning -
     hiddeny.fill(a.height);
     // Draw from front to back, 1024 is CAMERA DISTANCE
     for (var z=1; z<2000; z++) {
@@ -166,10 +160,10 @@ setInterval(() => {
         //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
         if (heightonscreen < hiddeny[i]) {
           // get offset on screen for the vertical line
-          var offset = (heightonscreen * a.width) + i;
+          mapOrOffset = (heightonscreen * a.width) + i;
           for (var k = heightonscreen; k < hiddeny[i]; k++) {
-            buf32[offset] = colormap[tmp + mapoffset];
-            offset += a.width;
+            buf32[mapOrOffset] = colormap[tmp + mapoffset];
+            mapOrOffset += a.width;
           }
           hiddeny[i] = heightonscreen;
         }
