@@ -79,7 +79,7 @@ map.forEach((r,i)=>{
     imgdata.data[4*tmp+3] = 255;  // APLHA (0-255)
 
     // this is the dead cheap shadow mapper
-    if (ofs+heightMapEntry>100+r%16 && map[(i - 1)] < r) {
+    if (ofs+heightMapEntry>100+r%16 && map[(i + 8)] < r) {
       imgdata.data[4*tmp+3]=0xe0;
     }
 /*    if (heightMapEntry - 20 > black ) black = false;
