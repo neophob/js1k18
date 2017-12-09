@@ -10,7 +10,7 @@
 
 (() => {
 
-var cameraX = 127;
+var cameraX = 0;
 var cameraY = 0;
 var cameraAngle = 0;
 var cameraHeight=0;
