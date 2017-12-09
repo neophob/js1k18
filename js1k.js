@@ -135,14 +135,13 @@ setInterval(() => {
     //if there's a lightning -
     hiddeny.fill(a.height);
     // Draw from front to back, implement primitive LOD after a certain distance
-    for (var z=5; z<2e3; z > 700 ? z+=4 : z++) {
+    for (var z=5; z<2e3; z > 900 ? z+=4 : z++) {
 
       // 90 degree field of view
       var plx = -cosang * z - sinang * z;
       var ply = sinang * z - cosang * z;
 
       var dx = ((cosang * z - sinang * z) - plx) / a.width;
-      //TODO checkme
       var dy = ((-sinang * z - cosang * z) - ply) / a.height;
       plx += cameraX;
       ply += cameraY;
@@ -157,7 +156,7 @@ setInterval(() => {
         //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
         if (heightonscreen < hiddeny[i]) {
           // get offset on screen for the vertical line
-          mapOrOffset = (heightonscreen * a.width) + i;
+          mapOrOffset = heightonscreen * a.width + i;
           for (var k = heightonscreen; k < hiddeny[i]; k++) {
             buf32[mapOrOffset] = colormap[tmp + mapoffset];
             mapOrOffset += a.width;
