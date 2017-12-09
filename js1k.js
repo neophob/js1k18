@@ -135,10 +135,8 @@ setInterval(() => {
 
     //if there's a lightning -
     hiddeny.fill(a.height);
-    // Draw from front to back, 1024 is CAMERA DISTANCE
-    for (var z=1; z<2000; z++) {
-      //improve rendering speed, increase z as we go away from the front
-      //if (z > 700) z+=2;
+    // Draw from front to back, implement primitive LOD after a certain distance
+    for (var z=5; z<2e3; z > 700 ? z+=4 : z++) {
 
       // 90 degree field of view
       var plx = -cosang * z - sinang * z;
