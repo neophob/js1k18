@@ -1,5 +1,5 @@
 var map = new Array(2e6);
-map.fill(0xff);
+map.fill(0);
 
 var divide = (size) => {
   if (size < 2) return;
@@ -14,7 +14,7 @@ var divide = (size) => {
         map[((x + half) & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + ((y + half) & 1023) * 1025]
       ) / 4 + Math.random() * 4 * size - 1.5 * size;
-      map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
+      map[x + 1025 * y] = (tmp<255) ? 255 : ((tmp>1024) ? 1024 : tmp);
     }
   }
   for (var y = 0; y <= 1025; y += half) {
@@ -26,7 +26,7 @@ var divide = (size) => {
         map[(x & 1023) + ((y + half) & 1023) * 1025] +
         map[((x - half) & 1023) + (y & 1023) * 1025]
       ) / 4 + Math.random() * 4 * size - 1.5 * size;
-      map[x + 1025 * y] = (tmp<0) ? 0 : ((tmp>1024) ? 1024 : tmp);
+      map[x + 1025 * y] = (tmp<255) ? 255 : ((tmp>1024) ? 1024 : tmp);
     }
   }
   divide(half);
@@ -79,7 +79,7 @@ map.forEach((r,i)=>{
     imgdata.data[4*tmp+3] = 255;  // APLHA (0-255)
 
     // this is the dead cheap shadow mapper
-    if (ofs+heightMapEntry>100+r%16 && map[(i + 8)] < r) {
+    if (ofs+heightMapEntry>100+r%16 && map[(i - 1)] < r) {
       imgdata.data[4*tmp+3]=0xe0;
     }
 /*    if (heightMapEntry - 20 > black ) black = false;
