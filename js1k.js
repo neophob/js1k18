@@ -13,7 +13,8 @@
 var cameraX = 0;
 var cameraY = 0;
 var cameraAngle = 0;
-var cameraHeight=0;
+// avoid beeing stuck at the beginning
+var cameraHeight=64;
 
 //buf32 and buf8 are just ArrayBuffer views to convert data
 var tmp = new ArrayBuffer(a.width * a.height << 2);
@@ -71,7 +72,7 @@ divide(1<<10);
 
 tmp=0;
 for (var l=0;l < 1024; l++) {
-  tmp = l%64 ? tmp : (64*(Math.random()*15))|0;
+  tmp = l%64 ? tmp : 64*((Math.random()*15)|0);
     for (var j=0;j < 64; j++) {
       mapOrOffset[(j+tmp) * 1025 +l] = 1024;
     }
@@ -163,6 +164,7 @@ setInterval(() => {
         var mapoffset = (((ply|0) & 1023) << 10) + ((plx|0) & 1023);
         // beware: if heightonscreen < 0 it will stop rendering!
         var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0
+
         //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
         if (heightonscreen < hiddeny[i]) {
           // get offset on screen for the vertical line
