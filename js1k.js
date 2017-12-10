@@ -68,11 +68,21 @@ var divide = (size) => {
 // generate heigthmap
 divide(1<<10);
 
+
+tmp=0;
+for (var l=0;l < 1024; l++) {
+  tmp = l%64 ? tmp : (64*(Math.random()*15))|0;
+    for (var j=0;j < 64; j++) {
+      mapOrOffset[(j+tmp) * 1025 +l] = 1024;
+    }
+}
+
+
 tmp=0;
 mapOrOffset.forEach((r,i)=>{
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
   if (i%1025==1024) {
-    return
+    return;
   }
   var heightMapEntry = r>>2;
 
@@ -118,7 +128,7 @@ setInterval(() => {
     ])>>1;
 
     time = Date.now();
-    cameraAngle += Math.sin(time/1000)/cameraHeight;
+    cameraAngle += Math.sin(time/1000)/96;
 
 // ## DRAW BACKGROUND
 
@@ -128,7 +138,7 @@ setInterval(() => {
       (tmp=0,   0xff) :
 
       //lightning mode - select other colormap with highlighted colors and shake camera
-      (tmp=2e6, cameraHeight += 16, 0xe5))<<24);
+      (tmp=2e6, cameraHeight += 8, 0xe5))<<24);
 
 // ## VOXEL START
 
@@ -142,7 +152,7 @@ setInterval(() => {
       var ply = sinang * z - cosang * z;
 
       var dx = ((cosang * z - sinang * z) - plx) / a.width;
-      var dy = ((-sinang * z - cosang * z) - ply) / a.height;
+      var dy = ((-sinang * z - cosang * z) - ply) / a.width;
       plx += cameraX;
       ply += cameraY;
 
