@@ -47,8 +47,8 @@ var divide = (size) => {
       mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp>1024) ? 1024 : tmp);
     }
   }
-  for (var y = 0; y <= 1025; y += half) {
-    for (var x = (y + half) % size; x <= 1025; x += size) {
+  for (var y = 0; y < 1025; y += half) {
+    for (var x = (y + half) % size; x < 1025; x += size) {
       //DIAMOND
       tmp = (
         mapOrOffset[(x & 1023) + ((y - half) & 1023) * 1025] +
