@@ -62,22 +62,19 @@ var divide = (size) => {
   }
   divide(half);
 };
-
-
-//set initial points - not needed
-//map[0] = 1024;
-// generate heigthmap
 divide(1<<10);
 
+// GENERATE BLACK BLOCKS
 
 tmp=0;
 for (var l=0;l < 1024; l++) {
-  tmp = l%64 ? tmp : 64*((Math.random()*15)|0);
+  tmp = l%64 ? tmp : ((Math.random()*15)|0) << 6;
     for (var j=0;j < 64; j++) {
       mapOrOffset[(j+tmp) * 1025 +l] = 1024;
     }
 }
 
+// GENERATE COLORMAP FROM HEIGHTMAP
 
 tmp=0;
 mapOrOffset.forEach((r,i)=>{
@@ -109,14 +106,10 @@ mapOrOffset.forEach((r,i)=>{
 
   heightmap[tmp++] = heightMapEntry;
 });
-// GENERATE HEIGHTMAP END
 
 setInterval(() => {
 
 // ## UPDATE CAMERA
-    //input.leftright -1 .. 1
-    //cameraHorizon -500 .. 500
-    //input.updown init: -10 .. 10
 
     var sinang = Math.sin(cameraAngle);
     var cosang = Math.sin(cameraAngle + 1.6);
@@ -124,16 +117,14 @@ setInterval(() => {
     cameraX -=  sinang * (Date.now()-time) / 10;
     cameraY -=  cosang * (Date.now()-time) / 10;
 
-    cameraHeight = (cameraHeight + heightmap[
-      /* get map offset*/ (((cameraY|0) & 1023) << 10) + ((cameraX|0) & 1023)
-    ])>>1;
+    cameraHeight = (cameraHeight + heightmap[(((cameraY|0) & 1023) << 10) + ((cameraX|0) & 1023)])>>1;
 
     time = Date.now();
+    //TODO make less boring
     cameraAngle += Math.sin(time/1000)/96;
 
 // ## DRAW BACKGROUND
 
-    //show lightning in the background
     buf32.fill((time%16 ?
       //regular drawing
       (tmp=0,   0xff) :
@@ -141,7 +132,7 @@ setInterval(() => {
       //lightning mode - select other colormap with highlighted colors and shake camera
       (tmp=2e6, cameraHeight += 8, 0xe5))<<24);
 
-// ## VOXEL START
+// ## DRAW VOXEL
 
     //if there's a lightning -
     hiddeny.fill(a.height);
@@ -181,7 +172,9 @@ setInterval(() => {
         ply += dy;
       }
     }
+
 // ## FLIP SCREEN
+
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
 },0);
