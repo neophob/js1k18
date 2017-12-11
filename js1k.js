@@ -14,7 +14,7 @@ var cameraX = 0;
 var cameraY = 0;
 var cameraAngle = 0;
 // avoid beeing stuck at the beginning
-var cameraHeight=64;
+var cameraHeight=1024;
 
 //buf32 and buf8 are just ArrayBuffer views to convert data
 var tmp = new ArrayBuffer(a.width * a.height << 2);
@@ -66,10 +66,10 @@ divide(1<<10);
 
 // GENERATE BLACK BLOCKS
 
-for (var l=0;l < 1024; l++) {
-  var tmp = l%64 ? tmp : ((Math.random()*15)|0) << 6;
+for (var l=0;l < cameraHeight; l++) {
+  var yofs = l%64 ? yofs : ((Math.random()*15)|0) << 6;
   for (var j=0;j < 64; j++) {
-    mapOrOffset[(j+tmp) * 1025 +l] = 1024;
+    mapOrOffset[(j+yofs) * 1025 +l] = cameraHeight;
   }
 }
 
@@ -126,7 +126,7 @@ setInterval(() => {
 
     buf32.fill((time%16 ?
       //regular drawing
-      (tmp=0,   0xff) :
+      (tmp=0, 0xff) :
 
       //lightning mode - select other colormap with highlighted colors and shake camera
       (tmp=2e6, cameraHeight += 8, 0xe5))<<24);
