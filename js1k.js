@@ -19,7 +19,7 @@ var cameraHeight=64;
 //buf32 and buf8 are just ArrayBuffer views to convert data
 var tmp = new ArrayBuffer(a.width * a.height << 2);
 var buf32 = new Uint32Array(tmp);
-var buf8  = new Uint8Array(tmp);
+var buf8 = new Uint8Array(tmp);
 var hiddeny = new Uint32Array(a.width);
 var heightmap = [];
 var colormap = [];
@@ -66,18 +66,17 @@ divide(1<<10);
 
 // GENERATE BLACK BLOCKS
 
-tmp=0;
 for (var l=0;l < 1024; l++) {
-  tmp = l%64 ? tmp : ((Math.random()*15)|0) << 6;
-    for (var j=0;j < 64; j++) {
-      mapOrOffset[(j+tmp) * 1025 +l] = 1024;
-    }
+  var tmp = l%64 ? tmp : ((Math.random()*15)|0) << 6;
+  for (var j=0;j < 64; j++) {
+    mapOrOffset[(j+tmp) * 1025 +l] = 1024;
+  }
 }
 
 // GENERATE COLORMAP FROM HEIGHTMAP
 
 tmp=0;
-mapOrOffset.forEach((r,i)=>{
+mapOrOffset.forEach((r,i) => {
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
   if (i%1025==1024) {
     return;
@@ -154,7 +153,7 @@ setInterval(() => {
         // |0 is math floor - way faster here than Math.floor
         var mapoffset = (((ply|0) & 1023) << 10) + ((plx|0) & 1023);
         // beware: if heightonscreen < 0 it will stop rendering!
-        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0
+        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0;
 
         //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
         if (heightonscreen < hiddeny[i]) {
