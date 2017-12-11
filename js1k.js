@@ -67,7 +67,7 @@ divide(1<<10);
 // GENERATE BLACK BLOCKS
 
 for (var l=0;l < cameraHeight; l++) {
-  var yofs = l%64 ? yofs : (Math.random()*15) << 6;
+  var yofs = l%64 ? yofs : Math.random()*15 << 6;
   for (var j=0;j < 64; j++) {
     mapOrOffset[(j+yofs) * 1025 +l] = cameraHeight;
   }
@@ -156,14 +156,13 @@ setInterval(() => {
         var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0;
 
         //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
-        if (heightonscreen < hiddeny[i]) {
+        for (;heightonscreen < hiddeny[i]; hiddeny[i] = heightonscreen) {
           // get offset on screen for the vertical line
           mapOrOffset = heightonscreen * a.width + i;
           for (var k = heightonscreen; k < hiddeny[i]; k++) {
             buf32[mapOrOffset] = colormap[tmp + mapoffset];
             mapOrOffset += a.width;
           }
-          hiddeny[i] = heightonscreen;
         }
         //DrawVerticalLine end
 
