@@ -29,7 +29,7 @@ var imagedata = c.createImageData(a.width, a.height);
 // GENERATE HEIGHTMAP START
 
 // array size is 1025x1025 - however 2 millions can be written much shorter
-var mapOrOffset = new Array(2e6);
+var mapOrOffset = Array(2e6);
 mapOrOffset.fill(0);
 
 var divide = (size) => {
