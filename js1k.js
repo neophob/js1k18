@@ -67,7 +67,7 @@ divide(1<<10);
 // GENERATE BLACK BLOCKS
 
 for (var l=0;l < cameraHeight; l++) {
-  var yofs = l%64 ? yofs : ((Math.random()*15)|0) << 6;
+  var yofs = l%64 ? yofs : (Math.random()*15) << 6;
   for (var j=0;j < 64; j++) {
     mapOrOffset[(j+yofs) * 1025 +l] = cameraHeight;
   }
@@ -116,7 +116,7 @@ setInterval(() => {
     cameraX -= sinang * (Date.now()-time) / 10;
     cameraY -= cosang * (Date.now()-time) / 10;
 
-    cameraHeight = (cameraHeight + heightmap[(((cameraY|0) & 1023) << 10) + ((cameraX|0) & 1023)])>>1;
+    cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1;
 
     time = Date.now();
     //TODO make less boring
@@ -151,7 +151,7 @@ setInterval(() => {
       var invz = a.width/4 / z;
       for (var i=0; i<a.width; i++) {
         // |0 is math floor - way faster here than Math.floor
-        var mapoffset = (((ply|0) & 1023) << 10) + ((plx|0) & 1023);
+        var mapoffset = ((ply & 1023) << 10) + (plx & 1023);
         // beware: if heightonscreen < 0 it will stop rendering!
         var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0;
 
