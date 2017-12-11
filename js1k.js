@@ -18,8 +18,8 @@ var cameraHeight=64;
 
 //buf32 and buf8 are just ArrayBuffer views to convert data
 var tmp = new ArrayBuffer(a.width * a.height << 2);
-var buf32  = new Uint32Array(tmp);
-var buf8   = new Uint8Array(tmp);
+var buf32 = new Uint32Array(tmp);
+var buf8  = new Uint8Array(tmp);
 var hiddeny = new Uint32Array(a.width);
 var heightmap = [];
 var colormap = [];
@@ -114,8 +114,8 @@ setInterval(() => {
     var sinang = Math.sin(cameraAngle);
     var cosang = Math.sin(cameraAngle + 1.6);
 
-    cameraX -=  sinang * (Date.now()-time) / 10;
-    cameraY -=  cosang * (Date.now()-time) / 10;
+    cameraX -= sinang * (Date.now()-time) / 10;
+    cameraY -= cosang * (Date.now()-time) / 10;
 
     cameraHeight = (cameraHeight + heightmap[(((cameraY|0) & 1023) << 10) + ((cameraX|0) & 1023)])>>1;
 
