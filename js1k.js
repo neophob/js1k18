@@ -158,10 +158,9 @@ setInterval(() => {
         //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
         for (;heightonscreen < hiddeny[i]; hiddeny[i] = heightonscreen) {
           // get offset on screen for the vertical line
-          mapOrOffset = heightonscreen * a.width + i;
+          //mapOrOffset = heightonscreen * a.width + i;
           for (var k = heightonscreen; k < hiddeny[i]; k++) {
-            //NOTE: mapOrOffset if updated one line too early, but not visible
-            buf32[mapOrOffset += a.width] = colormap[tmp + mapoffset];
+            buf32[k * a.width + i] = colormap[tmp + mapoffset];
           }
         }
         //DrawVerticalLine end
