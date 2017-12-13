@@ -29,8 +29,7 @@ var imagedata = c.createImageData(a.width, a.height);
 // GENERATE HEIGHTMAP START
 
 // array size is 1025x1025 - however 2 millions can be written much shorter
-var mapOrOffset = Array(2e6);
-mapOrOffset.fill(0);
+var mapOrOffset = Array(2e6).fill(0);
 
 var divide = (size) => {
   if (size == 1) return;
@@ -113,14 +112,13 @@ setInterval(() => {
     var sinang = Math.sin(cameraAngle);
     var cosang = Math.sin(cameraAngle + 1.6);
 
-    cameraX -= sinang * (Date.now()-time) / 10;
-    cameraY -= cosang * (Date.now()-time) / 10;
+    cameraX -= sinang * (Date.now()-time) / 9;
+    cameraY -= cosang * (Date.now()-time) / 9;
 
     cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1;
 
     time = Date.now();
-    //TODO make less boring
-    cameraAngle += Math.sin(time/1000)/96;
+    cameraAngle += Math.sin(time/2e3)/(cameraHeight);
 
 // ## DRAW BACKGROUND
 
