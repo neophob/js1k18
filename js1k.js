@@ -118,6 +118,7 @@ setInterval(() => {
     cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1;
 
     time = Date.now();
+    //TODO cameraHeight/2 looks better
     cameraAngle += Math.sin(time/2e3)/(cameraHeight);
 
 // ## DRAW BACKGROUND
