@@ -66,10 +66,10 @@ divide(1<<10);
 
 // GENERATE BLACK BLOCKS
 
-for (var l=0;l < cameraHeight; l++) {
+for (var l=0;l < 1025; l++) {
   var yofs = l%64 ? yofs : Math.random()*15 << 6;
   for (var j=yofs;j < yofs+64; j++) {
-    mapOrOffset[(j) * 1025 +l] = cameraHeight;
+    mapOrOffset[j * 1025 + l] = 1024;
   }
 }
 
