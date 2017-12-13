@@ -33,7 +33,7 @@ var mapOrOffset = Array(2e6);
 mapOrOffset.fill(0);
 
 var divide = (size) => {
-  if (size < 2) return;
+  if (size == 1) return;
   var half = size / 2;
 
   for (var y = half; y < 1025; y += size) {
