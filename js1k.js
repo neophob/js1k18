@@ -86,7 +86,7 @@ mapOrOffset.forEach((r,i) => {
 
   //fancy pallette - if no entry exists, its converted to 0
   var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (1+(heightMapEntry/(255 / 5))|0)%5];
-  var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][    (heightMapEntry/(255 / 5)|0)%5];
+  var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][    (heightMapEntry/(255 / 5) |0)%5];
 
   var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
@@ -128,7 +128,7 @@ setInterval(() => {
       (tmp=0, 0xff) :
 
       //lightning mode - select other colormap with highlighted colors and shake camera
-      (tmp=2e6, cameraHeight += 8, 0xe5))<<24);
+      (tmp=2e6, cameraHeight += 16, 0xe5))<<24);
 
 // ## DRAW VOXEL
 
@@ -152,17 +152,16 @@ setInterval(() => {
         // |0 is math floor - way faster here than Math.floor
         var mapoffset = ((ply & 1023) << 10) + (plx & 1023);
         // beware: if heightonscreen < 0 it will stop rendering!
+        // TODO use heightmap[mapoffset] to compare if it needs to draw, should speedup
         var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0;
-
-        //DrawVerticalLine(i, heightonscreen, hiddeny[i], colormap[mapoffset]);
+        // DrawVerticalLine start
         for (;heightonscreen < hiddeny[i]; hiddeny[i] = heightonscreen) {
           // get offset on screen for the vertical line
-          //mapOrOffset = heightonscreen * a.width + i;
           for (var k = heightonscreen; k < hiddeny[i]; k++) {
             buf32[k * a.width + i] = colormap[tmp + mapoffset];
           }
         }
-        //DrawVerticalLine end
+        // DrawVerticalLine end
 
         plx += dx;
         ply += dy;
