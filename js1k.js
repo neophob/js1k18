@@ -27,7 +27,6 @@ var time=0;
 var imagedata = c.createImageData(a.width, a.height);
 
 // GENERATE HEIGHTMAP START
-
 // array size is 1025x1025 - however 2 millions can be written much shorter
 var mapOrOffset = Array(2e6).fill(0);
 
@@ -64,16 +63,14 @@ var divide = (size) => {
 divide(1<<10);
 
 // GENERATE BLACK BLOCKS
-
 for (var l=0;l < 1025; l++) {
   var yofs = l%64 ? yofs : Math.random()*15 << 6;
-  for (var j=yofs;j < yofs+64; j++) {
+  for (var j=yofs; j < yofs+64; j++) {
     mapOrOffset[j * 1025 + l] = 1024;
   }
 }
 
 // GENERATE COLORMAP FROM HEIGHTMAP
-
 tmp=0;
 mapOrOffset.forEach((r,i) => {
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
@@ -87,7 +84,6 @@ mapOrOffset.forEach((r,i) => {
   //fancy pallette - if no entry exists, its converted to 0
   var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (1+(heightMapEntry/(255 / 5))|0)%5];
   var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][    (heightMapEntry/(255 / 5) |0)%5];
-
   var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
   //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
@@ -108,13 +104,11 @@ mapOrOffset.forEach((r,i) => {
 setInterval(() => {
 
 // ## UPDATE CAMERA
-
     var sinang = Math.sin(cameraAngle);
     var cosang = Math.sin(cameraAngle + 1.6);
 
     cameraX -= sinang * (Date.now()-time) / 9;
     cameraY -= cosang * (Date.now()-time) / 9;
-
     cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1;
 
     time = Date.now();
@@ -122,7 +116,6 @@ setInterval(() => {
     cameraAngle += Math.sin(time/2e3)/(cameraHeight);
 
 // ## DRAW BACKGROUND
-
     buf32.fill((time%16 ?
       //regular drawing
       (tmp=0, 0xff) :
@@ -131,31 +124,27 @@ setInterval(() => {
       (tmp=2e6, cameraHeight += 16, 0xe5))<<24);
 
 // ## DRAW VOXEL
-
-    //if there's a lightning -
     hiddeny.fill(a.height);
     // Draw from front to back, implement primitive LOD after a certain distance
     for (var z=5; z<2e3; z > 900 ? z+=4 : z++) {
-
       // 90 degree field of view
       var plx = -cosang * z - sinang * z;
       var ply = sinang * z - cosang * z;
-
       var dx = ((cosang * z - sinang * z) - plx) / a.width;
       var dy = ((-sinang * z - cosang * z) - ply) / a.width;
       plx += cameraX;
       ply += cameraY;
 
       // DEFINE HEIGHT (1/z * 240)
-      var invz = a.width/4 / z;
+      var invz = a.width / (4*z);
       for (var i=0; i<a.width; i++) {
         // |0 is math floor - way faster here than Math.floor
         var mapoffset = ((ply & 1023) << 10) + (plx & 1023);
         // beware: if heightonscreen < 0 it will stop rendering!
-        // TODO use heightmap[mapoffset] to compare if it needs to draw, should speedup
+        // TODO use heightmap[mapoffset] to compare if it needs to draw, should speedup rendering
         var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0;
         // DrawVerticalLine start
-        for (;heightonscreen < hiddeny[i]; hiddeny[i] = heightonscreen) {
+        for (; heightonscreen < hiddeny[i]; hiddeny[i] = heightonscreen) {
           // get offset on screen for the vertical line
           for (var k = heightonscreen; k < hiddeny[i]; k++) {
             buf32[k * a.width + i] = colormap[tmp + mapoffset];
@@ -169,7 +158,6 @@ setInterval(() => {
     }
 
 // ## FLIP SCREEN
-
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
 });
