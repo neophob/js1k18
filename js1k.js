@@ -68,8 +68,8 @@ divide(1<<10);
 
 for (var l=0;l < cameraHeight; l++) {
   var yofs = l%64 ? yofs : Math.random()*15 << 6;
-  for (var j=0;j < 64; j++) {
-    mapOrOffset[(j+yofs) * 1025 +l] = cameraHeight;
+  for (var j=yofs;j < yofs+64; j++) {
+    mapOrOffset[(j) * 1025 +l] = cameraHeight;
   }
 }
 
