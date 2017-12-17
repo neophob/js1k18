@@ -71,35 +71,33 @@ for (var l=0;l < 1025; l++) {
 }
 
 // GENERATE COLORMAP FROM HEIGHTMAP
-tmp=0;
-mapOrOffset.forEach((r,i) => {
+for (var i=0, tmp=0; i<2e6; i++) {
   //convert the 1025*1025 map to a 1024*1024 heightmap and color map
-  if (i%1025==1024) {
-    return;
+  if (i%1025!=1024 && mapOrOffset[i]) {
+    var heightMapEntry = mapOrOffset[i]>>2;
+
+    //generate smooth color dynamically, 5 equals the size of the pallete array: (heightMapEntry/(255 / 5))|0
+
+    //fancy pallette - if no entry exists, its converted to 0
+    var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
+    var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (heightMapEntry/(255 / 5) |0)%5];
+    var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
+
+    //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
+    //note: instead the "high resolution" shadowmap (i-1), use (i-10) to get a snowy map
+    colormap[tmp    ] = (((heightMapEntry>100 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xf7 : 0xff)<<24) |
+      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
+      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
+      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
+
+    colormap[tmp+2e6] = (((heightMapEntry>100 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xe7 : 0xff)<<24) |
+      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
+      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
+      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
+
+    heightmap[tmp++] = heightMapEntry;
   }
-  var heightMapEntry = r>>2;
-
-  //generate smooth color dynamically, 5 equals the size of the pallete array: (heightMapEntry/(255 / 5))|0
-
-  //fancy pallette - if no entry exists, its converted to 0
-  var col1 = [[], [], [0x60], [0x90,0x30,0x10], [0x60],[]][ (heightMapEntry/(255 / 5)|0)%5];
-  var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][    (heightMapEntry/(255 / 5) |0)%5];
-  var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
-
-  //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
-  //note: instead the "high resolution" shadowmap (i-1), use (i-10) to get a snowy map
-  colormap[tmp    ] = (((heightMapEntry>100 && mapOrOffset[(i - 1)] < r) ? 0xf7 : 0xff)<<24) |
-    (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
-    (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
-    ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
-
-  colormap[tmp+2e6] = (((heightMapEntry>100 && mapOrOffset[(i - 1)] < r) ? 0xe7 : 0xff)<<24) |
-    (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
-    (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
-    ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
-
-  heightmap[tmp++] = heightMapEntry;
-});
+};
 
 setInterval(() => {
 
