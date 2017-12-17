@@ -114,8 +114,12 @@ setInterval(() => {
     cameraAngle += Math.sin(time/2e3)/(cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1);
 
 // ## DRAW BACKGROUND
-    buf32.fill((time%16 ? 0xff : 0xe7) <<24);
-    tmp = time%16 ? 0 : (cameraHeight += 16, 2e6);
+    buf32.fill((time%16 ?
+     //regular drawing
+     (tmp=0, 0xff) :
+
+     //lightning mode - select other colormap with highlighted colors and shake camera
+     (tmp=2e6, cameraHeight += 16, 0xe5))<<24);
 
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
