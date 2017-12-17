@@ -6,7 +6,7 @@ UGLIFY=./node_modules/.bin/uglifyjs
 CLOSURE=./node_modules/.bin/google-closure-compiler-js
 OUT=./dist
 
-BABELMINIFY_OPT="--builtIns false"
+BABELMINIFY_OPT="--builtIns false --typeConstructors false"
 REGPACK_OPT0="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName c --crushGainFactor 2 --crushLengthFactor 1 --crushCopiesFactor 0 --crushTiebreakerFactor 0"
 REGPACK_OPT1="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName c --crushGainFactor 5 --crushLengthFactor 1 --crushCopiesFactor 0 --crushTiebreakerFactor 0"
 REGPACK_OPT2="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName c --crushGainFactor 3 --crushLengthFactor 2 --crushCopiesFactor 1"

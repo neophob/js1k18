@@ -109,23 +109,15 @@ setInterval(() => {
     cameraX -= sinang * (Date.now()-time) / 9;
     cameraY -= cosang * (Date.now()-time) / 9;
     //average height calculation
-    cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1;
+
 
     time = Date.now();
     //TODO cameraHeight/2 looks better
-    cameraAngle += Math.sin(time/2e3)/(cameraHeight);
+    cameraAngle += Math.sin(time/2e3)/(cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1);
 
 // ## DRAW BACKGROUND
-    buf32.fill(
-
-      (time%16 ?
-        //regular drawing
-        (tmp=0, 0xff) :
-
-        //lightning mode - select other colormap with highlighted colors and shake camera
-        (tmp=2e6, cameraHeight += 16, 0xe7)
-
-      )<<24);
+    buf32.fill((time%16 ? 0xff : 0xe7) <<24);
+    tmp = time%16 ? 0 : cameraHeight += 16, 2e6;
 
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
