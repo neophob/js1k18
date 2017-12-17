@@ -82,19 +82,18 @@ for (var i=0, tmp=0; i<2e6; i++) {
     var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
     var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][  (heightMapEntry/(255 / 5)   |0)%5];
     var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
-    var invSelectedPalleteEntry = 1-selectedPalleteEntry;
 
     //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
     //note: instead the "high resolution" shadowmap (i-1), use (i-10) to get a snowy map
     colormap[tmp    ] = (((heightMapEntry>99 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xf7 : 0xff)<<24) |
-      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*invSelectedPalleteEntry)) |
-      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*invSelectedPalleteEntry) << 8) |
-      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*invSelectedPalleteEntry) << 16;
+      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
+      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
+      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
     colormap[tmp+2e6] = (((heightMapEntry>99 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xe7 : 0xff)<<24) |
-      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*invSelectedPalleteEntry)) |
-      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*invSelectedPalleteEntry) << 8) |
-      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*invSelectedPalleteEntry) << 16;
+      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
+      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
+      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
     heightmap[tmp++] = heightMapEntry;
   }
@@ -108,16 +107,15 @@ setInterval(() => {
 
     cameraX -= sinang * (Date.now()-time) / 9;
     cameraY -= cosang * (Date.now()-time) / 9;
-    //average height calculation
-
 
     time = Date.now();
+    //camera angle update and average camera height calculation
     //TODO cameraHeight/2 looks better
     cameraAngle += Math.sin(time/2e3)/(cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1);
 
 // ## DRAW BACKGROUND
     buf32.fill((time%16 ? 0xff : 0xe7) <<24);
-    tmp = time%16 ? 0 : cameraHeight += 16, 2e6;
+    tmp = time%16 ? 0 : (cameraHeight += 16, 2e6);
 
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
