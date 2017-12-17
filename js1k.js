@@ -108,6 +108,7 @@ setInterval(() => {
 
     cameraX -= sinang * (Date.now()-time) / 9;
     cameraY -= cosang * (Date.now()-time) / 9;
+    //average height calculation
     cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1;
 
     time = Date.now();

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+
+# JS1k
+2018 by Michael Vogt
+
+---
+
+# Agenda
+
+1. WHY?
+
+1. Demo Time
+
+1. Step-by-Step example
+
+1. Toolchain
+
+1. Tricks
+
+---
+
+# WHY?
+
+--
+
+- Compo on js1k.com - 10th time this year
+
+--
+
+- Fun!
+
+--
+
+- Small Scope
+
+--
+
+- Think different
+
+--
+
+- Learn JS
+
+---
+
+# Demo Time
+
+Some JS1k entries from the past I like.
+
+--
+
+### Canvas
+
+- Pure javascript raytracer: ["pure js ray tracer" by Igor Sbitnev](http://js1k.com/2017-magic/demo/2648)
+
+--
+
+- Ride the mysterious monorail through a misty metropolis: ["Mysterious Monorail" by homecoded](http://js1k.com/2015-hypetrain/demo/2322)
+
+--
+
+### WebGL
+
+- ["Romanesco 2.0" by Lara & HellMood](http://js1k.com/2016-elemental/demo/2552)
+
+---
+
+# Step-by-Step "Black Rock City"
+
+["Black Rock City - almost Final Version"](file://index.html)
+
+--
+
+### Parts:
+
+- Generate heightmap
+
+--
+
+- Generate landscape from heightmap, generate shadowmap
+
+--
+
+- Voxel rendering
+
+--
+
+- Camera path
+
+--
+
+- Generate some actions to be less boring
+
+---
+
+# Step-by-Step "Black Rock City"
+
+### Heightmap
+
+- "Diamond Square" algorithm based on http://www.playfuljs.com/realistic-terrain-in-130-lines/
+
+- modified that generated heightmap is seamless
+
+---
+
+# Step-by-Step "Black Rock City"
+
+### Generate landscape from heightmap, generate shadowmap
+
+- Colorize the heightmap with a fancy palette
+
+- Generate shadowmap so it looks more realistic
+
+- Add some random "Black Rocks" - looks more interesting
+
+---
+
+# Toolchain
+
+### Babel-minifier
+
+This tool will shrink the codesize using
+
+- remove whitespaces, uneeded characters and dead code
+
+- mangle names:｛ `var positition` ⟶ `var b` ｝
+
+- optimize numbers: ｛ `20000` ⟶ `2e4` ｝
+
+- constant folding: ｛ `2 * 3` ⟶ `6` ｝
+
+- reorder code to compress better with gzip
+
+... and much more. **No** decompression is needed to run your JS code.
+
+Similar Tools: uglifyJS, Google Closure Compiler, butternut
+
+---
+
+# Toolchain
+
+### Regpack
+
+This tool is a "Self-contained packer" to shrink the codesize.
+
+- Made to compress small JS files (1-4kb)
+
+- Eliminate redundancies, replaced by tokens
+
+- Core compression is a token based String replacment (JSCrunch)
+
+- Regpack improves compression of JSCrunch and add more features
+
+- Decompress payload is 50 bytes (JSCrunch)
+
+---
+
+# Toolchain
+
+### Regpack Example (JSCrush)
+
+In (163 bytes):
+```
+var a=1000000;
+if (a==1000000) console.log('1 == 0');
+if (a==1000000) console.log('2 == 0');
+if (a!==0) console.log('1 > 0');
+if (a!==0) console.log('2 > 0');
+```
+
+Out (141 bytes):
+```
+_="var az0}1 =={}2 =={;|1 >{; |2 >{;~0) console.log('}; y=z~|y!==~{ 0'
+)z=100000yif (a";for(i of"yz{|}~")with(_.split(i))_=join(pop());eval(_)
+```
+
+---
+
+# Toolchain
+
+### Regpack Example (JSCrush)
+
+More Readable output:
+
+```
+_="var az0}1 =={}2 =={;|1 >{; |2 >{;~0) console.log('}; y=z~|y!==~{ 0')z=100000yif (a";
+for(i of "yz{|}~")
+  with(_.split(i))
+    _=join(pop());
+eval(_)
+```
+
+- Char Tokens: `yz{|}~`
+
+How the magic works:
+1. `if (a` is removed from end of string and replace all `y` character
+1. `=100000` is removed from end of string and replace all `z` characters
+
+
+---
+
+# Tricks
+
+### Convert float numbers to integer numbers
+
+--
+
+Instead ｛ `Math.floor(x)` ｝use｛ `x|0` ｝
+
+
+- Works only for 32bit (signed) integers
+- *Note:* Differs from Math.floor for negative numbers
+- Example: ｛ `-1.8|0` ⟶ `-1` ｝
+
+--
+
+Instead ｛ `Math.floor(x/2)` ｝use｛ `x>>1` ｝
+
+
+- Works only for 32bit (signed) integers
+- Floats are converted to integers
+- *Note:* Differs from Math.floor for negative numbers
+- Example: ｛ `15.5>>1` ⟶ `7` ｝
+
+
+---
+
+# Tricks
+
+### Choose clever values
+
+- Do you really need a `x > 100`? maybe a `x > 99` works too?
+
+--
+
+- Instead｛ `var a = new Array(1024*1024)` ｝use｛ `var a = Array(2e6)` ｝
+
+---
+
+# Tricks
+
+### Mechanized Abbreviation
+
+"Invented" by Marijn Haverbeke for JS1k compo in 2010.
+
+```
+for($ in C=c.getContext('2d'))
+  C[$[0]+($[6]||'')]=C[$];
+```
+
+--
+
+We now have:
+- `C.qt` for `quadraticCurveTo`
+- `C.f` for `fill`.
+
+
+Note:
+- *Not* futureproof when API change!
+- Regpack can do that for you (Module - hash contexts)
+
+
+---
+
+# Tricks
+
+### Duplicate code
+
+- Regpack will detect duplicate code and eliminite it
+
+- try to use that, duplicated code is cheap!
+
+- not always that easy when babel-minifier runs
+
+Example code:
+
+```
+var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (1+(heightMapEntry/(255 / 5))|0)%5];
+var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][    (heightMapEntry/(255 / 5) |0)%5];
+```
+
+---
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
