@@ -108,10 +108,15 @@ setInterval(() => {
     cameraX -= sinang * (Date.now()-time) / 9;
     cameraY -= cosang * (Date.now()-time) / 9;
 
-    time = Date.now();
-    //camera angle update and average camera height calculation
+    //camera angle update
     //TODO cameraHeight/2 looks better
-    cameraAngle += Math.sin(time/2e3)/(cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1);
+    cameraAngle += Math.sin((
+      //update time
+      time = Date.now()
+    )/2e3)/(
+      //average camera height calculation
+      cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1
+    );
 
 // ## DRAW BACKGROUND
     buf32.fill((time%16 ?
