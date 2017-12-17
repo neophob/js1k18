@@ -82,7 +82,7 @@ mapOrOffset.forEach((r,i) => {
   //generate smooth color dynamically, 5 equals the size of the pallete array: (heightMapEntry/(255 / 5))|0
 
   //fancy pallette - if no entry exists, its converted to 0
-  var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (1+(heightMapEntry/(255 / 5))|0)%5];
+  var col1 = [[], [], [0x60], [0x90,0x30,0x10], [0x60],[]][ (heightMapEntry/(255 / 5)|0)%5];
   var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][    (heightMapEntry/(255 / 5) |0)%5];
   var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
