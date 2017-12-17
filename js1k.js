@@ -80,7 +80,7 @@ for (var i=0, tmp=0; i<2e6; i++) {
 
     //fancy pallette - if no entry exists, its converted to 0
     var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
-    var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (heightMapEntry/(255 / 5) |0)%5];
+    var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][  (heightMapEntry/(255 / 5)   |0)%5];
     var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
     var invSelectedPalleteEntry = 1-selectedPalleteEntry;
 
@@ -134,15 +134,14 @@ setInterval(() => {
       // 90 degree field of view
       var plx = -cosang * z - sinang * z;
       var ply = sinang * z - cosang * z;
-      var dx = ((cosang * z - sinang * z) - plx) / a.width;
-      var dy = ((-sinang * z - cosang * z) - ply) / a.width;
+      var dx = (cosang * z - sinang * z - plx) / a.width;
+      var dy = (-sinang * z - cosang * z - ply) / a.width;
       plx += cameraX;
       ply += cameraY;
 
       // DEFINE HEIGHT (1/z * 240)
       var invz = a.width / (4*z);
       for (var i=0; i<a.width; i++) {
-        // |0 is math floor - way faster here than Math.floor
         var mapoffset = ((ply & 1023) << 10) + (plx & 1023);
         // beware: if heightonscreen < 0 it will stop rendering!
         // TODO use heightmap[mapoffset] to compare if it needs to draw, should speedup rendering
