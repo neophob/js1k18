@@ -82,18 +82,19 @@ for (var i=0, tmp=0; i<2e6; i++) {
     var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
     var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (heightMapEntry/(255 / 5) |0)%5];
     var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
+    var invSelectedPalleteEntry = 1-selectedPalleteEntry;
 
     //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
     //note: instead the "high resolution" shadowmap (i-1), use (i-10) to get a snowy map
-    colormap[tmp    ] = (((heightMapEntry>100 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xf7 : 0xff)<<24) |
-      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
-      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
-      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
+    colormap[tmp    ] = (((heightMapEntry>99 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xf7 : 0xff)<<24) |
+      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*invSelectedPalleteEntry)) |
+      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*invSelectedPalleteEntry) << 8) |
+      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*invSelectedPalleteEntry) << 16;
 
-    colormap[tmp+2e6] = (((heightMapEntry>100 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xe7 : 0xff)<<24) |
-      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
-      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
-      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
+    colormap[tmp+2e6] = (((heightMapEntry>99 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xe7 : 0xff)<<24) |
+      (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*invSelectedPalleteEntry)) |
+      (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*invSelectedPalleteEntry) << 8) |
+      ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*invSelectedPalleteEntry) << 16;
 
     heightmap[tmp++] = heightMapEntry;
   }
@@ -114,17 +115,21 @@ setInterval(() => {
     cameraAngle += Math.sin(time/2e3)/(cameraHeight);
 
 // ## DRAW BACKGROUND
-    buf32.fill((time%16 ?
-      //regular drawing
-      (tmp=0, 0xff) :
+    buf32.fill(
 
-      //lightning mode - select other colormap with highlighted colors and shake camera
-      (tmp=2e6, cameraHeight += 16, 0xe5))<<24);
+      (time%16 ?
+        //regular drawing
+        (tmp=0, 0xff) :
+
+        //lightning mode - select other colormap with highlighted colors and shake camera
+        (tmp=2e6, cameraHeight += 16, 0xe7)
+
+      )<<24);
 
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
     // Draw from front to back, implement primitive LOD after a certain distance
-    for (var z=5; z<2e3; z > 900 ? z+=4 : z++) {
+    for (var z=5; z<2e3; z += z > 900 ? 4 : 1) {
       // 90 degree field of view
       var plx = -cosang * z - sinang * z;
       var ply = sinang * z - cosang * z;
