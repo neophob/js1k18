@@ -162,6 +162,6 @@ setInterval(() => {
 // ## FLIP SCREEN
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
-});
+},0);
 
 })();
