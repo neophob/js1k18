@@ -144,7 +144,7 @@ setInterval(() => {
         var mapoffset = ((ply & 1023) << 10) + (plx & 1023);
         // beware: if heightonscreen < 0 it will stop rendering!
         // TODO use heightmap[mapoffset] to compare if it needs to draw, should speedup rendering
-        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz + 55/*cameraHorizon|0*/)|0;
+        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz /*cameraHorizon|0*/)|0;
         // DrawVerticalLine start
         for (; heightonscreen < hiddeny[i]; hiddeny[i] = heightonscreen) {
           // get offset on screen for the vertical line
