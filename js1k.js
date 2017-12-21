@@ -60,7 +60,7 @@ var divide = (size) => {
   }
   divide(half);
 };
-divide(1<<10);
+divide(1024);
 
 // GENERATE BLACK BLOCKS
 for (var l=0;l < 1025; l++) {
@@ -129,7 +129,7 @@ setInterval(() => {
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
     // Draw from front to back, implement primitive LOD after a certain distance
-    for (var z=5; z<2e3; z += z > 900 ? 4 : 1) {
+    for (var z=16; z<2e3; z += z > 1024 ? 4 : 1) {
       // 90 degree field of view
       var plx = -cosang * z - sinang * z;
       var ply = sinang * z - cosang * z;
