@@ -51,7 +51,9 @@ REGPACK_PACK() {
 echo "[MINIME] START"
 rm -f $OUT/*
 
-$BABILI js1k.js $BABELMINIFY_OPT > $OUT/in
+$BABILI js1k.js $BABELMINIFY_OPT > $OUT/in.tmp
+# remove trailing ;
+sed 's/.$//' $OUT/in.tmp | tee $OUT/in
 #CLOSURE_PACK&
 BAB_PACK "$REGPACK_OPT1" 1
 BAB_PACK "$REGPACK_OPT2" 2
