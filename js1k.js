@@ -134,7 +134,7 @@ setInterval(() => {
       var plx = -cosang * z - sinang * z;
       var ply = sinang * z - cosang * z;
       var dx = (cosang * z - sinang * z - plx) / a.width;
-      var dy = (-sinang * z - cosang * z - ply) / a.width;
+      var dy = (-sinang * z - cosang * z - ply) / a.height;
       plx += cameraX;
       ply += cameraY;
 
