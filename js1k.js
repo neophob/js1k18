@@ -79,8 +79,8 @@ for (var i=0, tmp=0; i<2e6; i++) {
     //generate smooth color dynamically, 5 equals the size of the pallete array: (heightMapEntry/(255 / 5))|0
 
     //fancy pallette - if no entry exists, its converted to 0
-    var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
-    var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][  (heightMapEntry/(255 / 5)   |0)%5];
+    var col1 = [[], [0x66], [0x90,0x30,0x10], [0x66],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
+    var col2 = [[], [0x66], [0x90,0x30,0x10], [0x66],[]][  (heightMapEntry/(255 / 5)   |0)%5];
     var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
     //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
