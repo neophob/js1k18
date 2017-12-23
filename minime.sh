@@ -22,6 +22,7 @@ REGPACK_OPTB="- --useES6 true --reassignVars true --hash2DContext true --context
 REGPACK_OPTC="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName 'c' --crushGainFactor 3 --crushLengthFactor 2 --crushCopiesFactor 1 --crushTiebreakerFactor 0"
 REGPACK_OPTD="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName 'c' --crushGainFactor 64 --crushLengthFactor 8 --crushCopiesFactor 0"
 REGPACK_OPTE="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName 'c' --crushGainFactor 1 --crushLengthFactor 0 --crushCopiesFactor 0"
+REGPACK_OPTF="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName 'c' --crushGainFactor 2 --crushLengthFactor 1 --crushCopiesFactor 3  --crushTiebreakerFactor 0"
 
 mkdir -p $OUT
 
@@ -66,6 +67,7 @@ BAB_PACK "$REGPACK_OPTB" B
 BAB_PACK "$REGPACK_OPTC" C
 #BAB_PACK "$REGPACK_OPTD" D
 #BAB_PACK "$REGPACK_OPTE" E
+BAB_PACK "$REGPACK_OPTF" F
 #UGLIFY_PACK
 echo "[MINIME] WAIT"
 
