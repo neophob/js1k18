@@ -79,18 +79,18 @@ for (var i=0, tmp=0; i<2e6; i++) {
     //generate smooth color dynamically, 5 equals the size of the pallete array: (heightMapEntry/(255 / 5))|0
 
     //fancy pallette - if no entry exists, its converted to 0
-    var col1 = [[], [102], [144,48,16], [102],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
-    var col2 = [[], [102], [144,48,16], [102],[]][  (heightMapEntry/(255 / 5)   |0)%5];
+    var col1 = [[], [102], [192,51,16], [102],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
+    var col2 = [[], [102], [192,51,16], [102],[]][  (heightMapEntry/(255 / 5)   |0)%5];
     var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
     //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
     //note: instead the "high resolution" shadowmap (i-1), use (i-10) to get a snowy map
-    colormap[tmp    ] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xf7 : 0xff)<<24) |
+    colormap[tmp    ] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 247 : 255)<<24) |
       (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
       (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
       ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
-    colormap[tmp+2e6] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 0xe7 : 0xff)<<24) |
+    colormap[tmp+2e6] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 231 : 255)<<24) |
       (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
       (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
       ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
@@ -121,10 +121,10 @@ setInterval(() => {
 // ## DRAW BACKGROUND
     buf32.fill((time%16 ?
      //regular drawing
-     (tmp=0, 0xff) :
+     (tmp=0, 255) :
 
      //lightning mode - select other colormap with highlighted colors and shake camera
-     (tmp=2e6, cameraHeight += 8, 0xe5))<<24);
+     (tmp=2e6, cameraHeight += 8, 231))<<24);
 
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
