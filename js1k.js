@@ -124,7 +124,7 @@ setInterval(() => {
      (tmp=0, 0xff) :
 
      //lightning mode - select other colormap with highlighted colors and shake camera
-     (tmp=2e6, cameraHeight += 16, 0xe5))<<24);
+     (tmp=2e6, cameraHeight += 8, 0xe5))<<24);
 
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
