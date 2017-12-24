@@ -90,7 +90,7 @@ for (var i=0, tmp=0; i<2e6; i++) {
       (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
       ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
-    colormap[tmp+2e6] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 231 : 255)<<24) |
+    colormap[tmp+2e6] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 240 : 255)<<24) |
       (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
       (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
       ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
@@ -124,7 +124,7 @@ setInterval(() => {
      (tmp=0, 255) :
 
      //lightning mode - select other colormap with highlighted colors and shake camera
-     (tmp=2e6, cameraHeight += 8, 231))<<24);
+     (tmp=2e6, cameraHeight += 8, 240))<<24);
 
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
