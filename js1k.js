@@ -112,10 +112,13 @@ setInterval(() => {
 
     //camera angle update
     //TODO cameraHeight/2 looks better
-    cameraAngle += Math.sin((
-      //update time
-      time = Date.now()
-    )/2e3)/(
+    cameraAngle += Math.sin(
+      (
+        //update time
+        time = Date.now()
+      )
+      /2e3
+    ) / (
       //average camera height calculation
       cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1
     );
@@ -126,7 +129,9 @@ setInterval(() => {
      (tmp=0, 255) :
 
      //lightning mode - select other colormap with highlighted colors and shake camera
-     (tmp=2e6, cameraHeight += 8, 240))<<24);
+     (tmp=2e6, cameraHeight += 8, 240)
+   // shift the returning color to act as alpha color
+   )<<24);
 
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
