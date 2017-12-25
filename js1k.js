@@ -45,7 +45,7 @@ var divide = (size) => {
       ) / 4 + Math.random() * 4 * size - 1.5 * size;
       // zoom in
       //) / 4 + Math.random() * 2 * size - .75 * size;
-      mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp<1025) ? tmp : 1024);
+      mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp>1024) ? 1024 : tmp);
     }
   }
   for (var y = 0; y < 1025; y += half) {
@@ -57,7 +57,7 @@ var divide = (size) => {
         mapOrOffset[(x & 1023) + ((y + half) & 1023) * 1025] +
         mapOrOffset[((x - half) & 1023) + (y & 1023) * 1025]
       ) / 4 + Math.random() * 4 * size - 1.5 * size;
-      mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp<1025) ? tmp : 1024);
+      mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp>1024) ? 1024 : tmp);
     }
   }
   divide(half);
@@ -107,8 +107,8 @@ setInterval(() => {
     var sinang = Math.sin(cameraAngle);
     var cosang = Math.sin(cameraAngle + 1.6);
 
-    cameraX -= sinang * (Date.now()-time) / 9;
-    cameraY -= cosang * (Date.now()-time) / 9;
+    cameraX -= sinang * (Date.now()-time) / 8;
+    cameraY -= cosang * (Date.now()-time) / 8;
 
     //camera angle update
     //TODO cameraHeight/2 looks better
@@ -120,7 +120,7 @@ setInterval(() => {
       /2e3
     ) / (
       //average camera height calculation
-      cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])>>1
+      cameraHeight = (cameraHeight + heightmap[((cameraY & 1023) << 10) + (cameraX & 1023)])/2
     );
 
 // ## DRAW BACKGROUND
