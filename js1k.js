@@ -45,7 +45,7 @@ var divide = (size) => {
       ) / 4 + Math.random() * 4 * size - 1.5 * size;
       // zoom in
       //) / 4 + Math.random() * 2 * size - .75 * size;
-      mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp>1024) ? 1024 : tmp);
+      mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp<1025) ? tmp : 1024);
     }
   }
   for (var y = 0; y < 1025; y += half) {
@@ -57,7 +57,7 @@ var divide = (size) => {
         mapOrOffset[(x & 1023) + ((y + half) & 1023) * 1025] +
         mapOrOffset[((x - half) & 1023) + (y & 1023) * 1025]
       ) / 4 + Math.random() * 4 * size - 1.5 * size;
-      mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp>1024) ? 1024 : tmp);
+      mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp<1025) ? tmp : 1024);
     }
   }
   divide(half);
@@ -136,7 +136,7 @@ setInterval(() => {
 // ## DRAW VOXEL
     hiddeny.fill(a.height);
     // Draw from front to back, implement primitive LOD after a certain distance
-    for (var z=16; z<2e3; z += z > 1024 ? 4 : 1) {
+    for (var z=16; z<2e3; z += z < 1024 ? 1 : 4) {
       // 90 degree field of view
       var plx = -cosang * z - sinang * z;
       var ply = sinang * z - cosang * z;
@@ -146,12 +146,11 @@ setInterval(() => {
       ply += cameraY;
 
       // DEFINE HEIGHT (1/z * 240)
-      var invz = a.width / (4*z);
       for (var i=0; i<a.width; i++) {
         var mapoffset = ((ply & 1023) << 10) + (plx & 1023);
         // beware: if heightonscreen < 0 it will stop rendering!
         // TODO use heightmap[mapoffset] to compare if it needs to draw, should speedup rendering
-        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * invz /*cameraHorizon|0*/)|0;
+        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * a.width / (4*z))|0;
         // DrawVerticalLine start
         for (; heightonscreen < hiddeny[i]; hiddeny[i] = heightonscreen) {
           // get offset on screen for the vertical line
