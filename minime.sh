@@ -6,7 +6,7 @@ UGLIFY=./node_modules/.bin/uglifyjs
 CLOSURE=./node_modules/.bin/google-closure-compiler-js
 OUT=./dist
 
-BABELMINIFY_OPT="--builtIns false --typeConstructors false"
+BABELMINIFY_OPT="--builtIns false --mangle.topLevel true"
 REGPACK_OPT0="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName c --crushGainFactor 2 --crushLengthFactor 1 --crushCopiesFactor 0 --crushTiebreakerFactor 0"
 REGPACK_OPT1="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName c --crushGainFactor 5 --crushLengthFactor 1 --crushCopiesFactor 0 --crushTiebreakerFactor 0"
 REGPACK_OPT2="- --useES6 true --reassignVars true --hash2DContext true --contextVariableName c --crushGainFactor 3 --crushLengthFactor 2 --crushCopiesFactor 1"
@@ -58,17 +58,17 @@ sed 's/.$//' $OUT/in.tmp | tee $OUT/in
 BAB_PACK "$REGPACK_OPT1" 1
 BAB_PACK "$REGPACK_OPT2" 2
 BAB_PACK "$REGPACK_OPT3" 3
-#BAB_PACK "$REGPACK_OPT4" 4
+BAB_PACK "$REGPACK_OPT4" 4
 BAB_PACK "$REGPACK_OPT5" 5
 BAB_PACK "$REGPACK_OPT6" 6
-#BAB_PACK "$REGPACK_OPT7" 7
-#BAB_PACK "$REGPACK_OPT8" 8
+BAB_PACK "$REGPACK_OPT7" 7
+BAB_PACK "$REGPACK_OPT8" 8
 BAB_PACK "$REGPACK_OPT9" 9
-#BAB_PACK "$REGPACK_OPTA" A
+BAB_PACK "$REGPACK_OPTA" A
 BAB_PACK "$REGPACK_OPTB" B
 BAB_PACK "$REGPACK_OPTC" C
-#BAB_PACK "$REGPACK_OPTD" D
-#BAB_PACK "$REGPACK_OPTE" E
+BAB_PACK "$REGPACK_OPTD" D
+BAB_PACK "$REGPACK_OPTE" E
 BAB_PACK "$REGPACK_OPTF" F
 #UGLIFY_PACK
 echo "[MINIME] WAIT"

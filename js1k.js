@@ -8,8 +8,6 @@
     - add geometric form (house? wall?) to the map
 */
 
-(() => {
-
 let cameraX = 0;
 let cameraY = 0;
 let cameraAngle = 0;
@@ -169,5 +167,3 @@ setInterval(() => {
     imagedata.data.set(buf8);
     c.putImageData(imagedata,0,0);
 },0);
-
-})();
