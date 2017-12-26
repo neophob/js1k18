@@ -28,7 +28,7 @@ mkdir -p $OUT
 
 BAB_PACK() {
   OPT=$1
-  $REGPACK $OUT/in $OPT > $OUT/js1k-babili-regpacked-$2.js
+  $REGPACK $OUT/in $OPT > $OUT/js1k-babili-regpacked-$2.js 2>/dev/null
   printf %s "$(cat $OUT/js1k-babili-regpacked-$2.js)" > $OUT/js1k-babili-regpacked-$2-no-newlines.js
   rm $OUT/js1k-babili-regpacked-$2.js
 }

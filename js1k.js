@@ -76,7 +76,7 @@ for (var l=0;l < 1025; l++) {
 for (var i=0, tmp=0; i<2e6; i++) {
   //convert the 1025*1025 height map to a 1024*1024 heightmap and color map
   if (i%1025!=1024 && mapOrOffset[i]) {
-    var heightMapEntry = mapOrOffset[i]>>2;
+    var heightMapEntry = mapOrOffset[i]/4;
 
     //generate smooth color dynamically, 5 equals the size of the pallete array: (heightMapEntry/(255 / 5))|0
 
