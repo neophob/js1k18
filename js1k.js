@@ -10,31 +10,31 @@
 
 (() => {
 
-var cameraX = 0;
-var cameraY = 0;
-var cameraAngle = 0;
+let cameraX = 0;
+let cameraY = 0;
+let cameraAngle = 0;
 // avoid beeing stuck at the beginning
-var cameraHeight=1024;
+let cameraHeight=1024;
 
 //buf32 and buf8 are just ArrayBuffer views to convert data
-var tmp = new ArrayBuffer(a.width * a.height << 2);
-var buf32 = new Uint32Array(tmp);
-var buf8 = new Uint8Array(tmp);
-var heightmap = [];
-var colormap = [];
-var time=0;
-var imagedata = c.createImageData(a.width, a.height);
+let tmp = new ArrayBuffer(a.width * a.height << 2);
+let buf32 = new Uint32Array(tmp);
+let buf8 = new Uint8Array(tmp);
+let heightmap = [];
+let colormap = [];
+let time=0;
+let imagedata = c.createImageData(a.width, a.height);
 
 // GENERATE HEIGHTMAP START
 // array size is 1025x1025 - however 2 millions can be written much shorter
-var mapOrOffset = Array(2e6).fill(0);
+let mapOrOffset = Array(2e6).fill(0);
 
-var divide = (size) => {
+let divide = (size) => {
   if (size == 1) return;
-  var half = size / 2;
+  let half = size / 2;
 
-  for (var y = half; y < 1025; y += size) {
-    for (var x = half; x < 1025; x += size) {
+  for (let y = half; y < 1025; y += size) {
+    for (let x = half; x < 1025; x += size) {
       //SQUARE
       tmp = (
         mapOrOffset[((x - half) & 1023) + ((y - half) & 1023) * 1025] +
@@ -47,8 +47,8 @@ var divide = (size) => {
       mapOrOffset[x + 1025 * y] = (tmp<255) ? 255 : ((tmp>1024) ? 1024 : tmp);
     }
   }
-  for (var y = 0; y < 1025; y += half) {
-    for (var x = (y + half) % size; x < 1025; x += size) {
+  for (let y = 0; y < 1025; y += half) {
+    for (let x = (y + half) % size; x < 1025; x += size) {
       //DIAMOND
       tmp = (
         mapOrOffset[(x & 1023) + ((y - half) & 1023) * 1025] +
@@ -64,25 +64,25 @@ var divide = (size) => {
 divide(1024);
 
 // GENERATE BLACK BLOCKS
-for (var l=0;l < 1025; l++) {
-  var yofs = l%64 ? yofs : Math.random()*16 << 6;
-  for (var j=yofs; j < yofs+64; j++) {
+for (let l=0,yofs=0;l < 1025; l++) {
+  yofs = l%64 ? yofs : Math.random()*16 << 6;
+  for (let j=yofs; j < yofs+64; j++) {
     mapOrOffset[j * 1025 + l] = 1024;
   }
 }
 
 // GENERATE COLORMAP FROM HEIGHTMAP
-for (var i=0, tmp=0; i<2e6; i++) {
+for (let i=0, tmp=0; i<2e6; i++) {
   //convert the 1025*1025 height map to a 1024*1024 heightmap and color map
   if (i%1025!=1024 && mapOrOffset[i]) {
-    var heightMapEntry = mapOrOffset[i]/4;
+    let heightMapEntry = mapOrOffset[i]/4;
 
     //generate smooth color dynamically, 5 equals the size of the pallete array: (heightMapEntry/(255 / 5))|0
 
     //fancy pallette - if no entry exists, its converted to 0
-    var col1 = [[], [102], [192,51,16], [102],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
-    var col2 = [[], [102], [192,51,16], [102],[]][  (heightMapEntry/(255 / 5)   |0)%5];
-    var selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
+    let col1 = [[], [102], [192,51,16], [102],[]][ ((heightMapEntry/(255 / 5)+1)|0)%5];
+    let col2 = [[], [102], [192,51,16], [102],[]][  (heightMapEntry/(255 / 5)   |0)%5];
+    let selectedPalleteEntry = (heightMapEntry%(255 / 5))/(255 / 5);
 
     //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
     //note: instead the "high resolution" shadowmap (i-1), use (i-10) to get a snowy map
@@ -98,13 +98,13 @@ for (var i=0, tmp=0; i<2e6; i++) {
 
     heightmap[tmp++] = heightMapEntry;
   }
-};
+}
 
 setInterval(() => {
 
 // ## UPDATE CAMERA
-    var sinang = Math.sin(cameraAngle);
-    var cosang = Math.sin(cameraAngle + 1.6);
+    let sinang = Math.sin(cameraAngle);
+    let cosang = Math.sin(cameraAngle + 1.6);
 
     cameraX -= sinang * (Date.now()-time) / 8;
     cameraY -= cosang * (Date.now()-time) / 8;
@@ -133,28 +133,28 @@ setInterval(() => {
    )<<24);
 
 // ## DRAW VOXEL
-    var hiddeny = Array(a.width).fill(a.height);
+    let hiddeny = Array(a.width).fill(a.height);
 
     // Draw from front to back, implement primitive LOD after a certain distance
-    for (var z=16; z<2e3; z += z < 1024 ? 1 : 4) {
+    for (let z=16; z<2e3; z += z < 1024 ? 1 : 4) {
       // 90 degree field of view
-      var plx = -cosang * z - sinang * z;
-      var ply = sinang * z - cosang * z;
-      var dx = (cosang * z - sinang * z - plx) / a.width;
-      var dy = (-sinang * z - cosang * z - ply) / a.height;
+      let plx = -cosang * z - sinang * z;
+      let ply = sinang * z - cosang * z;
+      let dx = (cosang * z - sinang * z - plx) / a.width;
+      let dy = (-sinang * z - cosang * z - ply) / a.height;
       plx += cameraX;
       ply += cameraY;
 
       // DEFINE HEIGHT (1/z * 240)
-      for (var i=0; i<a.width; i++) {
-        var mapoffset = ((ply & 1023) << 10) + (plx & 1023);
+      for (let i=0; i<a.width; i++) {
+        let mapoffset = ((ply & 1023) << 10) + (plx & 1023);
         // beware: if heightonscreen < 0 it will stop rendering!
         // TODO use heightmap[mapoffset] to compare if it needs to draw, should speedup rendering
-        var heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * a.width / (4*z))|0;
+        let heightonscreen = ((cameraHeight + 192 - heightmap[mapoffset]) * a.width / (4*z))|0;
         // DrawVerticalLine start
         for (; heightonscreen < hiddeny[i]; hiddeny[i] = heightonscreen) {
           // get offset on screen for the vertical line
-          for (var k = heightonscreen; k < hiddeny[i]; k++) {
+          for (let k = heightonscreen; k < hiddeny[i]; k++) {
             buf32[k * a.width + i] = colormap[tmp + mapoffset];
           }
         }
