@@ -20,7 +20,6 @@ var cameraHeight=1024;
 var tmp = new ArrayBuffer(a.width * a.height << 2);
 var buf32 = new Uint32Array(tmp);
 var buf8 = new Uint8Array(tmp);
-var hiddeny = Array(a.width);
 var heightmap = [];
 var colormap = [];
 var time=0;
@@ -134,7 +133,8 @@ setInterval(() => {
    )<<24);
 
 // ## DRAW VOXEL
-    hiddeny.fill(a.height);
+    var hiddeny = Array(a.width).fill(a.height);
+
     // Draw from front to back, implement primitive LOD after a certain distance
     for (var z=16; z<2e3; z += z < 1024 ? 1 : 4) {
       // 90 degree field of view
