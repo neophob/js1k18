@@ -10,7 +10,7 @@
 
 let cameraX = 0;
 let cameraY = 0;
-let cameraAngle = 0;
+let cameraAngle = 8;
 // avoid beeing stuck at the beginning
 let cameraHeight=1024;
 
