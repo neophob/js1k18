@@ -1,11 +1,3 @@
-# js1k2018 - WIP
+# js1k2018 - Black Rock City
 
-## NAME
-
-- mauna loa
-- mauna loa craft
-- Black Rock City
-- black blocks on mars
-- bl2onma
-- lavaland
-- aetna
+* Use Firefox to render
