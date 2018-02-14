@@ -349,9 +349,16 @@ Generate the realtime map is about 50% of the whole code (70 lines).
 
 ### Camera path
 
-- pretty boring
+.left-column[
+  .left[![](pics/camerapath.jpg)]
+]
 
-- speed depends on the current map position
+--
+.right-column[
+- pretty boring, sinus / cosinus based on time
+
+- camera angle depends on the current map height
+]
 
 ---
 
@@ -359,9 +366,17 @@ Generate the realtime map is about 50% of the whole code (70 lines).
 
 ### Generate some actions to be less boring
 
+--
+
+- add black blocks to the generated map
+
+--
+
 - add random lightning, shakes camera and show fake light
 
-- add black blocks when generating the map
+--
+
+.center[![](pics/lightning.jpg)]
 
 ---
 class: center, middle, inverse
@@ -547,11 +562,11 @@ Note:
 
 - not always that easy when babel-minifier runs
 
-Example code:
+Example code (calculate color palette):
 
 ```
-var col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (1+(heightMapEntry/(255 / 5))|0)%5];
-var col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][    (heightMapEntry/(255 / 5) |0)%5];
+let col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (1+(heightMapEntry/(255 / 5))|0)%5];
+let col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][    (heightMapEntry/(255 / 5) |0)%5];
 ```
 
 ---
