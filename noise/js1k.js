@@ -66,15 +66,12 @@ map.forEach((r,i)=>{
     imgdata.data[4*tmp+2] = heightMapEntry;
     imgdata.data[4*tmp+3] = 255;  // APLHA (0-255)
 
-    if ((tmp%1024) > 340) {
-      imgdata.data[4*tmp+0] = (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry)));
-      imgdata.data[4*tmp+1] = (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)));
-      imgdata.data[4*tmp+2] = ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry));
-
-    }
+    imgdata.data[4*tmp+0] = (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry)));
+    imgdata.data[4*tmp+1] = (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)));
+    imgdata.data[4*tmp+2] = ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry));
 
     // this is the dead cheap shadow mapper
-    if ((tmp%1024) > 680 && ofs+heightMapEntry>100+r%16 && map[(i - 1)] < r) {
+    if (/*(tmp%1024) > 680 && */ofs+heightMapEntry>100+r%16 && map[(i - 1)] < r) {
       imgdata.data[4*tmp+3]=0xe0;
     }
 

@@ -102,15 +102,15 @@
             /* Two-column layout */
             .left-column {
               color: #777;
-              width: 20%;
+              width: 45%;
               height: 92%;
               float: left;
             }
-              .left-column h2:last-of-type, .left-column h3:last-child {
-                color: #000;
-              }
+            .left-column h2:last-of-type, .left-column h3:last-child {
+              color: #000;
+            }
             .right-column {
-              width: 75%;
+              width: 50%;
               float: right;
               padding-top: 1em;
             }
@@ -134,7 +134,7 @@ class: center, middle, inverse
 
 1. Demo Time
 
-1. Step-by-Step example
+1. Close look at my js1k compo entry
 
 1. Toolchain
 
@@ -156,7 +156,7 @@ class: center, middle, inverse
 
 --
 
-- Small Scope
+- Small Scope (my entry has about 170 lines, including comments)
 
 --
 
@@ -199,9 +199,24 @@ Some JS1k entries from the past I like.
 ---
 class: center, middle, inverse
 
-# Step-by-Step "Black Rock City"
+# My js1k compo entry
 
-["Black Rock City - almost Final Version"](file://index.html)
+Full JS source of "Black Rock City":
+```
+for(_='],~102k~[k~[j=new ``Uint_++)^;b^\\let Z{ZY])*X(0|W);V+dTn[S;eRb)Q16P*eOO-Nat
+L=0Kk5J(k3&H)]+SHfG)+J*HeFFTG-dFE<<$)$10)+H#2e6")/+=k4255=(DLe.now()*(-B8,for(Ze=),
+ImageDLa(F-dGT|Wf[>eR.fill([b]bK,dK*MLh.random()X(1-h)Array;J>f;fQgSHf =MLh.sin(Xh+
+Wg[]k<e&&Sb-1]<n?24a.height=[[j192,51,Pj]][We/51a.width)]4+4*b-1.5*b,Sf+JO]=>g?:<g?
+:g;:)$240011$822$P,Z,e=8,f=,g`Buffer(*$2h_32(gi_8(gA=[~l=[~BK,m=c.creLe,n=(")0oQ=>{
+if(1!=QYd=b/2;d;JQf=d  -dET0;Jd)feT)%b  FGEo(d)}};o(V;J>b\\{d=b%64?d:P$6;dR<d+64R^S
+JO+b]=};">b\\if(!=b%J&&n)Ye=n/4,f+1)%5~g)%5~h=e%51/51;l[d7l[d+"0A[d++]=e}setInterva
+l(()=>Yneoe+1.6Vb-=nd-=oe+(B=2e3(ff+A[(Hd#Q]2h(B%P?(gK,):(g=",f8,240))$24VZp=()VP;2
+e3>e?1:4)YB=-oNnO,m=nNoO,DoNnNB,r-nNoNm;Bb,md;bK;b<\\YdHm#BiK|(f+192-A[dX/(4OVfor(;
+i<p;p=i)iR<pR^h[e*+b]=l[gT];BD,mr}}m.dLa.set(ic.putm,0,0)},0)';G=/[^ !%-DIMU[\]a-il
+-}]/.exec(_);)with(_.split(G))_=join(shift());eval(_)
+```
+
+["Black Rock City"](https://js1k.com/2018-coins/demo/3012)
 
 ---
 # Step-by-Step "Black Rock City"
@@ -212,11 +227,7 @@ class: center, middle, inverse
 
 --
 
-- Generate colormap from heightmap
-
---
-
-- Generate shadowmap from heightmap
+- Colorize Map
 
 --
 
@@ -224,7 +235,7 @@ class: center, middle, inverse
 
 --
 
-- Camera path
+- Update camera path
 
 --
 
@@ -236,31 +247,76 @@ class: center, middle, inverse
 
 ### Heightmap
 
+--
+
+.left-column[
+  .left[![](pics/heightmap.jpg)]
+]
+
+--
+.right-column[
 - "Diamond Square" algorithm based on http://www.playfuljs.com/realistic-terrain-in-130-lines/
 
-- modified that generated heightmap is seamless
+- modified that generated heightmap is seamless / tileable
 
 - optimized for size
+]
 
 ---
 
 # Step-by-Step "Black Rock City"
 
-### Generate colormap and heightmap from heightmap
+### Colorize map
 
-- Colorize the heightmap with a fancy palette
+--
 
-- Generate shadowmap so it looks more realistic. Implementation is dead simple `(heightmap[n]>102 && heightmap[n-1] < heightmap[n])`
+.left-column[
+  .left[![](pics/colormap.jpg)]
+]
+
+--
+.right-column[
+- Colorize the heightmap with a palette
+
+- I use 5 colors in my map that fade into each other: black, red, orange (kind of), red, black
+
+- Still does not look too fancy, peaks are not visible
+]
 
 ---
 
 # Step-by-Step "Black Rock City"
 
-### Generate colormap and heightmap from heightmap
+### Shadow map
 
-- heightmap, colormap and final colorized shadow map
+--
+
+.left-column[
+  .left[![](pics/shadowmap.jpg)]
+]
+
+--
+.right-column[
+- Generate shadowmap so it looks more realistic
+
+- Implementation is dead simple: `if (heightmap[n]>102 && heightmap[n-1] < heightmap[n]) increase alpha value`
+
+- Shadows are only visible after a certain height (above the lava)
+]
+
+---
+
+# Step-by-Step "Black Rock City"
+
+### Map generation summary
+
+Generate the realtime map is about 50% of the whole code (70 lines).
 
 .center[![](pics/height-color-shadow.jpg)]
+
+
+["Realtime Map Generation"](noise/index.html)
+
 
 ---
 
@@ -268,7 +324,13 @@ class: center, middle, inverse
 
 ### Voxel rendering
 
+--
+
 - "Voxel rendering" based on https://github.com/s-macke/VoxelSpace/
+
+--
+
+- About 30 lines of Code
 
 --
 
@@ -287,7 +349,9 @@ class: center, middle, inverse
 
 ### Camera path
 
-- pretty boring at the moment
+- pretty boring
+
+- speed depends on the current map position
 
 ---
 
@@ -335,13 +399,15 @@ This tool is a "Self-contained packer" to shrink the codesize.
 
 - Made to compress small JS files (1-4kb)
 
+- Has seven stages to optimize the code
+
+- Decompress payload is 50 bytes (JSCrunch)
+
 - Eliminate redundancies, replaced by tokens
 
 - Core compression is a token based String replacment (JSCrunch)
 
 - Regpack improves compression of JSCrunch and add more features
-
-- Decompress payload is 50 bytes (JSCrunch)
 
 - To compare: gzip compress (best) compress roughly 30% better
 
@@ -406,7 +472,9 @@ Instead ｛ `Math.floor(x)` ｝use｛ `x|0` ｝
 
 - Works only for 32bit (signed) integers
 - *Note:* Differs from Math.floor for negative numbers
-- Example: ｛ `-1.8|0` ⟶ `-1` ｝
+
+- Math.floor example: ｛ `Math.floor(-1.8)` ⟶ `-2` ｝
+- Bitwise OR example: ｛ `-1.8|0` ⟶ `-1` ｝
 
 --
 
@@ -416,7 +484,9 @@ Instead ｛ `Math.floor(x/2)` ｝use｛ `x>>1` ｝
 - Works only for 32bit (signed) integers
 - Floats are converted to integers
 - *Note:* Differs from Math.floor for negative numbers
-- Example: ｛ `15.5>>1` ⟶ `7` ｝
+
+- Math.floor example: ｛ `Math.floor(15.5/2)` ⟶ `7` ｝
+- Right shift example: ｛ `15.5>>1` ⟶ `7` ｝
 
 
 ---
@@ -490,7 +560,7 @@ class: center, middle, inverse
 # EOF
 
     </textarea>
-    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    <script src="remark/remark-latest.min.js">
     </script>
     <script>
       var slideshow = remark.create();
