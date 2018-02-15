@@ -476,9 +476,9 @@ i<p;p=i)iR<pR^h[e*+b]=l[gT];BD,mr}}m.dLa.set(ic.putm,0,0)},0)';G=/[^ !%
 
 --
 .right-column[
-- pretty boring, sinus / cosinus based on time
+- main animation is based on simple sinus calculation
 
-- camera angle depends on the current map height
+- camera angle depends on the current map height -> path is different for each terrain
 ]
 
 ???
@@ -525,23 +525,19 @@ class: center, middle, inverse
 
 ### Babel-minifier
 
-This tool will shrink the codesize using
-
-- remove whitespaces, uneeded characters and dead code
-
+This tool will shrink the codesize using different plugins
 - mangle names:｛ `var positition` ⟶ `var b` ｝
-
 - optimize numbers: ｛ `20000` ⟶ `2e4` ｝
-
 - constant folding: ｛ `2 * 3` ⟶ `6` ｝
-
 - reorder code to compress better with gzip
 
 ... and much more. **No** decompression is needed to run your JS code.
 
-Similar Tools: uglifyJS, Google Closure Compiler, butternut
-
 ???
+
+- remove whitespaces, uneeded characters and dead code
+
+- Similar Tools: uglifyJS, Google Closure Compiler, butternut
 
 - babel-minifier reduce the js size from about 6k to 2k
 
@@ -553,23 +549,23 @@ Similar Tools: uglifyJS, Google Closure Compiler, butternut
 
 This tool is a "Self-contained packer" to shrink the codesize.
 
-- Made to compress small JS files (1-4kb)
-
-- Has seven stages to optimize the code
-
-- Decompress payload is 50 bytes (JSCrunch)
-
-- Eliminate redundancies, replaced by tokens
-
 - Core compression is a token based String replacment (JSCrunch)
-
 - Regpack improves compression of JSCrunch and add more features
-
 - To compare: gzip compress (best) compress roughly 30% better
+
+**Decompression** (at runtime) is needed to run your JS code.
 
 ???
 
+- Regpack has seven stages to optimize the code
+
+- Decompress payload is 50 bytes (JSCrunch)
+
+- Made to compress small JS files (1-4kb)
+
 - We will take a look how JSCrunch works in the next slide
+
+- for my entry, regpack reduce the size from 1771 bytes to 1024 bytes
 
 ---
 
@@ -594,7 +590,6 @@ _="var az0}1 =={}2 =={;|1 >{; |2 >{;~0) console.log('}; y=z~|y!==~{ 0'
 
 ???
 - Here we compressed a short example. the compression rate is better if you have more code
-- for my entry, regpack reduce the size from 1771 bytes to 1024 bytes
 
 ---
 
@@ -738,6 +733,27 @@ for($ in C=context)
 
 # Tricks
 
+### Question
+
+What does this code do?
+
+```
+let value = [[], [0x60], [0x90,0x30,0x10], [0x60],[]] [ (heightMapEntry/(255 / 5)|0)
+let r = value[0]|0;
+let g = value[1]|0;
+let b = value[2]|0;
+```
+
+???
+
+- anybody have an idea what this code does?
+- this code creates the pallette to colorize the map
+- we have 5 colors, the black color does not need to be defined
+- `undefined|0` -> `0`
+---
+
+# Tricks
+
 ### Duplicate code
 
 - Regpack will detect duplicate code and eliminite it
@@ -752,6 +768,9 @@ for($ in C=context)
 let col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (1+(heightMapEntry/(255 / 5))|0)%5];
 let col2 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][    (heightMapEntry/(255 / 5) |0)%5];
 ```
+
+???
+- this code compress really well
 
 ---
 class: center, middle, inverse
