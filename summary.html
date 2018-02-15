@@ -120,26 +120,61 @@
     <textarea id="source">
 name: inverse
 layout: false
-count: false
 class: center, middle, inverse
 
-# JS1k
+# JS1k - code golfing
 2018 by Michael Vogt
 .footnote[Go directly to [project site](https://github.com/neophob/js1k18)]
 
+???
+- Intro Speaker
+
+- topic of this talk is "JS1k - code golfing"
+
+- the goal of this talk is, show what you can do with 1k of pure js code, without any external assets
+
+- lets jump to tha agenda
 ---
 
 # Agenda
 
 1. WHY?
 
+???
+
+- first I will answer the obious WHY question
+
+--
+
 1. Demo Time
 
-1. Close look at my js1k compo entry
+???
+
+- then I will show you some 1k demos I like
+
+--
+
+1. Close look at my 1k production
+
+???
+
+- I will show you my 1k production and talk about how i build it
+
+--
 
 1. Toolchain
 
+???
+
+- Next, I will show you how to shrink the codesize
+
+--
+
 1. Tricks
+
+???
+
+- Some tricks I used to shrink the codesize
 
 ---
 class: center, middle, inverse
@@ -149,41 +184,59 @@ class: center, middle, inverse
 ---
 # WHY?
 
-- Compo on js1k.com - 10th time this year
+- Yearly compo on js1k.com
+
+???
+- The compo started as joke, its the 10th compo this year
 
 --
 
 - Fun!
 
+???
+- at least I enjoy it, its completly different that a business project, you're allowed or forced to produce ugly looking code, pollute the global scope etc. any you can create something beautiful. and there's the competition
+
 --
 
-- Small Scope (my entry has about 170 lines, including comments)
+- Small Scope
+
+???
+- you have one file, my production has about 170 lines, including comments
 
 --
 
 - Think different
 
+???
+- today if you need to solve a problem, you often add a package to your project to solve a problem. sometimes thats not needed and you can solve the problem by using the brain
+
 --
 
 - Learn JS
+
+???
+- you learn JS, because you need to be creative.
 
 ---
 class: center, middle, inverse
 
 # Demo Time
+
+???
+
+I want to show you whats possible with 1k of JS code
 
 ---
 # Demo Time
 
 Some JS1k entries from the past I like.
 
+???
+js1k entries can use Canvas or WebGL
+
 --
 
 ### Canvas
-
-- Pure javascript raytracer: ["pure js ray tracer" by Igor Sbitnev](http://js1k.com/2017-magic/demo/2648)
-
---
 
 - Ride the mysterious monorail through a misty metropolis: ["Mysterious Monorail" by homecoded](http://js1k.com/2015-hypetrain/demo/2322)
 
@@ -192,10 +245,6 @@ Some JS1k entries from the past I like.
 ### WebGL
 
 - ["Romanesco 2.0" by Lara & HellMood](http://js1k.com/2016-elemental/demo/2552)
-
---
-
-- ["Takoscript" by Shotgan & frikeldon](http://js1k.com/2017-magic/demo/2829)
 
 ---
 class: center, middle, inverse
@@ -217,26 +266,52 @@ i<p;p=i)iR<pR^h[e*+b]=l[gT];BD,mr}}m.dLa.set(ic.putm,0,0)},0)';G=/[^ !%
 -}]/.exec(_);)with(_.split(G))_=join(shift());eval(_)
 ```
 
+???
+
+- thats exactly 1024 bytes of valid JS code
+
+--
+
 ["Black Rock City"](https://js1k.com/2018-coins/demo/3012)
 
+
+???
+
+- the js1k.com compo is still running and ends this month.
+
 ---
-# Step-by-Step "Black Rock City"
+# Close look at "Black Rock City"
+
+???
+
+"Black Rock City" can be split up in different parts:
+
+--
 
 ### Parts:
 
-- Generate heightmap
+- Generate the map
+
+???
+
+- we need to define the height of the landscape
+- we need to colorize this map
 
 --
 
-- Colorize Map
+- Rendering
 
---
+???
 
-- Voxel rendering
+- I use a Voxel rendering
 
 --
 
 - Update camera path
+
+???
+
+- its bascially how we walk through this landscape
 
 --
 
@@ -244,15 +319,26 @@ i<p;p=i)iR<pR^h[e*+b]=l[gT];BD,mr}}m.dLa.set(ic.putm,0,0)},0)';G=/[^ !%
 
 ---
 
-# Step-by-Step "Black Rock City"
+# Close look at "Black Rock City"
 
-### Heightmap
+### Generate the Map - Heightmap
+
+???
+
+- the heightmap is the foundation of the landscape
+
+- how does a heightmap look like?
 
 --
 
 .left-column[
   .left[![](pics/heightmap.jpg)]
 ]
+
+???
+
+- its 1024 pixel wide and height array, contains 8 bit values
+- 0 is the lowest point, 255 is highest point
 
 --
 .right-column[
@@ -263,11 +349,20 @@ i<p;p=i)iR<pR^h[e*+b]=l[gT];BD,mr}}m.dLa.set(ic.putm,0,0)},0)';G=/[^ !%
 - optimized for size
 ]
 
+???
+
+- next step: we need colors!
+
 ---
 
-# Step-by-Step "Black Rock City"
+# Close look at "Black Rock City"
 
-### Colorize map
+### Generate the Map - Colorize map
+
+???
+
+- as i want to display some lava-ish landscape I mainly focus on red and black colors.
+- nice sideeffect: this colors use not much space when define the colors
 
 --
 
@@ -280,50 +375,65 @@ i<p;p=i)iR<pR^h[e*+b]=l[gT];BD,mr}}m.dLa.set(ic.putm,0,0)},0)';G=/[^ !%
 - Colorize the heightmap with a palette
 
 - I use 5 colors in my map that fade into each other: black, red, orange (kind of), red, black
-
-- Still does not look too fancy, peaks are not visible
 ]
+
+???
+
+- looks a bit more than the lava landscape, but still does not look too fancy, high mountains are not visible
+- to solve that problem, I NEED SHADOWS
+
 
 ---
 
-# Step-by-Step "Black Rock City"
+# Close look at "Black Rock City"
 
-### Shadow map
-
---
+### Generate the Map - Shadow map
 
 .left-column[
   .left[![](pics/shadowmap.jpg)]
 ]
+
+???
+- I started reading tutorials about generating shadows
+- way too complex for my use case - i dont care where the sun is, all i want is shadow
+- thats what I meant when I talked about "think different"
 
 --
 .right-column[
 - Generate shadowmap so it looks more realistic
 
 - Implementation is dead simple: `if (heightmap[n]>102 && heightmap[n-1] < heightmap[n]) increase alpha value`
+]
+
+???
 
 - Shadows are only visible after a certain height (above the lava)
-]
 
 ---
 
-# Step-by-Step "Black Rock City"
+# Close look at "Black Rock City"
 
-### Map generation summary
-
-Generate the realtime map is about 50% of the whole code (70 lines).
+### Generate the Map - Summary
 
 .center[![](pics/height-color-shadow.jpg)]
 
 
 ["Realtime Map Generation"](noise/index.html)
 
-
+???
+- Generate the realtime map is about 50% of the whole code (70 lines).
+- Press on link to show different generated maps
+- The landscape exists now, next step: visualize it
 ---
 
-# Step-by-Step "Black Rock City"
+# Close look at "Black Rock City"
 
 ### Voxel rendering
+
+???
+- people in this room with greyish hair might remember comanche
+
+- a game released by novalogic in 1992 and was quite a thing back then
 
 --
 
@@ -344,9 +454,14 @@ Generate the realtime map is about 50% of the whole code (70 lines).
 
 .footnote[Image source [https://github.com/s-macke/VoxelSpace](https://github.com/s-macke/VoxelSpace)]
 
+???
+
+- the image explains very well, how voxel rendering works
+- landscape rendering is done too - now we need to move
+
 ---
 
-# Step-by-Step "Black Rock City"
+# Close look at "Black Rock City"
 
 ### Camera path
 
@@ -363,7 +478,7 @@ Generate the realtime map is about 50% of the whole code (70 lines).
 
 ---
 
-# Step-by-Step "Black Rock City"
+# Close look at "Black Rock City"
 
 ### Generate some actions to be less boring
 
@@ -373,16 +488,28 @@ Generate the realtime map is about 50% of the whole code (70 lines).
 
 --
 
-- add random lightning, shakes camera and show fake light
+- add lightning: shakes camera and show fake light
 
 --
 
 .center[![](pics/lightning.jpg)]
 
+???
+
+- the lightning is a bit subtile, the left side you see a regular rendering, on the right side the ligthning mode
+
+- Now all the parts of the demo are here, however the JS code is about 6kb
+
 ---
 class: center, middle, inverse
 
 # Toolchain
+
+???
+
+- Of course the final asset I showed you before is not made manually
+
+- Here I show you the toolchain I used
 
 ---
 # Toolchain
@@ -404,6 +531,10 @@ This tool will shrink the codesize using
 ... and much more. **No** decompression is needed to run your JS code.
 
 Similar Tools: uglifyJS, Google Closure Compiler, butternut
+
+???
+
+- babel-minifier reduce the js size from about 6k to 2k
 
 ---
 
@@ -427,6 +558,10 @@ This tool is a "Self-contained packer" to shrink the codesize.
 
 - To compare: gzip compress (best) compress roughly 30% better
 
+???
+
+- We will take a look how JSCrunch works in the next slide
+
 ---
 
 # Toolchain
@@ -448,6 +583,10 @@ _="var az0}1 =={}2 =={;|1 >{; |2 >{;~0) console.log('}; y=z~|y!==~{ 0'
 )z=100000yif (a";for(i of"yz{|}~")with(_.split(i))_=join(pop());eval(_)
 ```
 
+???
+- Here we compressed a short example. the compression rate is better if you have more code
+- for my entry, regpack reduce the size from 1771 bytes to 1024 bytes
+
 ---
 
 # Toolchain
@@ -464,6 +603,9 @@ How the magic works:
 1. `if (a` is removed from end of string and replace all `y` character
 1. `=100000` is removed from end of string and replace all `z` characters
 
+???
+
+Here is the crunched code a bit reformated, see the colorized tokens
 ---
 
 # Toolchain
@@ -471,6 +613,12 @@ How the magic works:
 ### Regpack Example (JSCrush)
 
 .center[![](pics/jscrush-step-by-step.png)]
+
+???
+
+- Step by step we decompress the input string
+
+- the order of the tokens is important
 
 ---
 
@@ -498,25 +646,20 @@ class: center, middle, inverse
 
 Instead ｛ `Math.floor(x)` ｝use｛ `x|0` ｝
 
-
 - Works only for 32bit (signed) integers
 - *Note:* Differs from Math.floor for negative numbers
 
-- Math.floor example: ｛ `Math.floor(-1.8)` ⟶ `-2` ｝
-- Bitwise OR example: ｛ `-1.8|0` ⟶ `-1` ｝
+Examples:
+- Math.floor: ｛ `Math.floor(-1.8)` ⟶ `-2` ｝
+- Bitwise OR: ｛ `-1.8|0` ⟶ `-1` ｝
 
 --
 
 Instead ｛ `Math.floor(x/2)` ｝use｛ `x>>1` ｝
 
-
 - Works only for 32bit (signed) integers
 - Floats are converted to integers
 - *Note:* Differs from Math.floor for negative numbers
-
-- Math.floor example: ｛ `Math.floor(15.5/2)` ⟶ `7` ｝
-- Right shift example: ｛ `15.5>>1` ⟶ `7` ｝
-
 
 ---
 
@@ -530,6 +673,12 @@ Instead ｛ `Math.floor(x/2)` ｝use｛ `x>>1` ｝
 
 - Instead｛ `var a = Math.sin(value); var b = Math.cos(value);` ｝ use｛ `var a = Math.sin(value); var b = Math.sin(value + 1.6);` ｝
 
+???
+
+- First example is simple from a technical view
+
+- the second example will improve the compression rate with regpack
+
 ---
 
 # Tricks
@@ -538,7 +687,12 @@ Instead ｛ `Math.floor(x/2)` ｝use｛ `x>>1` ｝
 
 --
 
-- Instead｛ `var a = new Array(1024*1024)` ｝use｛ `var a = Array(2e6)` ｝
+- Instead｛ `let a = new Array(1024*1024)` ｝use｛ `let a = Array(2e6)` ｝
+
+???
+
+- I use this tradeoff in my code
+- note that babel minify would do a constant folding on the multiplication, the string would be 2 characters shorter but will compress badly (1'048'576)
 
 ---
 
@@ -549,20 +703,27 @@ Instead ｛ `Math.floor(x/2)` ｝use｛ `x>>1` ｝
 "Invented" by Marijn Haverbeke for JS1k compo in 2010.
 
 ```
-for($ in C=c.getContext('2d'))
+let canvas = document.createElement('canvas');
+let context = canvas.getContext('2d');
+for($ in C=context)
   C[$[0]+($[6]||'')]=C[$];
 ```
 
+???
+- any idea what this code snipped does?
+
 --
 
-We now have:
-- `C.qt` for `quadraticCurveTo`
-- `C.f` for `fill`.
+#### Examples:
+- `C.fx()` points to `context.fillText()`
+- `C.f()` for `context.fill()`.
 
+#### Note:
+- Don't do this yourself, Regpack can do that for you (module "hash contexts")
 
-Note:
-- Don't do this yourself, Regpack can do that for you (Module "hash contexts")
-
+???
+- usefull if your code uses a lot of different canvas API calls
+- especially the HTML5 audio API has a lot of long function names
 
 ---
 
@@ -576,7 +737,7 @@ Note:
 
 - not always that easy when babel-minifier runs
 
-Example code (calculate color palette):
+#### Example code (calculate color palette):
 
 ```
 let col1 = [[], [0x60], [0x90,0x30,0x10], [0x60],[]][ (1+(heightMapEntry/(255 / 5))|0)%5];
@@ -588,11 +749,20 @@ class: center, middle, inverse
 
 # EOF
 
+???
+
+- If you're interessted in realtime generated animations, don't hesitate to visit the Demonights event in the Effinger, there are about 4 Demonights per year
+
     </textarea>
     <script src="remark/remark-latest.min.js">
     </script>
     <script>
-      var slideshow = remark.create();
+      var slideshow = remark.create({
+        navigation: {
+          scroll: false
+        },
+        slideNumberFormat: '',
+      });
     </script>
   </body>
 </html>
