@@ -84,12 +84,12 @@ for (let i=0, tmp=0; i<2e6; i++) {
 
     //the alpha channel is used as a dead cheap shadow map, if current pixel is bigger than last -> it is exposed to light
     //note: instead the "high resolution" shadowmap (i-1), use (i-10) to get a snowy map
-    colormap[tmp    ] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 247 : 255)<<24) |
+    colormap[tmp    ] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 245 : 255)<<24) |
       (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
       (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
       ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
 
-    colormap[tmp+2e6] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 240 : 255)<<24) |
+    colormap[tmp+2e6] = (((heightMapEntry>102 && mapOrOffset[(i - 1)] < mapOrOffset[i]) ? 225 : 255)<<24) |
       (((col1[0]|0)*selectedPalleteEntry + (col2[0]|0)*(1-selectedPalleteEntry))) |
       (((col1[1]|0)*selectedPalleteEntry + (col2[1]|0)*(1-selectedPalleteEntry)) << 8) |
       ( (col1[2]|0)*selectedPalleteEntry + (col2[2]|0)*(1-selectedPalleteEntry)) << 16;
@@ -134,7 +134,7 @@ setInterval(() => {
     let hiddeny = Array(a.width).fill(a.height);
 
     // Draw from front to back, implement primitive LOD after a certain distance
-    for (let z=16; z<2e3; z += z < 1024 ? 1 : 4) {
+    for (let z=16; z<1500; z++) {
       // 90 degree field of view
       let plx = -cosang * z - sinang * z;
       let ply = sinang * z - cosang * z;
